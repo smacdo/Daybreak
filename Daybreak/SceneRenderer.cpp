@@ -43,10 +43,18 @@ SceneRenderer::~SceneRenderer()
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::Render(const Scene& scene)
 {
+    // Enable wireframe rendering if requested otherwise use solid mode.
+    glPolygonMode(GL_FRONT_AND_BACK, IsWireframeEnabled() ? GL_LINE : GL_FILL);
+
+    // Initialize standard shader program with a standard vertex layout.
     glUseProgram(m_standardShaderProgram);
     glBindVertexArray(m_standardVAO);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // Draw rect.
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Unbind vertex array.
+    glBindVertexArray(0);
 
     // Make sure no errors happened while drawing.
     glCheckForErrors();
@@ -59,14 +67,20 @@ void SceneRenderer::CreateDefaultScene()
     glGenVertexArrays(1, &m_standardVAO);
     glBindVertexArray(m_standardVAO);
 
-
-    // Create a simple mesh to render.
+    // Create a simple rectangle to render.
     // TODO: Remove this once scene loading is added.
     const float DefaultVertices[] =
     {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+         0.5f,  0.5f, 0.0f,     // Top right.
+         0.5f, -0.5f, 0.0f,     // Bottom right.
+        -0.5f, -0.5f, 0.0f,     // Bottom left.
+        -0.5f,  0.5f, 0.0f,     // Top left.
+    };
+
+    const unsigned int DefaultIndices[] =
+    {
+        0, 1, 3,    // Left triangle.
+        1, 2, 3     // Right triangle.
     };
 
     // Upload vertex data.
@@ -77,6 +91,16 @@ void SceneRenderer::CreateDefaultScene()
     glCheckForErrors();
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(DefaultVertices), DefaultVertices, GL_STATIC_DRAW);
+    glCheckForErrors();
+
+    // Upload index data.
+    unsigned int ebo = 0;
+    glGenBuffers(1, &ebo);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glCheckForErrors();
+
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(DefaultIndices), DefaultIndices, GL_STATIC_DRAW);
     glCheckForErrors();
 
     // Create standard vertex and pixel shaders.
