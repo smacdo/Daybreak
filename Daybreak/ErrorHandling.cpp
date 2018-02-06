@@ -96,6 +96,14 @@ DaybreakEngineException::DaybreakEngineException(const std::string& message, con
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+ObjectNotShaderException::ObjectNotShaderException(const std::string& shaderName, unsigned int objectId)
+    : DaybreakEngineException("Expected shader object id " + std::to_string(objectId) + " to be a shader", shaderName),
+      m_shaderName(shaderName),
+      m_objectId(objectId)
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 DaybreakShaderCompileException::DaybreakShaderCompileException(
     const std::string& shaderName,
     const std::string& compileInfo)

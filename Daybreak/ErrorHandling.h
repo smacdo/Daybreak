@@ -67,7 +67,6 @@ private:
     int m_line;
 };
 
-
 /** Core engine errors. */
 class DaybreakEngineException : public std::runtime_error
 {
@@ -84,6 +83,24 @@ public:
 private:
     std::string m_message;
     std::string m_details;
+};
+
+/** Object is not a shader exception. */
+class ObjectNotShaderException : public DaybreakEngineException
+{
+public:
+    /** Constructor. */
+    ObjectNotShaderException(const std::string& shaderName, unsigned int objectId);
+
+    /** Get the name of the shader. */
+    std::string ShaderName() const { return m_shaderName; }
+
+    /** Get the object id. */
+    unsigned int ObjectId() const { return m_objectId; }
+
+private:
+    std::string m_shaderName;
+    unsigned int m_objectId;
 };
 
 /** Shader compilation exception. */

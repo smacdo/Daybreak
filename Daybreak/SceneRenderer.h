@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
+#include <memory>
 
 class Scene;
+class Shader;
 
 /** Renders a scene. */
 class SceneRenderer
@@ -31,8 +33,6 @@ private:
     //       at program start and shared to everyone who needs it.
     unsigned int m_standardVAO = 0;
 
-    // TODO: This needs to be moved once we have a better rendering class layout since it should be created once
-    //       at program start and shared to everyone who needs it.
-    unsigned int m_standardShaderProgram = 0;
+    std::unique_ptr<Shader> m_standardShader;
 };
 

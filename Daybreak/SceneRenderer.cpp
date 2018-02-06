@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneRenderer.h"
 #include "Scene.h"
+#include "Shader.h"
 #include "ErrorHandling.h"
 
 #include <glad\glad.h>
@@ -43,7 +44,8 @@ SceneRenderer::~SceneRenderer()
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::Render(const Scene& scene)
 {
-    glUseProgram(m_standardShaderProgram);
+    m_standardShader->Activate();
+
     glBindVertexArray(m_standardVAO);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -58,7 +60,6 @@ void SceneRenderer::CreateDefaultScene()
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
     glGenVertexArrays(1, &m_standardVAO);
     glBindVertexArray(m_standardVAO);
-
 
     // Create a simple mesh to render.
     // TODO: Remove this once scene loading is added.
@@ -79,50 +80,16 @@ void SceneRenderer::CreateDefaultScene()
     glBufferData(GL_ARRAY_BUFFER, sizeof(DefaultVertices), DefaultVertices, GL_STATIC_DRAW);
     glCheckForErrors();
 
-    // Create standard vertex and pixel shaders.
-    unsigned int standardVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    // Construct standard shader.
+    m_standardShader = std::move(
+        Shader::LoadFromString(
+            "StandardShader",
+            "StandardVertexShader.glsl",
+            StandardVertexShaderSource,
+            "StandardFragmentShader.glsl",
+            StandardFragmentShaderSource));
 
-    glShaderSource(standardVertexShader, 1, &StandardVertexShaderSource, nullptr);
-    glCheckForErrors();
-
-    glCompileShader(standardVertexShader);
-    glCheckForErrors();
-
-    VerifyShaderCompiled(standardVertexShader, "StandardVertexShader");
-
-    unsigned int standardFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    
-    glShaderSource(standardFragmentShader, 1, &StandardFragmentShaderSource, nullptr);
-    glCheckForErrors();
-
-    glCompileShader(standardFragmentShader);
-    glCheckForErrors();
-
-    VerifyShaderCompiled(standardFragmentShader, "StandardFragmentShader");
-
-    // Create standard shader program.
-    m_standardShaderProgram = glCreateProgram();
-
-    glAttachShader(m_standardShaderProgram, standardVertexShader);
-    glCheckForErrors();
-
-    glAttachShader(m_standardShaderProgram, standardFragmentShader);
-    glCheckForErrors();
-
-    glLinkProgram(m_standardShaderProgram);
-    glCheckForErrors();
-
-    VerifyShaderLinked(m_standardShaderProgram, "StandardShader");
-
-    // Activate newly created standard shader and destroy temporary shader pieces.
-    glUseProgram(m_standardShaderProgram);
-    glCheckForErrors();
-
-    glDeleteShader(standardVertexShader);
-    glCheckForErrors();
-
-    glDeleteShader(standardFragmentShader);
-    glCheckForErrors();
+    m_standardShader->Activate();
 
     // Generate vertex attributes for the standard shader.
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -151,7 +118,6 @@ void SceneRenderer::VerifyShaderLinked(unsigned int program, const std::string& 
         throw DaybreakShaderLinkException(programName, errorText);
     }
 }
-
 
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::VerifyShaderCompiled(unsigned int shader, const std::string& shaderName)
