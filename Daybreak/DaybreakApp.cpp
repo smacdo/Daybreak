@@ -138,6 +138,11 @@ void DaybreakApp::ProcessPendingEvents()
             {
             case SDLK_ESCAPE:
                 m_quit = true;
+                break;
+
+            case SDLK_F6:
+                m_sceneRenderer->SetWireframeEnabled(!m_sceneRenderer->IsWireframeEnabled());
+                break;
             }
             break;
 
