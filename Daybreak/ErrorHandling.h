@@ -85,12 +85,30 @@ private:
     std::string m_details;
 };
 
+/** Invalid or unsupported enumeration value. */
+class InvalidEnumerationValueException : public DaybreakEngineException
+{
+public:
+    /** Constructor. */
+    InvalidEnumerationValueException(const std::string& enumTypeName, int value);
+
+    /** Get enumeration type name. */
+    std::string EnumTypeName() const { return m_enumTypeName; }
+
+    /** Get invalid value. */
+    int InvalidValue() const { return m_value; }
+
+private:
+    std::string m_enumTypeName;
+    int m_value;
+};
+
 /** Object is not a shader exception. */
 class ObjectNotShaderException : public DaybreakEngineException
 {
 public:
     /** Constructor. */
-    ObjectNotShaderException(const std::string& shaderName, unsigned int objectId);
+    ObjectNotShaderException(unsigned int objectId, const std::string& shaderName);
 
     /** Get the name of the shader. */
     std::string ShaderName() const { return m_shaderName; }
@@ -100,6 +118,24 @@ public:
 
 private:
     std::string m_shaderName;
+    unsigned int m_objectId;
+};
+
+/** Object is not a texture exception. */
+class ObjectNotTextureException : public DaybreakEngineException
+{
+public:
+    /** Constructor. */
+    ObjectNotTextureException(unsigned int objectId, const std::string& textureName);
+
+    /** Get the name of the shader. */
+    std::string TextureName() const { return m_textureName; }
+
+    /** Get the object id. */
+    unsigned int ObjectId() const { return m_objectId; }
+
+private:
+    std::string m_textureName;
     unsigned int m_objectId;
 };
 
@@ -141,4 +177,25 @@ public:
 private:
     std::string m_shaderName;
     std::string m_linkInfo;
+};
+
+/** Exceptions with reading content after loading it into memory. */
+class ContentReadException : DaybreakEngineException
+{
+public:
+    /** Constructor. */
+    ContentReadException(
+        const std::string& contentFilePath,
+        const std::string& contentTypeName,
+        const std::string& errorMessage);
+    
+    /** Get the content file path. */
+    std::string FilePath() const { return m_filePath; }
+
+    /** Get the content type name. */
+    std::string TypeName() const { return m_typeName; }
+
+private:
+    std::string m_filePath;
+    std::string m_typeName;
 };

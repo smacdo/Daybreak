@@ -3,6 +3,7 @@
 #include "Daybreak.h"
 #include "Scene.h"
 #include "SceneRenderer.h"
+#include "SystemInfo.h"
 
 #include "glad/glad.h"
 
@@ -24,6 +25,8 @@ DaybreakApp::~DaybreakApp()
 {
 }
 
+#include <iostream>
+
 //---------------------------------------------------------------------------------------------------------------------
 void DaybreakApp::Run()
 {
@@ -37,15 +40,29 @@ void DaybreakApp::Run()
     InitializeRendering();
 
     // Create the default scene renderer.
-    m_sceneRenderer.reset(new SceneRenderer);
+    m_sceneRenderer.reset(new SceneRenderer); 
 
     // TODO: Load scene.
 
     // Main game loop.
+    auto frequency = SDL_GetPerformanceFrequency();
+    auto t0 = SDL_GetPerformanceCounter();
+
     while (!m_quit)
     {
+        // Get time elapsed since last frame.
+        auto t1 = SDL_GetPerformanceCounter();
+        float deltaSeconds = (t1 - t0) / static_cast<float>(frequency);
+
+        t0 = t1;
+
+        // TODO: Update simulation.
+
+        // Process platform windowinng events.
         ProcessPendingEvents();
-        RenderFrame();
+
+        // Draw current frame.
+        RenderFrame(deltaSeconds);
     }
 }
 
@@ -105,12 +122,12 @@ void DaybreakApp::InitializeRendering()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DaybreakApp::RenderFrame()
+void DaybreakApp::RenderFrame(float deltaSeconds)
 {
     glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    m_sceneRenderer->Render(*m_scene.get());
+    m_sceneRenderer->Render(*m_scene.get(), deltaSeconds);
 
     SDL_GL_SwapWindow(m_pWindow);
 }

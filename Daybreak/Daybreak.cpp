@@ -9,10 +9,11 @@
 int main(int argc, char* argv[])
 {
     DaybreakApp app(800, 600);
-    try
-    {
+    //try
+    //{
         app.Run();
-    }
+    //}
+    /* TODO: Only catch if debugger attached
     catch (DaybreakEngineException& e)
     {
         std::string message;
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
     catch (std::runtime_error& e)
     {
         DisplayErrorDialog("Uncaught runtime exception", e.what());
-    }
+    }*/
 
     return 0;
 }

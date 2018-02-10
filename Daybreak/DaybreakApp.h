@@ -35,7 +35,7 @@ private:
     void InitResources();
 
     /** Called to render a frame. */
-    void RenderFrame();
+    void RenderFrame(float deltaSeconds);
 
 private:
     size_t m_initialWindowWidth = 0;

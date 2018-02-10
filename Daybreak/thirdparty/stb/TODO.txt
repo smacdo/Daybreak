@@ -1,0 +1,2 @@
+- Switch to using namespace Daybreak
+- Move library / core engine code into static library

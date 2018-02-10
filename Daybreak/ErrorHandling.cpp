@@ -96,9 +96,27 @@ DaybreakEngineException::DaybreakEngineException(const std::string& message, con
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-ObjectNotShaderException::ObjectNotShaderException(const std::string& shaderName, unsigned int objectId)
-    : DaybreakEngineException("Expected shader object id " + std::to_string(objectId) + " to be a shader", shaderName),
+InvalidEnumerationValueException::InvalidEnumerationValueException(const std::string& enumTypeName, int value)
+    : DaybreakEngineException(
+        "Invalid or unexpected enumeration value",
+        "Enumeration type " + enumTypeName + ", value was " + std::to_string(value)),
+      m_enumTypeName(enumTypeName),
+      m_value(value)
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+ObjectNotShaderException::ObjectNotShaderException(unsigned int objectId, const std::string& shaderName)
+    : DaybreakEngineException("Expected object id " + std::to_string(objectId) + " to be a shader", shaderName),
       m_shaderName(shaderName),
+      m_objectId(objectId)
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+ObjectNotTextureException::ObjectNotTextureException(unsigned int objectId, const std::string& textureName)
+    : DaybreakEngineException("Expected object id " + std::to_string(objectId) + " to be a texture", textureName),
+      m_textureName(textureName),
       m_objectId(objectId)
 {
 }
@@ -120,5 +138,18 @@ DaybreakShaderLinkException::DaybreakShaderLinkException(
     : DaybreakEngineException("Failed to link shader " + shaderName, linkInfo),
       m_shaderName(shaderName),
       m_linkInfo(linkInfo)
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+ContentReadException::ContentReadException(
+    const std::string& contentFilePath,
+    const std::string& contentTypeName,
+    const std::string& errorMessage)
+    : DaybreakEngineException(
+        errorMessage,
+        "Failed to load content type " + contentTypeName + " from file " + contentFilePath),
+      m_filePath(contentFilePath),
+      m_typeName(contentTypeName)
 {
 }

@@ -16,7 +16,7 @@ Shader::Shader(const std::string& shaderName, unsigned int shaderProgram)
     // Verify that shader is valid.
     if (!glIsProgram(shaderProgram))
     {
-        throw ObjectNotShaderException(shaderName, shaderProgram);
+        throw ObjectNotShaderException(shaderProgram, shaderName);
     }
 }
 
