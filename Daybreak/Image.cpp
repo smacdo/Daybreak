@@ -106,6 +106,9 @@ std::unique_ptr<Image> Image::LoadFromFile(const std::string& imageFilePath)
     {
         std::lock_guard<std::mutex> lock(GImageLoadingMutex);
 
+        // TODO: Make this a flag rather than always flip it for OpenGL.
+        stbi_set_flip_vertically_on_load(true);
+
         // Load the image into a raw pixel buffer.
         rawPixels.reset(stbi_load_from_memory(
             fileBytes.get(),
@@ -167,6 +170,9 @@ std::unique_ptr<HdrImage> HdrImage::LoadFromFile(const std::string& imageFilePat
 
     {
         std::lock_guard<std::mutex> lock(GImageLoadingMutex);
+
+        // TODO: Make this a flag rather than always flip it for OpenGL.
+        stbi_set_flip_vertically_on_load(true);
 
         // Load the image into a raw pixel buffer.
         rawPixels.reset(stbi_loadf_from_memory(

@@ -29,6 +29,7 @@ void SceneRenderer::Render(const Scene& scene, float deltaSeconds)
     glPolygonMode(GL_FRONT_AND_BACK, IsWireframeEnabled() ? GL_LINE : GL_FILL);
 
     m_texture->Activate(0);
+    m_texture2->Activate(1);
 
     m_shader->Activate();
     glBindVertexArray(m_standardVAO);
@@ -97,7 +98,11 @@ void SceneRenderer::CreateDefaultScene()
             "Standard",
             "Shaders\\Standard_vs.glsl",
             "Shaders\\Standard_fs.glsl")); 
+
     m_shader->Activate();
+
+    m_shader->SetInt("texture1", 0);
+    m_shader->SetInt("texture2", 1); 
 
     // Generate vertex attributes for the standard shader.
     // TODO: Move to nearer vertex definition.
@@ -116,4 +121,7 @@ void SceneRenderer::CreateDefaultScene()
     // Load textures.
     auto image = Image::LoadFromFile("Content\\container.jpg");
     m_texture = Texture::Create2d(*image.get(), TextureParameters(), TextureFormat::RGB);
+
+    auto image2 = Image::LoadFromFile("Content\\awesomeface.png");
+    m_texture2 = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
 }

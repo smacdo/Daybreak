@@ -119,7 +119,7 @@ Texture::~Texture()
 
 //---------------------------------------------------------------------------------------------------------------------
 void Texture::Activate()
-{
+{   
     glBindTexture(GL_TEXTURE_2D, m_texture);
     glCheckForErrors();
 }

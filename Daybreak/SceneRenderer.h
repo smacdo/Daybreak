@@ -41,5 +41,6 @@ private:
 
     std::unique_ptr<Shader> m_shader;
     std::unique_ptr<Texture> m_texture;
+    std::unique_ptr<Texture> m_texture2;
 };
 
