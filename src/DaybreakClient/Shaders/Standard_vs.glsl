@@ -6,15 +6,16 @@ layout (location = 2) in vec2 texCoordIn;
 out vec3 vertexColor;
 out vec2 texCoord;
 
-out float _renderTime;			// TODO: Should this be a uniform for perf when passing to PS?
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 uniform float renderTime;
 
 void main()
 {
-	gl_Position = vec4(posIn, 1.0);
+    // position = model * view * projection (but right to left order).
+    gl_Position = projection * view * model * vec4(posIn, 1.0);
 	vertexColor = colorIn;
 	texCoord = texCoordIn;
-
-	_renderTime = renderTime;
 }

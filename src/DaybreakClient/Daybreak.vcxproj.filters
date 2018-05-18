@@ -69,9 +69,6 @@
     <ClCompile Include="Daybreak.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\thirdparty\glad\src\glad.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DaybreakApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,6 +96,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\thirdparty\glad\src\glad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Daybreak.rc">
@@ -114,7 +114,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Colorful_vs.glsl" />
-    <None Include="Shaders\Colorful_fs.glsl" />
+    <None Include="Shaders\Standard_fs.glsl" />
+    <None Include="Shaders\Standard_vs.glsl" />
   </ItemGroup>
 </Project>

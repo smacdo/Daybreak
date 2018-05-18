@@ -10,8 +10,10 @@
 #include <cassert>
 #include <SDL.h>
 
+using namespace Daybreak;
+
 //---------------------------------------------------------------------------------------------------------------------
-DaybreakApp::DaybreakApp(size_t windowWidth, size_t windowHeight)
+DaybreakApp::DaybreakApp(unsigned int windowWidth, unsigned int windowHeight)
     : m_initialWindowWidth(windowWidth),
       m_initialWindowHeight(windowHeight),
       m_scene(new Scene)
@@ -24,8 +26,6 @@ DaybreakApp::DaybreakApp(size_t windowWidth, size_t windowHeight)
 DaybreakApp::~DaybreakApp()
 {
 }
-
-#include <iostream>
 
 //---------------------------------------------------------------------------------------------------------------------
 void DaybreakApp::Run()
@@ -40,7 +40,7 @@ void DaybreakApp::Run()
     InitializeRendering();
 
     // Create the default scene renderer.
-    m_sceneRenderer.reset(new SceneRenderer); 
+    m_sceneRenderer.reset(new SceneRenderer(m_windowWidth, m_windowHeight)); 
 
     // TODO: Load scene.
 
@@ -52,7 +52,7 @@ void DaybreakApp::Run()
     {
         // Get time elapsed since last frame.
         auto t1 = SDL_GetPerformanceCounter();
-        float deltaSeconds = (t1 - t0) / static_cast<float>(frequency);
+        auto deltaSeconds = (t1 - t0) / static_cast<double>(frequency);
 
         t0 = t1;
 
@@ -62,7 +62,7 @@ void DaybreakApp::Run()
         ProcessPendingEvents();
 
         // Draw current frame.
-        RenderFrame(deltaSeconds);
+        RenderFrame(TimeSpan::FromSeconds(deltaSeconds));
     }
 }
 
@@ -74,6 +74,13 @@ void DaybreakApp::InitializeRendering()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+#ifdef __APPLE__
+    // TODO: Untested!
+    glfwWindowHint(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+#endif
+
+    // TODO: SDL_GET_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE).
 
 #ifdef _DEBUG
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
@@ -91,6 +98,10 @@ void DaybreakApp::InitializeRendering()
 
     assert(m_pWindow != nullptr && "Window must be created");
     assert(m_pSdlRenderer != nullptr && "Renderer must be created");
+
+    // Record render window size.
+    m_windowWidth = m_initialWindowWidth;
+    m_windowHeight = m_initialWindowHeight;
 
     // Make sure the window was created as expected.
     SDL_RendererInfo rendererInfo = {};
@@ -114,20 +125,17 @@ void DaybreakApp::InitializeRendering()
         throw GladException("Unable to initialize GLAD");
     }
 
-    // Make sure window is resized to initial size.
-    OnRenderWindowResized(m_initialWindowWidth, m_initialWindowHeight);
-
     // Enable v-sync.
     SDL_GL_SetSwapInterval(1);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DaybreakApp::RenderFrame(float deltaSeconds)
+void DaybreakApp::RenderFrame(const TimeSpan& deltaTime)
 {
     glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    m_sceneRenderer->Render(*m_scene.get(), deltaSeconds);
+    m_sceneRenderer->Render(*m_scene.get(), deltaTime);
 
     SDL_GL_SwapWindow(m_pWindow);
 }
@@ -171,13 +179,7 @@ void DaybreakApp::ProcessPendingEvents()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DaybreakApp::OnRenderWindowResized(size_t newWidth, size_t newHeight)
+void DaybreakApp::OnRenderWindowResized(unsigned int newWidth, unsigned int newHeight)
 {
-    assert(newWidth > 0 && "Render window width must be larger than zero");
-    assert(newHeight > 0 && "Render window height must be larger than zero");
-
-    m_windowWidth = newWidth;
-    m_windowHeight = newHeight;
-
-    glViewport(0, 0, static_cast<int>(m_windowWidth), static_cast<int>(m_windowHeight));
+    m_sceneRenderer->SetViewportSize(newWidth, newHeight);
 }

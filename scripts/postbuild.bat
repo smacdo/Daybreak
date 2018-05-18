@@ -8,13 +8,13 @@ echo Performing postbuild actions...
 
 pushd %SOLUTION_DIR%
 
-@REM Copy shaders
-@echo Copying shaders
-xcopy %SOLUTION_DIR%\Daybreak\Shaders %BUILD_DIR%\Shaders /e /i /y /s /q
-
 @REM Copy content
 @echo Copying content
 xcopy %SOLUTION_DIR%\Content %BUILD_DIR%\Content /e /i /y /s /q
+
+@REM Copy shaders
+@echo Copying shaders
+xcopy %SOLUTION_DIR%\src\DaybreakClient\Shaders %BUILD_DIR%\Content\Shaders /e /i /y /s /q
 
 @REM Copy platform dlls
 IF "%PLATFORM%" == "Win32" goto :PLATFORM86

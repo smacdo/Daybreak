@@ -6,8 +6,7 @@ in vec2 texCoord;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
-
-in float _renderTime;		// TODO: Should this be a uniform?
+uniform float renderTime;
 
 void main()
 {

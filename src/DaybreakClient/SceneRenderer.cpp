@@ -11,9 +11,18 @@
 #include <memory>
 #include <cassert>
 
+using namespace Daybreak;
+
+// XXX: CAMERA START
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+// XXX: CAMERA END
+
 //---------------------------------------------------------------------------------------------------------------------
-SceneRenderer::SceneRenderer()
+SceneRenderer::SceneRenderer(unsigned int viewportWidth, unsigned int viewportHeight)
 {
+    SetViewportSize(viewportWidth, viewportHeight);
     CreateDefaultScene();
 }
 
@@ -23,7 +32,7 @@ SceneRenderer::~SceneRenderer()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void SceneRenderer::Render(const Scene& scene, float deltaSeconds)
+void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
 {
     // Enable wireframe rendering if requested otherwise use solid mode.
     glPolygonMode(GL_FRONT_AND_BACK, IsWireframeEnabled() ? GL_LINE : GL_FILL);
@@ -34,9 +43,30 @@ void SceneRenderer::Render(const Scene& scene, float deltaSeconds)
     m_shader->Activate();
     glBindVertexArray(m_standardVAO);
 
+    // XXX: CAMERA START. 
+    // Create model transform and send it to shader.
+    glm::mat4 model(1);
+    model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.0f, 0.0f, 0.0f));
+    
+    glm::mat4 view(1);
+    view = glm::translate(view, glm::vec3{ 0.0f, 0.0f, -3.0f });
+
+    glm::mat4 projection(1);
+    projection = glm::perspective( 
+        glm::radians(45.0f),
+        static_cast<float>(m_viewportWidth) / static_cast<float>(m_viewportHeight),
+        0.1f,
+        100.0f);
+     
+    m_shader->SetMatrix4("model", model);
+    m_shader->SetMatrix4("view", view);
+    m_shader->SetMatrix4("projection", projection);
+
+    // XXX: CAMERA END.
+
     // Update elapsed time and pass it to the shader.
-    m_sceneSeconds += deltaSeconds;
-    m_shader->SetFloat("renerTime", m_sceneSeconds);
+    m_renderTime += deltaTime; 
+    m_shader->SetFloat("renderTime", static_cast<float>(m_renderTime.totalSeconds()));
 
     // Draw rect.
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -55,11 +85,11 @@ void SceneRenderer::CreateDefaultScene()
     glGenVertexArrays(1, &m_standardVAO);
     glBindVertexArray(m_standardVAO);
 
-    // Create a simple rectangle to render.
     // TODO: Remove this once scene loading is added.
+    
     const float DefaultVertices[] =
     {
-        // Positions.         // Colors.          // Texture.
+         // Positions.         // Colors.          // Texture.
          0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,     // Top right.
          0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,     // Bottom right.
         -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,     // Bottom left.
@@ -96,8 +126,8 @@ void SceneRenderer::CreateDefaultScene()
     m_shader = std::move(
         Shader::LoadFromFile(
             "Standard",
-            "Shaders\\Standard_vs.glsl",
-            "Shaders\\Standard_fs.glsl")); 
+            "Content\\Shaders\\Standard_vs.glsl",
+            "Content\\Shaders\\Standard_fs.glsl")); 
 
     m_shader->Activate();
 
@@ -124,4 +154,15 @@ void SceneRenderer::CreateDefaultScene()
 
     auto image2 = Image::LoadFromFile("Content\\awesomeface.png");
     m_texture2 = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
+}
+//---------------------------------------------------------------------------------------------------------------------
+void SceneRenderer::SetViewportSize(unsigned int width, unsigned int height)
+{
+    assert(width > 0 && "Viewport width must be larger than zero");
+    assert(height > 0 && "Viewport height must be larger than zero");
+
+    m_viewportWidth = width;
+    m_viewportHeight = height;
+
+    glViewport(0, 0, static_cast<int>(m_viewportWidth), static_cast<int>(m_viewportHeight));
 }

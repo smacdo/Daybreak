@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Common/Time.h"
 #include <cstdint>
 #include <memory>
 
@@ -13,7 +13,7 @@ class DaybreakApp
 {
 public:
     /** Main constructor. */
-    DaybreakApp(size_t windowWidth, size_t windowHeight);
+    DaybreakApp(unsigned int windowWidth, unsigned int windowHeight);
 
     /** Destructor. */
     ~DaybreakApp();
@@ -29,20 +29,17 @@ private:
     void ProcessPendingEvents();
 
     /** Called when rendering window size is changed. */
-    void OnRenderWindowResized(size_t newWidth, size_t newHeight);
-
-    /** Loads graphical resources. This should be removed once scenes and scene loading is added. */
-    void InitResources();
+    void OnRenderWindowResized(unsigned int newWidth, unsigned int newHeight);
 
     /** Called to render a frame. */
-    void RenderFrame(float deltaSeconds);
+    void RenderFrame(const Daybreak::TimeSpan& deltaTime);
 
 private:
-    size_t m_initialWindowWidth = 0;
-    size_t m_initialWindowHeight = 0;
+    unsigned int m_initialWindowWidth = 0;
+    unsigned int m_initialWindowHeight = 0;
 
-    size_t m_windowWidth = 0;
-    size_t m_windowHeight = 0;
+    unsigned int m_windowWidth = 0;
+    unsigned int m_windowHeight = 0;
 
     bool m_quit = false;
 
