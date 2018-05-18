@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Texture.h"
-#include "Image.h"
-#include "ErrorHandling.h"
+#include "Graphics/Image.h"
+#include "Common/Error.h"
 
 #include <glad\glad.h>
 

@@ -2,8 +2,8 @@
 #include "SceneRenderer.h"
 #include "Scene.h"
 #include "Shader.h"
-#include "ErrorHandling.h"
-#include "Image.h"
+#include "Common/Error.h"
+#include "Graphics/Image.h"
 #include "Texture.h"
 
 #include <glad\glad.h>

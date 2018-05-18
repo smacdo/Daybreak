@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Image.h"
-#include "ErrorHandling.h"
+#include "Common/Error.h"
 
 #define STBI_NO_STDIO
-#include "thirdparty\stb\stb_image.h"
+#include "stb\stb_image.h"
 
 #include <fstream>
 #include <vector>

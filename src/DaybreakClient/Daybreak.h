@@ -3,4 +3,4 @@
 #include "resource.h"
 #include <string>
 
-#include "ErrorHandling.h"
+#include "Common/Error.h"

@@ -201,13 +201,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-    <Text Include="thirdparty\stb\TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Daybreak.h" />
     <ClInclude Include="DaybreakApp.h" />
-    <ClInclude Include="ErrorHandling.h" />
-    <ClInclude Include="Image.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneRenderer.h" />
@@ -216,15 +213,11 @@
     <ClInclude Include="SystemInfo.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="thirdparty\stb\stb_image.h" />
-    <ClInclude Include="thirdparty\stb\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\thirdparty\glad\src\glad.cpp" />
     <ClCompile Include="Daybreak.cpp" />
     <ClCompile Include="DaybreakApp.cpp" />
-    <ClCompile Include="ErrorHandling.cpp" />
-    <ClCompile Include="Image.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -236,7 +229,6 @@
     </ClCompile>
     <ClCompile Include="SystemInfo.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="thirdparty\stb\stb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Daybreak.rc" />

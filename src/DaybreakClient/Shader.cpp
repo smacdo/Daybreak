@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Shader.h"
-#include "ErrorHandling.h"
+#include "Common/Error.h"
 
 #include <glad\glad.h>
 #include <glm\glm.hpp>

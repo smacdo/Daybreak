@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ErrorHandling.h"
+#include "Error.h"
 
 #include <string>
 #include <exception>
