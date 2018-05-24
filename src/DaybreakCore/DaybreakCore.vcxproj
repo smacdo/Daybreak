@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -160,9 +160,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Error.h" />
+    <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Graphics\Image.h" />
     <ClInclude Include="Graphics\stdafx.h" />
+    <ClInclude Include="Input\IInputSource.h" />
+    <ClInclude Include="Input\InputKeys.h" />
+    <ClInclude Include="Input\SdlInputSource.h" />
+    <ClInclude Include="Scene\Camera.h" />
+    <ClInclude Include="Scene\FirstPersonCameraController.h" />
     <ClInclude Include="stb\stb_image.h" />
     <ClInclude Include="stb\stdafx.h" />
     <ClInclude Include="stdafx.h" />
@@ -172,6 +178,10 @@
   <ItemGroup>
     <ClCompile Include="Common\Error.cpp" />
     <ClCompile Include="Graphics\Image.cpp" />
+    <ClCompile Include="Input\InputKeys.cpp" />
+    <ClCompile Include="Input\SdlInputSource.cpp" />
+    <ClCompile Include="Scene\Camera.cpp" />
+    <ClCompile Include="Scene\FirstPersonCameraController.cpp" />
     <ClCompile Include="stb\stb.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

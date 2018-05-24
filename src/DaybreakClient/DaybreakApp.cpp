@@ -5,6 +5,9 @@
 #include "SceneRenderer.h"
 #include "SystemInfo.h"
 
+#include "Input/SdlInputSource.h"
+#include "Scene/FirstPersonCameraController.h"
+
 #include "glad/glad.h"
 
 #include <cassert>
@@ -23,9 +26,7 @@ DaybreakApp::DaybreakApp(unsigned int windowWidth, unsigned int windowHeight)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-DaybreakApp::~DaybreakApp()
-{
-}
+DaybreakApp::~DaybreakApp() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
 void DaybreakApp::Run()
@@ -36,13 +37,20 @@ void DaybreakApp::Run()
         throw SdlException("Failed to initialize SDL subsystems");;
     }
 
+    // Initialize SDL input controller.
+    m_inputSource = std::make_shared<SdlInputSource>();
+
     // Now initialize rendering.
     InitializeRendering();
 
     // Create the default scene renderer.
+    // TODO: Load scene.
     m_sceneRenderer.reset(new SceneRenderer(m_windowWidth, m_windowHeight)); 
 
-    // TODO: Load scene.
+    // Configure camera controller.
+    m_cameraController = std::make_unique<FirstPersonCameraController>(
+        m_sceneRenderer->mainCamera(),
+        m_inputSource);
 
     // Main game loop.
     auto frequency = SDL_GetPerformanceFrequency();
@@ -56,7 +64,19 @@ void DaybreakApp::Run()
 
         t0 = t1;
 
+        // Input stuff...
+        if (m_inputSource->IsKeyDown(InputKey::Escape))
+        {
+            m_quit = true;
+        }
+        
+        if (m_inputSource->IsKeyDown(InputKey::f6))
+        {
+            m_sceneRenderer->SetWireframeEnabled(!m_sceneRenderer->IsWireframeEnabled());
+        }
+
         // TODO: Update simulation.
+        m_cameraController->update(TimeSpan::FromSeconds(deltaSeconds));
 
         // Process platform windowinng events.
         ProcessPendingEvents();
@@ -147,6 +167,13 @@ void DaybreakApp::ProcessPendingEvents()
 
     while (SDL_PollEvent(&event))
     {
+        // Send event to input manager for potential processing.
+        if (m_inputSource->TryProcessMessage(event))
+        {
+            continue;
+        }
+
+        // Handle other events.
         switch (event.type)
         {
         case SDL_WINDOWEVENT:
@@ -158,24 +185,14 @@ void DaybreakApp::ProcessPendingEvents()
             }
             break;
 
-        case SDL_KEYDOWN:
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_ESCAPE:
-                m_quit = true;
-                break;
-
-            case SDLK_F6:
-                m_sceneRenderer->SetWireframeEnabled(!m_sceneRenderer->IsWireframeEnabled());
-                break;
-            }
-            break;
-
         case SDL_QUIT:
             m_quit = true;
             break;
         }
     }
+
+    // Allow input manager to finish event processing before continuing with update.
+    m_inputSource->FinishProcessingMessages();
 }
 
 //---------------------------------------------------------------------------------------------------------------------

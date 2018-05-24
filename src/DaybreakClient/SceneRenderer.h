@@ -2,17 +2,25 @@
 #include "Common/Time.h"
 #include <string>
 #include <memory>
+#include <vector>
 
 class Scene;
 class Shader;
 class Texture;
+
+namespace Daybreak
+{
+    class Camera;
+}
 
 // Responsible for rendering a graphical scene.
 class SceneRenderer
 {
 public:
     // Constructor.
-    SceneRenderer(unsigned int viewportWidth, unsigned int viewportHeight);
+    SceneRenderer(
+        unsigned int viewportWidth,
+        unsigned int viewportHeight);
 
     // Destructor.
     ~SceneRenderer();
@@ -29,9 +37,13 @@ public:
     // Set if wireframe rendering is enabled.
     void SetWireframeEnabled(bool isEnabled) { m_wireframe = isEnabled; }
 
+    // Get the camera.
+    std::shared_ptr<Daybreak::Camera> mainCamera() { return m_camera; }
+
 private:
     // Creates a default scene to render (since there is no scene support yet).
     void CreateDefaultScene(); // TODO: Remove this once we have scene loading.
+
 private:
     // Viewport width.
     unsigned int m_viewportWidth = 0;
@@ -52,5 +64,6 @@ private:
     std::unique_ptr<Shader> m_shader;
     std::unique_ptr<Texture> m_texture;
     std::unique_ptr<Texture> m_texture2;
+    std::shared_ptr<Daybreak::Camera> m_camera;
 };
 

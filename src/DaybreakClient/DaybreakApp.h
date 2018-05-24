@@ -8,6 +8,12 @@ struct SDL_Renderer;
 class Scene;
 class SceneRenderer;
 
+namespace Daybreak
+{
+    class SdlInputSource;
+    class FirstPersonCameraController;
+}
+
 /** Main application class that runs event loop. */
 class DaybreakApp
 {
@@ -48,5 +54,7 @@ private:
 
     std::unique_ptr<Scene> m_scene;
     std::unique_ptr<SceneRenderer> m_sceneRenderer;
+    std::shared_ptr<Daybreak::SdlInputSource> m_inputSource;
+    std::unique_ptr<Daybreak::FirstPersonCameraController> m_cameraController;
 };
 

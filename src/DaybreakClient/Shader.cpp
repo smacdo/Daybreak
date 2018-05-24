@@ -226,7 +226,7 @@ void Shader::VerifyShaderCompiled(unsigned int shader, const std::string& shader
 
         // Get the reason for compilation failure.
         glGetShaderInfoLog(shader, ErrorTextBufferSize, nullptr, &errorText[0]);
-
+         
         // Throw an exception telling the user that the shader failed to compile.
         throw DaybreakShaderCompileException(shaderName, errorText);
     }
