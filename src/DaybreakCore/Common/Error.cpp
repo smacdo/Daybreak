@@ -96,6 +96,30 @@ DaybreakEngineException::DaybreakEngineException(const std::string& message, con
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+RuntimeCheckException::RuntimeCheckException(
+    const char * message,
+    const char * expression,
+    const char * file,
+    unsigned int lineNumber)
+    : DaybreakEngineException(
+        message == nullptr ? "A runtime check has failed" : message,
+        buildDetailsString(expression, file, lineNumber)),
+      m_expression(expression),
+      m_file(file),
+      m_lineNumber(lineNumber)
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::string RuntimeCheckException::buildDetailsString(
+    const char * expression,
+    const char * file,
+    unsigned int lineNumber)
+{
+    return std::string(expression) + "\n(" + file + ":" + std::to_string(lineNumber) + ")";
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 InvalidEnumerationValueException::InvalidEnumerationValueException(const std::string& enumTypeName, int value)
     : DaybreakEngineException(
         "Invalid or unexpected enumeration value",

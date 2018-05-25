@@ -5,6 +5,7 @@
 #include "SceneRenderer.h"
 #include "SystemInfo.h"
 
+#include "Common/Error.h"
 #include "Input/SdlInputSource.h"
 #include "Scene/FirstPersonCameraController.h"
 
@@ -39,6 +40,7 @@ void DaybreakApp::Run()
 
     // Initialize SDL input controller.
     m_inputSource = std::make_shared<SdlInputSource>();
+    m_inputSource->SetRelativeMouseMode(true);
 
     // Now initialize rendering.
     InitializeRendering();
@@ -116,8 +118,8 @@ void DaybreakApp::InitializeRendering()
         &m_pWindow,
         &m_pSdlRenderer);
 
-    assert(m_pWindow != nullptr && "Window must be created");
-    assert(m_pSdlRenderer != nullptr && "Renderer must be created");
+    CHECK_NOT_NULL(m_pWindow);
+    CHECK_NOT_NULL(m_pSdlRenderer);
 
     // Record render window size.
     m_windowWidth = m_initialWindowWidth;

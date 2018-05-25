@@ -43,7 +43,7 @@ void Camera::addRoll(float degrees)
 //---------------------------------------------------------------------------------------------------------------------
 void Camera::setRoll(float degrees)
 {
-    m_roll = degrees;
+    m_roll = fmod(degrees, 360.0f);
     m_dirty = true;
 }
 
@@ -69,7 +69,7 @@ void Camera::addPitch(float degrees)
 //---------------------------------------------------------------------------------------------------------------------
 void Camera::setPitch(float degrees)
 {
-    m_pitch = degrees;
+    m_pitch = fmod(degrees, 360.0f);
     m_dirty = true;
 }
 
@@ -128,7 +128,7 @@ void Camera::addYaw(float degrees)
 //---------------------------------------------------------------------------------------------------------------------
 void Camera::setYaw(float degrees)
 {
-    m_yaw = degrees;
+    m_yaw = fmod(degrees, 360.0f);
     m_dirty = true;
 }
 
@@ -157,8 +157,48 @@ void Camera::regenerateCachedValues() const // const because it only regenerates
     m_right = glm::normalize(glm::cross(m_front, m_worldUp));
     m_up = glm::normalize(glm::cross(m_right, m_front));
 
-    m_view = glm::lookAt(
+    //m_view = glm::lookAt(
+    m_view = createLookAt(
         m_position,
         m_position + m_front,
         m_up);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+glm::mat4 Camera::createLookAt(
+    const glm::vec3& position,
+    const glm::vec3& target,
+    const glm::vec3& worldUp)
+{
+    // Calculate the camera direction vector.
+    auto zAxis = glm::normalize(position - target);
+
+    // Calculate right angle vector.
+    auto xAxis = glm::normalize(glm::cross(glm::normalize(worldUp), zAxis));
+
+    // Calculate camera up vector.
+    auto yAxis = glm::cross(zAxis, xAxis);
+
+    // Create lookAt matrix as a combination of a translation and rotation matrix.
+    //  (NOTE: matrix is accessed as [col][row] due to column major layout).
+    glm::mat4 translation(1);
+    
+    translation[3][0] = -position.x;        // Third column, first row.
+    translation[3][1] = -position.y;        // Third column, second row.
+    translation[3][2] = -position.z;        // Third column, third row.
+
+    glm::mat4 rotation(1);
+
+    rotation[0][0] = xAxis.x;               // First column, first row.
+    rotation[0][1] = xAxis.y;               // ...           second row.
+    rotation[0][2] = xAxis.z;               // ...           third row.
+    rotation[1][0] = yAxis.x;               // Second column, first row.
+    rotation[1][1] = yAxis.y;               // ...            second row.
+    rotation[1][2] = yAxis.z;               // ...            third row.
+    rotation[2][0] = zAxis.x;               // Third column, first row.
+    rotation[2][1] = zAxis.y;               // ...           second row.
+    rotation[2][2] = zAxis.z;               // ...           third row.
+
+    // Order: translation then rotation although reversed in code because left - right ordering.
+    return rotation * translation;
 }

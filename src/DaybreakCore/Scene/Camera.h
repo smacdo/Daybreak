@@ -3,7 +3,7 @@
 
 namespace Daybreak
 {
-    // Basic camera class.
+    // Standard camera for rendering.
     class Camera
     {
     public:
@@ -61,9 +61,16 @@ namespace Daybreak
         // Set pitch in degrees (rotation around Y axis).
         void setYaw(float degrees);
 
+        // Calculate view matrix from a custom implementation of the standard "lookAt"  function.
+        static glm::mat4 createLookAt(
+            const glm::vec3& position,
+            const glm::vec3& target,
+            const glm::vec3& worldUp);
+
     private:
         void regenerateCachedValuesIfDirty() const;
         void regenerateCachedValues() const;
+        
 
     private:
         static const glm::vec3 DefaultWorldUp;

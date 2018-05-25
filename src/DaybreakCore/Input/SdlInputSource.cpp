@@ -16,6 +16,30 @@ SdlInputSource::SdlInputSource()
 SdlInputSource::~SdlInputSource() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
+bool SdlInputSource::IsRelativeMouseModeEnabled() const
+{
+    return SDL_GetRelativeMouseMode() == SDL_TRUE;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void SdlInputSource::SetRelativeMouseMode(bool isEnabled)
+{
+    SDL_SetRelativeMouseMode(isEnabled ? SDL_TRUE : SDL_FALSE);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+glm::ivec2 SdlInputSource::MousePosition() const
+{
+    return m_mousePos;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+glm::ivec2 SdlInputSource::RelativeMouseMovemnet() const
+{
+    return m_relativeMouseMotion;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 bool SdlInputSource::TryProcessMessage(const SDL_Event& event)
 {
     switch (event.type)
@@ -26,6 +50,10 @@ bool SdlInputSource::TryProcessMessage(const SDL_Event& event)
 
     case SDL_KEYUP:
         OnKeyUpEvent(event);
+        return true;
+
+    case SDL_MOUSEMOTION:
+        OnMouseMotion(event);
         return true;
 
     default:
@@ -48,8 +76,22 @@ void SdlInputSource::OnKeyUpEvent(const SDL_Event& event)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+void SdlInputSource::OnMouseMotion(const SDL_Event& event)
+{
+    m_nextMousePos = { event.motion.x, event.motion.y };
+    m_nextRelativeMouseMotion = { event.motion.xrel, event.motion.yrel };
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 void SdlInputSource::FinishProcessingMessages()
 {
+    // Update mouse state.
+    m_mousePos = m_nextMousePos;
+    m_relativeMouseMotion = m_nextRelativeMouseMotion;
+
+    m_nextRelativeMouseMotion = { 0, 0 };
+
+    // Update input button state.
     for (size_t i = 0; i < m_keys.size(); ++i)
     {
         const auto nextPushState = m_nextKeys[i].pushState;

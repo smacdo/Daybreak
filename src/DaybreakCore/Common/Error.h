@@ -85,6 +85,33 @@ private:
     std::string m_details;
 };
 
+
+/** Core engine errors. */
+class RuntimeCheckException : DaybreakEngineException
+{
+public:
+    /** Constructor. */
+    RuntimeCheckException(
+        const char * message,
+        const char * expression,
+        const char * file,
+        unsigned int lineNumber);
+
+    std::string expression() const { return m_expression; }
+    std::string file() const { return m_file; }
+    unsigned int lineNumber() const { return m_lineNumber; }
+
+    static std::string buildDetailsString(
+        const char * expression,
+        const char * file,
+        unsigned int lineNumber);
+
+private:
+    std::string m_expression = "";
+    std::string m_file = "";
+    unsigned int m_lineNumber = 0;
+};
+
 /** Invalid or unsupported enumeration value. */
 class InvalidEnumerationValueException : public DaybreakEngineException
 {
@@ -199,3 +226,9 @@ private:
     std::string m_filePath;
     std::string m_typeName;
 };
+
+//---------------------------------------------------------------------------------------------------------------------
+// Runtime check macros.
+//---------------------------------------------------------------------------------------------------------------------
+#define CHECK_NOT_NULL(x) if ((x) == nullptr) { \
+    throw RuntimeCheckException("Expected " ## #x " to not be null", #x ## " != nullptr", __FILE__, __LINE__); }
