@@ -2,7 +2,8 @@
 #include "SceneRenderer.h"
 #include "Scene.h"
 #include "Shader.h"
-#include "Common/Error.h"
+#include "OglRenderer/OglError.h"
+#include "OglRenderer/OglInputLayout.h"
 #include "Graphics/Image.h"
 #include "Scene/Camera.h"
 #include "Texture.h"
@@ -13,6 +14,7 @@
 #include <cassert>
 
 using namespace Daybreak;
+using namespace Daybreak::OpenGlRenderer;
 
 // XXX: CAMERA START
 #include <glm/glm.hpp>
@@ -51,18 +53,21 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
 
     // Enable wireframe rendering if requested otherwise use solid mode.
     glPolygonMode(GL_FRONT_AND_BACK, IsWireframeEnabled() ? GL_LINE : GL_FILL);
+    
+    // Bind the standard shader and standard vertex layout for cube rendering.
+    m_standardShader->Activate();
+    m_standardInputLayout->bind();
 
     // Bind textures (texture0 is main texture, texture1 is additional blend texture).
     m_texture->Activate(0);
+    m_standardShader->SetInt("texture1", 0);
+
     m_texture2->Activate(1);
-
-    // Bind the standard shader and standard vertex layout for cube rendering.
-    m_shader->Activate();
-    glBindVertexArray(m_standardVAO);
-
+    m_standardShader->SetInt("texture2", 1);
+    
     // Update elapsed time and pass it to the shader.
     m_renderTime += deltaTime;
-    m_shader->SetFloat("renderTime", static_cast<float>(m_renderTime.totalSeconds()));
+    m_standardShader->SetFloat("renderTime", static_cast<float>(m_renderTime.totalSeconds()));
 
     // Pass camera transformation matrices to the shader.
     //  Rotate objects around camera.
@@ -70,11 +75,9 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
     float cameraX = (float)sin(m_renderTime.totalSeconds()) * radius;
     float cameraZ = (float)cos(m_renderTime.totalSeconds()) * radius;
 
-    //m_camera->setPosition(glm::vec3{ cameraX, 0.0f, cameraZ });
-
     // Copy camera matrix to shader.
     auto view = m_camera->view();
-    m_shader->SetMatrix4("view", view);
+    m_standardShader->SetMatrix4("view", view);
 
     // Copy projection matrix to shader.
     glm::mat4 projection(1);
@@ -84,7 +87,7 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
         0.1f,
         100.0f);
 
-    m_shader->SetMatrix4("projection", projection);      // TODO: This doesn't change often, don't upload every time.
+    m_standardShader->SetMatrix4("projection", projection);
 
     // Render each box.
     for (const auto& position : GCubePositions)
@@ -96,11 +99,32 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
         auto rotateOverTime = m_renderTime.totalSeconds() * glm::radians(50.0f);
         model = glm::rotate(model, (float)rotateOverTime, glm::vec3(0.5f, 1.0f, 0.3f));
 
-        m_shader->SetMatrix4("model", model);
+        m_standardShader->SetMatrix4("model", model);
 
         // Draw cube.
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+
+    // Draw the lamp.
+    m_lightDebugShader->Activate();
+
+    m_lightDebugShader->SetMatrix4("view", view);
+    m_lightDebugShader->SetMatrix4("projection", projection);
+
+    glm::mat4 model(1);
+
+    model = glm::translate(model, m_lightPos);
+    model = glm::scale(model, glm::vec3{ 0.2f, 0.2f, 0.2f });
+
+    m_lightDebugShader->SetMatrix4("model", model);
+
+    m_lightDebugShader->SetVector3f("tint", { 1.0f, 1.0f, 1.0f });
+
+    m_lightInputLayout->bind();
+     
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     // Unbind vertex array.
     glBindVertexArray(0);
@@ -116,10 +140,7 @@ void SceneRenderer::CreateDefaultScene()
     glEnable(GL_DEPTH_TEST);
 
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
-    glGenVertexArrays(1, &m_standardVAO);
-    glBindVertexArray(m_standardVAO);
-
-    // TODO: Remove this once scene loading is added.
+    m_standardInputLayout = OglInputLayout::Generate();
 
     // Create a simple cube to render.
     // TODO: Remove this once scene loading is added.
@@ -199,33 +220,43 @@ void SceneRenderer::CreateDefaultScene()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
     glCheckForErrors();
 
+    // Generate vertex attributes for the standard shader.
+    // TODO: Move this work into a fluent-ish interface inside InputLayout.
+    m_standardInputLayout->bind();
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glCheckForErrors();
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glCheckForErrors();
+
+    // Create debug light input layout.
+    m_lightInputLayout = OglInputLayout::Generate();
+    m_lightInputLayout->bind();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glCheckForErrors();
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glDisableVertexAttribArray(1);
+
     // Construct scene shader.
-    m_shader = std::move(
+    m_standardShader = std::move(
         Shader::LoadFromFile(
             "Standard",
             "Content\\Shaders\\Standard_vs.glsl",
             "Content\\Shaders\\Standard_fs.glsl")); 
 
-    m_shader->Activate();
+    m_lightDebugShader = std::move(
+        Shader::LoadFromFile(
+            "Standard",
+            "Content\\Shaders\\LightDebug_vs.glsl",
+            "Content\\Shaders\\LightDebug_fs.glsl"));
 
-    m_shader->SetInt("texture1", 0);
-    m_shader->SetInt("texture2", 1); 
-
-    // Generate vertex attributes for the standard shader.
-    // TODO: Move to nearer vertex definition.
-    // glVertexAttribPointer(slot, numberOfComponents, componentDataType, normalized?, stride, firstOffset);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glCheckForErrors();
-
-//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-//    glEnableVertexAttribArray(1);
-//    glCheckForErrors();
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glCheckForErrors();
-    
     // Load textures.
     auto image = Image::LoadFromFile("Content\\container.jpg");
     m_texture = Texture::Create2d(*image.get(), TextureParameters(), TextureFormat::RGB);
@@ -233,6 +264,7 @@ void SceneRenderer::CreateDefaultScene()
     auto image2 = Image::LoadFromFile("Content\\awesomeface.png");
     m_texture2 = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
 }
+
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::SetViewportSize(unsigned int width, unsigned int height)
 {

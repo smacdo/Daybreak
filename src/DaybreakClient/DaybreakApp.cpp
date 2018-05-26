@@ -5,7 +5,7 @@
 #include "SceneRenderer.h"
 #include "SystemInfo.h"
 
-#include "Common/Error.h"
+#include "OglRenderer/OglError.h"
 #include "Input/SdlInputSource.h"
 #include "Scene/FirstPersonCameraController.h"
 
@@ -15,6 +15,7 @@
 #include <SDL.h>
 
 using namespace Daybreak;
+using namespace Daybreak::OpenGlRenderer;
 
 //---------------------------------------------------------------------------------------------------------------------
 DaybreakApp::DaybreakApp(unsigned int windowWidth, unsigned int windowHeight)

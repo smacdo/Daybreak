@@ -48,6 +48,15 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OglRenderer\OglError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OglRenderer\OglException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OglRenderer\OglInputLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -75,6 +84,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\thirdparty\glad\src\glad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OglRenderer\OglError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OglRenderer\OglException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OglRenderer\OglInputLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,15 +2,7 @@
 
 #include <string>
 #include <exception>
-
-// Core error handling.
-void glCheckForErrorsImpl(const char * filename, int line);
-
-#ifdef _DEBUG
-#define glCheckForErrors() glCheckForErrorsImpl(__FILE__, __LINE__);
-#else
-#define glCheckForErrors() 
-#endif
+#include <cassert>
 
 void DisplayErrorDialog(
     const std::string& title,
@@ -27,44 +19,6 @@ public:
 
 private:
     std::string m_message;
-};
-
-/** Error when interacting with GLAD API. */
-class GladException : public std::runtime_error
-{
-public:
-    GladException(const std::string& message);
-};
-
-/** Error when interacting with OpneGL. */
-class GlException : public std::runtime_error
-{
-public:
-    /** Constructor. */
-    GlException(
-        unsigned int error,                 // OpenGL error enum value.
-        const char* filename = nullptr,     // Optional name of source code file where error caught.
-        int line = -1);                     // Optional line in source code file where error caught.
-
-    /** Get the error code. */
-    unsigned int ErrorCode() const { return m_error; }
-
-    /** Get a human readable name for the error that was generated. */
-    const char * ErrorName() const;
-
-    /** Get the filename where the error was caught (Optional, might be null). */
-    const char * FileName() const { return m_filename; }
-
-    /** Get the line where the error was caught (Optional, might be -1). */
-    int Line() const { return m_line; }
-
-    /** Get a human readable name for an OpenGL error code. */
-    static const char * GetErrorName(unsigned int error);
-
-private:
-    unsigned int m_error;
-    const char * m_filename;
-    int m_line;
 };
 
 /** Core engine errors. */
@@ -84,7 +38,6 @@ private:
     std::string m_message;
     std::string m_details;
 };
-
 
 /** Core engine errors. */
 class RuntimeCheckException : DaybreakEngineException
@@ -230,5 +183,6 @@ private:
 //---------------------------------------------------------------------------------------------------------------------
 // Runtime check macros.
 //---------------------------------------------------------------------------------------------------------------------
+#define EXPECT(x, msg) assert(x && msg)
 #define CHECK_NOT_NULL(x) if ((x) == nullptr) { \
     throw RuntimeCheckException("Expected " ## #x " to not be null", #x ## " != nullptr", __FILE__, __LINE__); }

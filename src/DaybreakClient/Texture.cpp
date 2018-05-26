@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "Texture.h"
 #include "Graphics/Image.h"
-#include "Common/Error.h"
+#include "OglRenderer/OglError.h"
 
 #include <glad\glad.h>
 
 #include <memory>
 #include <string>
 #include <cassert>
+
+using namespace Daybreak::OpenGlRenderer;
 
 namespace
 {

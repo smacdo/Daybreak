@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
 class Scene;
 class Shader;
@@ -11,6 +12,11 @@ class Texture;
 namespace Daybreak
 {
     class Camera;
+}
+
+namespace Daybreak::OpenGlRenderer
+{
+    class OglInputLayout;
 }
 
 // Responsible for rendering a graphical scene.
@@ -57,11 +63,12 @@ private:
     // Amount of accumulated rendering time.
     Daybreak::TimeSpan m_renderTime;
 
-    // TODO: This needs to be moved once we have a better rendering class layout since it should be created once
-    //       at program start and shared to everyone who needs it.
-    unsigned int m_standardVAO = 0;
+    glm::vec3 m_lightPos = { 1.2f, 1.0f, 2.0f };
 
-    std::unique_ptr<Shader> m_shader;
+    std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout;
+    std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
+    std::unique_ptr<Shader> m_standardShader;
+    std::unique_ptr<Shader> m_lightDebugShader;
     std::unique_ptr<Texture> m_texture;
     std::unique_ptr<Texture> m_texture2;
     std::shared_ptr<Daybreak::Camera> m_camera;

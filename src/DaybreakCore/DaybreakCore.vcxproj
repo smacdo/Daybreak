@@ -98,6 +98,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -112,6 +113,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,6 +130,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +149,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,6 +171,8 @@
     <ClInclude Include="Input\IInputSource.h" />
     <ClInclude Include="Input\InputKeys.h" />
     <ClInclude Include="Input\SdlInputSource.h" />
+    <ClInclude Include="Renderer\BindableResource.h" />
+    <ClInclude Include="Renderer\InputLayout.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\FirstPersonCameraController.h" />
     <ClInclude Include="stb\stb_image.h" />

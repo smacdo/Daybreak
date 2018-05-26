@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "Shader.h"
-#include "Common/Error.h"
+#include "OglRenderer/OglError.h"
 
 #include <glad\glad.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\type_ptr.hpp>
 #include <string>
 #include <fstream>
+
+using namespace Daybreak::OpenGlRenderer;
 
 //---------------------------------------------------------------------------------------------------------------------
 Shader::Shader(const std::string& shaderName, unsigned int shaderProgram)
