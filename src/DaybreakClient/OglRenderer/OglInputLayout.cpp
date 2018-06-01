@@ -20,10 +20,18 @@ OglInputLayout::OglInputLayout(GLuint vao)
 //---------------------------------------------------------------------------------------------------------------------
 OglInputLayout::~OglInputLayout()
 {
+    destroy();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglInputLayout::destroy()
+{
     if (glIsVertexArray(m_vao) == GL_TRUE)
     {
         GLuint vao[] = { m_vao };
         glDeleteVertexArrays(1, std::begin(vao));
+
+        m_vao = 0;
     }
 }
 

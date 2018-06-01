@@ -99,6 +99,13 @@ void Shader::SetVector4f(const std::string& name, const glm::vec4& v) const
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+void Shader::SetMatrix3(const std::string& name, const glm::mat3& v) const
+{
+    glUniformMatrix3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 void Shader::SetMatrix4(const std::string& name, const glm::mat4& v) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DaybreakApp.h"
 #include "Daybreak.h"
-#include "Scene.h"
+#include "Scene/Scene.h"
 #include "SceneRenderer.h"
 #include "SystemInfo.h"
 
@@ -155,7 +155,7 @@ void DaybreakApp::InitializeRendering()
 //---------------------------------------------------------------------------------------------------------------------
 void DaybreakApp::RenderFrame(const TimeSpan& deltaTime)
 {
-    glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     m_sceneRenderer->Render(*m_scene.get(), deltaTime);

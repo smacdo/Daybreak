@@ -186,3 +186,5 @@ private:
 #define EXPECT(x, msg) assert(x && msg)
 #define CHECK_NOT_NULL(x) if ((x) == nullptr) { \
     throw RuntimeCheckException("Expected " ## #x " to not be null", #x ## " != nullptr", __FILE__, __LINE__); }
+#define CHECK_NOT_ZERO(x) if ((x) == 0) { \
+    throw RuntimeCheckException("Expected " ## #x " to not be zero", #x ## " != 0", __FILE__, __LINE__); }

@@ -211,9 +211,11 @@
     <ClInclude Include="DaybreakApp.h" />
     <ClInclude Include="OglRenderer\OglError.h" />
     <ClInclude Include="OglRenderer\OglException.h" />
+    <ClInclude Include="OglRenderer\OglIndexBuffer.h" />
     <ClInclude Include="OglRenderer\OglInputLayout.h" />
+    <ClInclude Include="OglRenderer\OglMesh.h" />
+    <ClInclude Include="OglRenderer\OglVertexBuffer.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stdafx.h" />
@@ -227,8 +229,10 @@
     <ClCompile Include="DaybreakApp.cpp" />
     <ClCompile Include="OglRenderer\OglError.cpp" />
     <ClCompile Include="OglRenderer\OglException.cpp" />
+    <ClCompile Include="OglRenderer\OglIndexBuffer.cpp" />
     <ClCompile Include="OglRenderer\OglInputLayout.cpp" />
-    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="OglRenderer\OglMesh.cpp" />
+    <ClCompile Include="OglRenderer\OglVertexBuffer.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stdafx.cpp">

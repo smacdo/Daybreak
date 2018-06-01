@@ -5,18 +5,20 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-class Scene;
 class Shader;
 class Texture;
 
 namespace Daybreak
 {
     class Camera;
+    class Scene;
 }
 
 namespace Daybreak::OpenGlRenderer
 {
     class OglInputLayout;
+    class OglVertexBuffer;
+    class OglIndexBuffer;
 }
 
 // Responsible for rendering a graphical scene.
@@ -32,7 +34,7 @@ public:
     ~SceneRenderer();
 
     // Render the scene.
-    void Render(const Scene& scene, const Daybreak::TimeSpan& deltaTime);
+    void Render(const Daybreak::Scene& scene, const Daybreak::TimeSpan& deltaTime);
 
     // Resize the render window size (in pixels).
     void SetViewportSize(unsigned int width, unsigned int height);
@@ -63,14 +65,18 @@ private:
     // Amount of accumulated rendering time.
     Daybreak::TimeSpan m_renderTime;
 
-    glm::vec3 m_lightPos = { 1.2f, 1.0f, 2.0f };
+    glm::vec3 m_lightPos = { 1.2f, 0.0f, 2.0f };
+    glm::vec3 m_lightColor = { 0.8f, 0.8f, 1.0f };
 
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout;
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
     std::unique_ptr<Shader> m_standardShader;
     std::unique_ptr<Shader> m_lightDebugShader;
-    std::unique_ptr<Texture> m_texture;
-    std::unique_ptr<Texture> m_texture2;
+    std::unique_ptr<Texture> m_diffuseTexture;
+    std::unique_ptr<Texture> m_specularTexture;
     std::shared_ptr<Daybreak::Camera> m_camera;
+
+    std::unique_ptr<Daybreak::OpenGlRenderer::OglVertexBuffer> m_vertexBuffer;
+    std::unique_ptr<Daybreak::OpenGlRenderer::OglIndexBuffer> m_indexBuffer;
 };
 

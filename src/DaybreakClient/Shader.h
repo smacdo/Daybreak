@@ -51,6 +51,9 @@ public:
     void SetVector4f(const std::string& name, const glm::vec4& v) const;
 
     /** Set matrix4x4 shader parameter. */
+    void SetMatrix3(const std::string& name, const glm::mat3& v) const;
+
+    /** Set matrix4x4 shader parameter. */
     void SetMatrix4(const std::string& name, const glm::mat4& v) const;
 
     /** Get name of shader. */

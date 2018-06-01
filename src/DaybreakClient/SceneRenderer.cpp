@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "SceneRenderer.h"
-#include "Scene.h"
 #include "Shader.h"
 #include "OglRenderer/OglError.h"
 #include "OglRenderer/OglInputLayout.h"
+#include "OglRenderer/OglVertexBuffer.h"
+#include "OglRenderer/OglIndexBuffer.h"
+#include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Image.h"
+#include "Scene/Scene.h"
 #include "Scene/Camera.h"
 #include "Texture.h"
 
@@ -46,7 +49,7 @@ SceneRenderer::~SceneRenderer()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
+void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTime)
 {
     // Clear display from last render.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -57,13 +60,6 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
     // Bind the standard shader and standard vertex layout for cube rendering.
     m_standardShader->Activate();
     m_standardInputLayout->bind();
-
-    // Bind textures (texture0 is main texture, texture1 is additional blend texture).
-    m_texture->Activate(0);
-    m_standardShader->SetInt("texture1", 0);
-
-    m_texture2->Activate(1);
-    m_standardShader->SetInt("texture2", 1);
     
     // Update elapsed time and pass it to the shader.
     m_renderTime += deltaTime;
@@ -77,7 +73,9 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
 
     // Copy camera matrix to shader.
     auto view = m_camera->view();
+
     m_standardShader->SetMatrix4("view", view);
+    m_standardShader->SetVector3f("viewPos", m_camera->position());
 
     // Copy projection matrix to shader.
     glm::mat4 projection(1);
@@ -89,7 +87,27 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
 
     m_standardShader->SetMatrix4("projection", projection);
 
+    // Set material shader params.
+    m_diffuseTexture->Activate(0);
+    m_specularTexture->Activate(1);
+
+    m_standardShader->SetVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);
+    m_standardShader->SetInt("material.diffuse", 0);
+    m_standardShader->SetVector3f("material.diffuseColor", 1.0f, 1.0f, 1.0f);
+    m_standardShader->SetInt("material.specular", 1);
+    m_standardShader->SetVector3f("material.specularColor", 1.0f, 1.0f, 1.0f);
+    m_standardShader->SetFloat("material.shininess", 32.0f);
+
+    // Set lighting shader params.
+    m_standardShader->SetVector3f("light.position", m_lightPos);
+    m_standardShader->SetVector3f("light.ambient", m_lightColor / 2.0f);
+    m_standardShader->SetVector3f("light.diffuse", m_lightColor);
+    m_standardShader->SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
+    
     // Render each box.
+    m_vertexBuffer->bind();
+    m_indexBuffer->bind();
+
     for (const auto& position : GCubePositions)
     {
         // Create cube model matrix by translating to the correct position and then rotating over time.
@@ -97,9 +115,22 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
         model = glm::translate(model, position);
 
         auto rotateOverTime = m_renderTime.totalSeconds() * glm::radians(50.0f);
-        model = glm::rotate(model, (float)rotateOverTime, glm::vec3(0.5f, 1.0f, 0.3f));
+        model = glm::rotate(model, (float)rotateOverTime, glm::vec3(0.0f, 1.0f, 0.0f));
 
         m_standardShader->SetMatrix4("model", model);
+
+        // Generate normal transformation matrix by taking the transpose of the inverse of the upper left corner
+        // of the model matrix.
+        glm::mat3 normal;
+        
+        normal[0][0] = model[0][0]; normal[0][1] = model[0][1]; normal[0][2] = model[0][2];
+        normal[1][0] = model[1][0]; normal[1][1] = model[1][1]; normal[1][2] = model[1][2];
+        normal[2][0] = model[2][0]; normal[2][1] = model[2][1]; normal[2][2] = model[2][2];
+
+        normal = glm::inverse(normal);
+        normal = glm::transpose(normal);
+        
+        m_standardShader->SetMatrix3("normalMatrix", normal);
 
         // Draw cube.
         //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -119,7 +150,7 @@ void SceneRenderer::Render(const Scene& scene, const TimeSpan& deltaTime)
 
     m_lightDebugShader->SetMatrix4("model", model);
 
-    m_lightDebugShader->SetVector3f("tint", { 1.0f, 1.0f, 1.0f });
+    m_lightDebugShader->SetVector3f("tint", m_lightColor);
 
     m_lightInputLayout->bind();
      
@@ -143,106 +174,47 @@ void SceneRenderer::CreateDefaultScene()
     m_standardInputLayout = OglInputLayout::Generate();
 
     // Create a simple cube to render.
-    // TODO: Remove this once scene loading is added.
-    const float CubeVertices[] =
-    {
-        //  x      y      z       u     v
-        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,          // Front
-         0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+    auto cubeVertices = BasicGeometryGenerator::MakeCubeVertices();
+    auto cubeIndices = BasicGeometryGenerator::MakeCubeIndices();
 
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,          // Back
-         0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+    m_vertexBuffer = OglVertexBuffer::generate(
+        cubeVertices.data(),
+        sizeof(BasicGeometryGenerator::VertexValueType),
+        cubeVertices.size());
 
-        -0.5f,  0.5f,  0.5f,   1.0f, 0.0f,          // Left
-        -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,   1.0f, 0.0f,          // Right
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,   0.0f, 1.0f,          // Bottom
-         0.5f, -0.5f, -0.5f,   1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,          // Top
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
-    };
-
-    const unsigned int CubeIndices[] =
-    {
-         0,  1,  2,  3,  4,  5,
-         6,  7,  8,  9, 10, 11,
-        12, 13, 14, 15, 16, 17,
-        18, 19, 20, 21, 22, 23,
-        24, 25, 26, 27, 28, 29,
-        30, 31, 32, 33, 34, 35
-    };
-
-    // Upload vertex data.
-    unsigned int vbo = 0;
-    glGenBuffers(1, &vbo);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glCheckForErrors();
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), CubeVertices, GL_STATIC_DRAW);
-    glCheckForErrors();
-
-    // Upload index data.
-    unsigned int ebo = 0;
-    glGenBuffers(1, &ebo);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glCheckForErrors();
-
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
-    glCheckForErrors();
+    m_indexBuffer = OglIndexBuffer::generate(
+        cubeIndices.data(),
+        sizeof(BasicGeometryGenerator::IndexValueType),
+        cubeIndices.size());
 
     // Generate vertex attributes for the standard shader.
     // TODO: Move this work into a fluent-ish interface inside InputLayout.
     m_standardInputLayout->bind();
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glCheckForErrors();
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glCheckForErrors();
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
     glCheckForErrors();
 
     // Create debug light input layout.
     m_lightInputLayout = OglInputLayout::Generate();
     m_lightInputLayout->bind();
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glCheckForErrors();
+    m_vertexBuffer->bind();
+    m_indexBuffer->bind(); // ?? not sure if needed
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 
     // Construct scene shader.
     m_standardShader = std::move(
@@ -259,10 +231,10 @@ void SceneRenderer::CreateDefaultScene()
 
     // Load textures.
     auto image = Image::LoadFromFile("Content\\container.jpg");
-    m_texture = Texture::Create2d(*image.get(), TextureParameters(), TextureFormat::RGB);
+    m_diffuseTexture = Texture::Create2d(*image.get(), TextureParameters(), TextureFormat::RGB);
 
     auto image2 = Image::LoadFromFile("Content\\awesomeface.png");
-    m_texture2 = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
+    m_specularTexture = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -1,19 +1,19 @@
 #pragma once
-#include "Renderer/InputLayout.h"
+#include "Renderer/IMesh.h"
 #include <glad\glad.h>
 #include <memory>
 
 namespace Daybreak::OpenGlRenderer
 {
-    // OpenGL vertex array object encapsulation.
-    class OglInputLayout : public IInputLayout
+    // OpenGL mesh.
+ /*   class OglMesh : public IMesh
     {
     public:
         // Constructor.
-        explicit OglInputLayout(GLuint vao = 0);
+        OglMesh(GLUint vbo, GLuin);
 
         // Destructor.
-        virtual ~OglInputLayout();
+        virtual ~OglMesh();
 
         // Bind input layout.
         virtual void bind() override;
@@ -25,13 +25,9 @@ namespace Daybreak::OpenGlRenderer
         void setVAO(GLuint vao);
 
         // Create a new VAO object.
-        static std::unique_ptr<OglInputLayout> Generate();
-
-    private:
-        // Destroy VAO.
-        void destroy();
+        static std::unique_ptr<OglMesh> Generate();
 
     private:
         GLuint m_vao = 0;
-    };
+    };*/
 }
