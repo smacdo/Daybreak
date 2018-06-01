@@ -47,7 +47,7 @@ void main()
     vec3 reflectDirection = reflect(-lightDirection, ps_normal);
 
     float specularFactor = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
-    vec3 specular = light.specular * specularFactor /* * vec3(texture(material.specular, ps_uv))*/ * material.specularColor;
+    vec3 specular = light.specular * specularFactor * vec3(texture(material.specular, ps_uv)) * material.specularColor;
 
     // Combine lighting terms with texture into final output color.
     vec3 result = ambient + diffuse + specular;

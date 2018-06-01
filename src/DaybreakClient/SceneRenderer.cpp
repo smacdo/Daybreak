@@ -230,10 +230,10 @@ void SceneRenderer::CreateDefaultScene()
             "Content\\Shaders\\LightDebug_fs.glsl"));
 
     // Load textures.
-    auto image = Image::LoadFromFile("Content\\container.jpg");
+    auto image = Image::LoadFromFile("Content\\cube_diffuse.png");
     m_diffuseTexture = Texture::Create2d(*image.get(), TextureParameters(), TextureFormat::RGB);
 
-    auto image2 = Image::LoadFromFile("Content\\awesomeface.png");
+    auto image2 = Image::LoadFromFile("Content\\cube_specular.png");
     m_specularTexture = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
 }
 
