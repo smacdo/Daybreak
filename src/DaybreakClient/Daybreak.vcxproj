@@ -218,7 +218,7 @@
     <ClInclude Include="OglRenderer\OglVertexBuffer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneRenderer.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="OglRenderer\OglShader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SystemInfo.h" />
     <ClInclude Include="targetver.h" />
@@ -235,7 +235,7 @@
     <ClCompile Include="OglRenderer\OglTexture.cpp" />
     <ClCompile Include="OglRenderer\OglVertexBuffer.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="OglRenderer\OglShader.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

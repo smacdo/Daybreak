@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Shader.h"
-#include "OglRenderer/OglError.h"
+#include "OglShader.h"
+#include "OglError.h"
 
 #include <glad\glad.h>
 #include <glm\glm.hpp>
@@ -11,109 +11,137 @@
 using namespace Daybreak::OpenGlRenderer;
 
 //---------------------------------------------------------------------------------------------------------------------
-Shader::Shader(const std::string& shaderName, unsigned int shaderProgram)
-    : m_name(shaderName),
-      m_shaderProgram(shaderProgram)
+OglShader::OglShader(GLuint shaderProgram, const std::string& shaderName)
+    : IShader(),
+      m_name(shaderName)
 {
-    // Verify that shader is valid.
-    if (!glIsProgram(shaderProgram))
+    if (shaderProgram != 0)
     {
-        throw ObjectNotShaderException(shaderProgram, shaderName);
+        setShaderProgram(shaderProgram);
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Shader::~Shader()
+OglShader::~OglShader()
 {
-    glDeleteProgram(m_shaderProgram);
+    destroy();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::Activate()
+void OglShader::destroy()
 {
+    if (glIsProgram(m_shaderProgram) == GL_TRUE)
+    {
+        GLuint shaders[] = { m_shaderProgram };
+        glDeleteBuffers(1, std::begin(shaders));
+
+        m_shaderProgram = 0;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglShader::bind()
+{
+    // TODO: Better exception.
+    if (m_shaderProgram == 0)
+    {
+        throw std::runtime_error("Shader was not assigned before being bound");
+    }
+
     glUseProgram(m_shaderProgram);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetInt(const std::string& name, int value) const
+void OglShader::setShaderProgram(GLuint id)
+{
+    if (glIsProgram(id) == GL_FALSE)
+    {
+        throw ObjectNotShaderException(id, m_name);
+    }
+
+    m_shaderProgram = id;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglShader::setInt(const std::string& name, int value) const
 {
     glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetFloat(const std::string& name, float value) const
+void OglShader::setFloat(const std::string& name, float value) const
 {
     glUniform1f(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetBool(const std::string& name, bool value) const
+void OglShader::setBool(const std::string& name, bool value) const
 {
     glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), static_cast<int>(value));
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetVector2f(const std::string& name, float x, float y) const
+void OglShader::setVector2f(const std::string& name, float x, float y) const
 {
     glUniform2f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetVector2f(const std::string& name, const glm::vec2& v) const
+void OglShader::setVector2f(const std::string& name, const glm::vec2& v) const
 {
     glUniform2f(glGetUniformLocation(m_shaderProgram, name.c_str()), v.x, v.y);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetVector3f(const std::string& name, float x, float y, float z) const
+void OglShader::setVector3f(const std::string& name, float x, float y, float z) const
 {
     glUniform3f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y, z);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetVector3f(const std::string& name, const glm::vec3& v) const
+void OglShader::setVector3f(const std::string& name, const glm::vec3& v) const
 {
     glUniform3f(glGetUniformLocation(m_shaderProgram, name.c_str()), v.x, v.y, v.z);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetVector4f(const std::string& name, float x, float y, float z, float w) const
+void OglShader::setVector4f(const std::string& name, float x, float y, float z, float w) const
 {
     glUniform4f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y, z, w);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetVector4f(const std::string& name, const glm::vec4& v) const
+void OglShader::setVector4f(const std::string& name, const glm::vec4& v) const
 {
     glUniform4f(glGetUniformLocation(m_shaderProgram, name.c_str()), v.x, v.y, v.z, v.w);
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetMatrix3(const std::string& name, const glm::mat3& v) const
+void OglShader::setMatrix3(const std::string& name, const glm::mat3& v) const
 {
     glUniformMatrix3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::SetMatrix4(const std::string& name, const glm::mat4& v) const
+void OglShader::setMatrix4(const std::string& name, const glm::mat4& v) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));
     glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<Shader> Shader::LoadFromFile(
+std::unique_ptr<OglShader> OglShader::generateFromFile(
     const std::string& shaderProgramName,
     const std::string& vertexShaderPath,
     const std::string& fragmentShaderPath)
@@ -123,7 +151,7 @@ std::unique_ptr<Shader> Shader::LoadFromFile(
     auto fragmentShaderString = ReadTextFromFile(fragmentShaderPath);
     
     // Use LoadFromString variant to finish loading the shader.
-    return LoadFromString(
+    return generate(
         shaderProgramName,
         vertexShaderPath,
         vertexShaderString,
@@ -132,7 +160,7 @@ std::unique_ptr<Shader> Shader::LoadFromFile(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<Shader> Shader::LoadFromString(
+std::unique_ptr<OglShader> OglShader::generate(
     const std::string& shaderProgramName,
     const std::string& vertexShaderName,
     const std::string& vertexShaderString,
@@ -186,11 +214,11 @@ std::unique_ptr<Shader> Shader::LoadFromString(
     glCheckForErrors();
 
     // Construct and return shader.
-    return std::unique_ptr<Shader>(new Shader(shaderProgramName, shaderProgram));
+    return std::unique_ptr<OglShader>(new OglShader(shaderProgram, shaderProgramName));
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::string Shader::ReadTextFromFile(const std::string& filepath)
+std::string OglShader::ReadTextFromFile(const std::string& filepath)
 {
     std::ifstream stream;
 
@@ -201,7 +229,7 @@ std::string Shader::ReadTextFromFile(const std::string& filepath)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::VerifyShaderLinked(unsigned int program, const std::string& programName)
+void OglShader::VerifyShaderLinked(GLuint program, const std::string& programName)
 {
     int result = 0;
     glGetProgramiv(program, GL_LINK_STATUS, &result);
@@ -221,7 +249,7 @@ void Shader::VerifyShaderLinked(unsigned int program, const std::string& program
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Shader::VerifyShaderCompiled(unsigned int shader, const std::string& shaderName)
+void OglShader::VerifyShaderCompiled(GLuint shader, const std::string& shaderName)
 {
     int result = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);

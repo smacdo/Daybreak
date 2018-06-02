@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SceneRenderer.h"
-#include "Shader.h"
+#include "OglRenderer/OglShader.h"
 #include "OglRenderer/OglError.h"
 #include "OglRenderer/OglInputLayout.h"
 #include "OglRenderer/OglVertexBuffer.h"
@@ -65,12 +65,12 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     glPolygonMode(GL_FRONT_AND_BACK, IsWireframeEnabled() ? GL_LINE : GL_FILL);
     
     // Bind the standard shader and standard vertex layout for cube rendering.
-    m_standardShader->Activate();
+    m_standardShader->bind();
     m_standardInputLayout->bind();
     
     // Update elapsed time and pass it to the shader.
     m_renderTime += deltaTime;
-    m_standardShader->SetFloat("renderTime", static_cast<float>(m_renderTime.totalSeconds()));
+    m_standardShader->setFloat("renderTime", static_cast<float>(m_renderTime.totalSeconds()));
 
     // Pass camera transformation matrices to the shader.
     //  Rotate objects around camera.
@@ -81,8 +81,8 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     // Copy camera matrix to shader.
     auto view = m_camera->view();
 
-    m_standardShader->SetMatrix4("view", view);
-    m_standardShader->SetVector3f("viewPos", m_camera->position());
+    m_standardShader->setMatrix4("view", view);
+    m_standardShader->setVector3f("viewPos", m_camera->position());
 
     // Copy projection matrix to shader.
     glm::mat4 projection(1);
@@ -92,36 +92,36 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         0.1f,
         100.0f);
 
-    m_standardShader->SetMatrix4("projection", projection);
+    m_standardShader->setMatrix4("projection", projection);
 
     // Set material shader params.
     m_diffuseTexture->bind(0);
     m_specularTexture->bind(1);
 
-    m_standardShader->SetVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);
-    m_standardShader->SetInt("material.diffuse", 0);
-    m_standardShader->SetVector3f("material.diffuseColor", 0.0f, 0.0f, 0.0f);
-    m_standardShader->SetBool("material.hasDiffuseTexture", true);
-    m_standardShader->SetInt("material.specular", 1);
-    m_standardShader->SetVector3f("material.specularColor", 0.0f, 0.0f, 0.0f);
-    m_standardShader->SetBool("material.hasSpecularTexture", true);
-    m_standardShader->SetFloat("material.shininess", 32.0f);
+    m_standardShader->setVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);
+    m_standardShader->setInt("material.diffuse", 0);
+    m_standardShader->setVector3f("material.diffuseColor", 0.0f, 0.0f, 0.0f);
+    m_standardShader->setBool("material.hasDiffuseTexture", true);
+    m_standardShader->setInt("material.specular", 1);
+    m_standardShader->setVector3f("material.specularColor", 0.0f, 0.0f, 0.0f);
+    m_standardShader->setBool("material.hasSpecularTexture", true);
+    m_standardShader->setFloat("material.shininess", 32.0f);
 
     // Set lighting shader params.
-    m_standardShader->SetInt("directionalLightCount", 1);
-    m_standardShader->SetVector3f("directionalLights[0].direction", { -0.2f, -1.0f, -0.3f });
-    m_standardShader->SetVector3f("directionalLights[0].ambient", { 0.0f, 0.0f, 0.0f });
-    m_standardShader->SetVector3f("directionalLights[0].diffuse", { 0.0f, 0.0f, 1.0f });
-    m_standardShader->SetVector3f("directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
+    m_standardShader->setInt("directionalLightCount", 1);
+    m_standardShader->setVector3f("directionalLights[0].direction", { -0.2f, -1.0f, -0.3f });
+    m_standardShader->setVector3f("directionalLights[0].ambient", { 0.0f, 0.0f, 0.0f });
+    m_standardShader->setVector3f("directionalLights[0].diffuse", { 0.0f, 0.0f, 1.0f });
+    m_standardShader->setVector3f("directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
 
-    m_standardShader->SetInt("pointLightCount", 1);
-    m_standardShader->SetVector3f("pointLights[0].position", m_lightPos);
-    m_standardShader->SetVector3f("pointLights[0].ambient", m_lightColor / 2.0f);
-    m_standardShader->SetVector3f("pointLights[0].diffuse", m_lightColor);
-    m_standardShader->SetVector3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-    m_standardShader->SetFloat("pointLights[0].constant", 1.0f);
-    m_standardShader->SetFloat("pointLights[0].linear", 0.09f);
-    m_standardShader->SetFloat("pointLights[0].quadratic", 0.032f);
+    m_standardShader->setInt("pointLightCount", 1);
+    m_standardShader->setVector3f("pointLights[0].position", m_lightPos);
+    m_standardShader->setVector3f("pointLights[0].ambient", m_lightColor / 2.0f);
+    m_standardShader->setVector3f("pointLights[0].diffuse", m_lightColor);
+    m_standardShader->setVector3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+    m_standardShader->setFloat("pointLights[0].constant", 1.0f);
+    m_standardShader->setFloat("pointLights[0].linear", 0.09f);
+    m_standardShader->setFloat("pointLights[0].quadratic", 0.032f);
     
     // Render each box.
     m_vertexBuffer->bind();
@@ -140,7 +140,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
         i += 1.0f;
 
-        m_standardShader->SetMatrix4("model", model);
+        m_standardShader->setMatrix4("model", model);
 
         // Generate normal transformation matrix by taking the transpose of the inverse of the upper left corner
         // of the model matrix.
@@ -153,7 +153,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         normal = glm::inverse(normal);
         normal = glm::transpose(normal);
         
-        m_standardShader->SetMatrix3("normalMatrix", normal);
+        m_standardShader->setMatrix3("normalMatrix", normal);
 
         // Draw cube.
         //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -161,19 +161,19 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     }
 
     // Draw the lamp.
-    m_lightDebugShader->Activate();
+    m_lightDebugShader->bind();
 
-    m_lightDebugShader->SetMatrix4("view", view);
-    m_lightDebugShader->SetMatrix4("projection", projection);
+    m_lightDebugShader->setMatrix4("view", view);
+    m_lightDebugShader->setMatrix4("projection", projection);
 
     glm::mat4 model(1);
 
     model = glm::translate(model, m_lightPos);
     model = glm::scale(model, glm::vec3{ 0.2f, 0.2f, 0.2f });
 
-    m_lightDebugShader->SetMatrix4("model", model);
+    m_lightDebugShader->setMatrix4("model", model);
 
-    m_lightDebugShader->SetVector3f("tint", m_lightColor);
+    m_lightDebugShader->setVector3f("tint", m_lightColor);
 
     m_lightInputLayout->bind();
      
@@ -241,13 +241,13 @@ void SceneRenderer::CreateDefaultScene()
 
     // Construct scene shader.
     m_standardShader = std::move(
-        Shader::LoadFromFile(
+        OglShader::generateFromFile(
             "Standard",
             "Content\\Shaders\\Standard_vs.glsl",
             "Content\\Shaders\\Standard_fs.glsl")); 
 
     m_lightDebugShader = std::move(
-        Shader::LoadFromFile(
+        OglShader::generateFromFile(
             "Standard",
             "Content\\Shaders\\LightDebug_vs.glsl",
             "Content\\Shaders\\LightDebug_fs.glsl"));

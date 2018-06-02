@@ -168,6 +168,7 @@
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
+    <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Phong\PhongMaterial.h" />
     <ClInclude Include="Graphics\stdafx.h" />

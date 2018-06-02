@@ -5,8 +5,6 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-class Shader;
-
 namespace Daybreak
 {
     class Camera;
@@ -20,6 +18,7 @@ namespace Daybreak::OpenGlRenderer
     class OglVertexBuffer;
     class OglIndexBuffer;
     class OglTexture2d;
+    class OglShader;
 }
 
 // Responsible for rendering a graphical scene.
@@ -71,8 +70,8 @@ private:
 
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout;
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
-    std::unique_ptr<Shader> m_standardShader;
-    std::unique_ptr<Shader> m_lightDebugShader;
+    std::unique_ptr<Daybreak::OpenGlRenderer::OglShader> m_standardShader;
+    std::unique_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
     std::unique_ptr<Daybreak::ITexture2d> m_diffuseTexture;
     std::unique_ptr<Daybreak::ITexture2d> m_specularTexture;
     std::shared_ptr<Daybreak::Camera> m_camera;
