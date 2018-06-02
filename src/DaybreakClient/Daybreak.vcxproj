@@ -214,6 +214,7 @@
     <ClInclude Include="OglRenderer\OglIndexBuffer.h" />
     <ClInclude Include="OglRenderer\OglInputLayout.h" />
     <ClInclude Include="OglRenderer\OglMesh.h" />
+    <ClInclude Include="OglRenderer\OglTexture.h" />
     <ClInclude Include="OglRenderer\OglVertexBuffer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneRenderer.h" />
@@ -221,7 +222,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SystemInfo.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\thirdparty\glad\src\glad.cpp" />
@@ -232,6 +232,7 @@
     <ClCompile Include="OglRenderer\OglIndexBuffer.cpp" />
     <ClCompile Include="OglRenderer\OglInputLayout.cpp" />
     <ClCompile Include="OglRenderer\OglMesh.cpp" />
+    <ClCompile Include="OglRenderer\OglTexture.cpp" />
     <ClCompile Include="OglRenderer\OglVertexBuffer.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -242,7 +243,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SystemInfo.cpp" />
-    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Daybreak.rc" />

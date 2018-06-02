@@ -13,6 +13,8 @@
 
 #include <mutex>
 
+using namespace Daybreak;
+
 namespace
 {
     // stb_image error reporting is not thread safe so a global image lock is used to guard stb's image loading and

@@ -168,6 +168,8 @@
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
+    <ClInclude Include="Renderer\Texture.h" />
+    <ClInclude Include="Renderer\Phong\PhongMaterial.h" />
     <ClInclude Include="Graphics\stdafx.h" />
     <ClInclude Include="Input\IInputSource.h" />
     <ClInclude Include="Input\InputKeys.h" />
@@ -194,6 +196,7 @@
     <ClCompile Include="Input\InputKeys.cpp" />
     <ClCompile Include="Input\SdlInputSource.cpp" />
     <ClCompile Include="Graphics\MeshData.cpp" />
+    <ClCompile Include="Renderer\TextureParameters.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\FirstPersonCameraController.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />

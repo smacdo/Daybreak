@@ -5,11 +5,11 @@
 #include "OglRenderer/OglInputLayout.h"
 #include "OglRenderer/OglVertexBuffer.h"
 #include "OglRenderer/OglIndexBuffer.h"
+#include "OglRenderer/OglTexture.h"
 #include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Image.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
-#include "Texture.h"
 
 #include <glad\glad.h>
 #include <string>
@@ -95,8 +95,8 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     m_standardShader->SetMatrix4("projection", projection);
 
     // Set material shader params.
-    m_diffuseTexture->Activate(0);
-    m_specularTexture->Activate(1);
+    m_diffuseTexture->bind(0);
+    m_specularTexture->bind(1);
 
     m_standardShader->SetVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);
     m_standardShader->SetInt("material.diffuse", 0);
@@ -254,10 +254,10 @@ void SceneRenderer::CreateDefaultScene()
 
     // Load textures.
     auto image = Image::LoadFromFile("Content\\cube_diffuse.png");
-    m_diffuseTexture = Texture::Create2d(*image.get(), TextureParameters(), TextureFormat::RGB);
+    m_diffuseTexture = OglTexture2d::generate(*image.get(), TextureParameters(), TextureFormat::RGB);
 
     auto image2 = Image::LoadFromFile("Content\\cube_specular.png");
-    m_specularTexture = Texture::Create2d(*image2.get(), TextureParameters(), TextureFormat::RGB);
+    m_specularTexture = OglTexture2d::generate(*image2.get(), TextureParameters(), TextureFormat::RGB);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
