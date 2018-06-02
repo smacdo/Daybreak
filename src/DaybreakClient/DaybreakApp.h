@@ -24,6 +24,17 @@ public:
     /** Destructor. */
     ~DaybreakApp();
 
+public:
+    // Check if OpenGL debug context is enabled.
+    bool hasGlDebugContext() const { return m_hasGlDebugContext; }
+
+    // Check if OpenGL debug context was requested.
+    bool wasGlDebugContextRequested() const { return m_glDebugContext; }
+
+    // Set if OpenGL context should have debug enabled.
+    void setGlDebugContextRequested(bool isRequested) { m_glDebugContext = isRequested; }
+
+public:
     /** Run main event loop and return when completed. */
     void Run();
 
@@ -48,6 +59,8 @@ private:
     unsigned int m_windowHeight = 0;
 
     bool m_quit = false;
+    bool m_glDebugContext = false;
+    bool m_hasGlDebugContext = false;
 
     SDL_Window * m_pWindow = nullptr;
     SDL_Renderer * m_pSdlRenderer = nullptr;

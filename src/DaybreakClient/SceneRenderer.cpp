@@ -30,7 +30,14 @@ using namespace Daybreak::OpenGlRenderer;
 std::vector<glm::vec3> GCubePositions = {
     { 0.0f, 0.0f, 0.0f },
     { 2.0f, 5.0f, -15.0f },
-    {-1.5f,-2.2f, -2.5f }
+    {-1.5f,-2.2f, -2.5f },
+    { -3.0f, 2.0f, 3.0f },
+    { 8.5f, -6.2f, -3.5f },
+    { 2.0f, 0.0f, -2.0f },
+    { 3.0f, -5.0f, 6.0f },
+    { 0.5f, -6.2f, 3.5f },
+    { 3.0f, 2.0f, -3.0f },
+    { 4.5f, 6.5f, -0.5f }
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -93,20 +100,34 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
     m_standardShader->SetVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);
     m_standardShader->SetInt("material.diffuse", 0);
-    m_standardShader->SetVector3f("material.diffuseColor", 1.0f, 1.0f, 1.0f);
+    m_standardShader->SetVector3f("material.diffuseColor", 0.0f, 0.0f, 0.0f);
+    m_standardShader->SetBool("material.hasDiffuseTexture", true);
     m_standardShader->SetInt("material.specular", 1);
-    m_standardShader->SetVector3f("material.specularColor", 1.0f, 1.0f, 1.0f);
+    m_standardShader->SetVector3f("material.specularColor", 0.0f, 0.0f, 0.0f);
+    m_standardShader->SetBool("material.hasSpecularTexture", true);
     m_standardShader->SetFloat("material.shininess", 32.0f);
 
     // Set lighting shader params.
-    m_standardShader->SetVector3f("light.position", m_lightPos);
-    m_standardShader->SetVector3f("light.ambient", m_lightColor / 2.0f);
-    m_standardShader->SetVector3f("light.diffuse", m_lightColor);
-    m_standardShader->SetVector3f("light.specular", 1.0f, 1.0f, 1.0f);
+    m_standardShader->SetInt("directionalLightCount", 1);
+    m_standardShader->SetVector3f("directionalLights[0].direction", { -0.2f, -1.0f, -0.3f });
+    m_standardShader->SetVector3f("directionalLights[0].ambient", { 0.0f, 0.0f, 0.0f });
+    m_standardShader->SetVector3f("directionalLights[0].diffuse", { 0.0f, 0.0f, 1.0f });
+    m_standardShader->SetVector3f("directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
+
+    m_standardShader->SetInt("pointLightCount", 1);
+    m_standardShader->SetVector3f("pointLights[0].position", m_lightPos);
+    m_standardShader->SetVector3f("pointLights[0].ambient", m_lightColor / 2.0f);
+    m_standardShader->SetVector3f("pointLights[0].diffuse", m_lightColor);
+    m_standardShader->SetVector3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+    m_standardShader->SetFloat("pointLights[0].constant", 1.0f);
+    m_standardShader->SetFloat("pointLights[0].linear", 0.09f);
+    m_standardShader->SetFloat("pointLights[0].quadratic", 0.032f);
     
     // Render each box.
     m_vertexBuffer->bind();
     m_indexBuffer->bind();
+
+    float i = 1;
 
     for (const auto& position : GCubePositions)
     {
@@ -114,8 +135,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         glm::mat4 model(1);
         model = glm::translate(model, position);
 
-        auto rotateOverTime = m_renderTime.totalSeconds() * glm::radians(50.0f);
-        model = glm::rotate(model, (float)rotateOverTime, glm::vec3(0.0f, 1.0f, 0.0f));
+        auto rotateOverTime = m_renderTime.totalSeconds() * glm::radians(20.0f * (i + 1) + 20.0f * i);
+        model = glm::rotate(model, (float)rotateOverTime, glm::vec3(1.0f, 0.3f, 0.5f));
+
+        i += 1.0f;
 
         m_standardShader->SetMatrix4("model", model);
 

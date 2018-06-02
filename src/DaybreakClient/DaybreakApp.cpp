@@ -105,11 +105,15 @@ void DaybreakApp::InitializeRendering()
 
     // TODO: SDL_GET_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE).
 
-#ifdef _DEBUG
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-#else
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-#endif
+    // Enable OpenGL debug context if requested.
+    if (m_glDebugContext)
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    }
+    else
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    }
 
     // Create an OpenGL accelerated rendering window.
     SDL_CreateWindowAndRenderer(
@@ -138,6 +142,12 @@ void DaybreakApp::InitializeRendering()
     // Create an OpenGL context after creating the window.
     SDL_GLContext context = SDL_GL_CreateContext(m_pWindow);
 
+    // Check if OpenGL debug context was enabled.
+//    GLint contextFlags = 0;
+//    glGetIntegerv(GL_CONTEXT_FLAGS, &contextFlags);
+
+    
+    // Print out debug info about OpenGL context.
     /*printf("Vendor:   %s\n", glGetString(GL_VENDOR));
     printf("Renderer: %s\n", glGetString(GL_RENDERER));
     printf("Version:  %s\n", glGetString(GL_VERSION));*/

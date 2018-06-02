@@ -97,7 +97,7 @@ namespace Daybreak
         mutable bool m_dirty = false;
 
         // Camera front vector ("heading").
-        mutable glm::vec3 m_front = { 0.0f, 0.0f, 0.0f };
+        mutable glm::vec3 m_forward = { 0.0f, 0.0f, 0.0f };
 
         // Camera right vector.
         mutable glm::vec3 m_right = { 0.0f, 0.0f, 0.0f };

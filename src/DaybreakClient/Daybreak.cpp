@@ -9,6 +9,14 @@
 int main(int argc, char* argv[])
 {
     DaybreakApp app(800, 600);
+
+#ifdef _DEBUG
+    app.setGlDebugContextRequested(true);
+#else
+    app.setGlDebugContextRequested(false);
+#endif
+
+
     //try
     //{
         app.Run();

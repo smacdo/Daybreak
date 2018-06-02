@@ -25,7 +25,7 @@ Camera::Camera(const glm::vec3& position)
 glm::vec3 Camera::forward() const
 {
     regenerateCachedValuesIfDirty();
-    return m_front;
+    return m_forward;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ void Camera::addPitch(float degrees)
 //---------------------------------------------------------------------------------------------------------------------
 void Camera::setPitch(float degrees)
 {
-    m_pitch = fmod(degrees, 360.0f);
+    m_pitch = degrees;// fmod(degrees, 360.0f);
     m_dirty = true;
 }
 
@@ -128,7 +128,7 @@ void Camera::addYaw(float degrees)
 //---------------------------------------------------------------------------------------------------------------------
 void Camera::setYaw(float degrees)
 {
-    m_yaw = fmod(degrees, 360.0f);
+    m_yaw = degrees;// fmod(degrees, 360.0f);
     m_dirty = true;
 }
 
@@ -146,21 +146,23 @@ void Camera::regenerateCachedValuesIfDirty() const
 void Camera::regenerateCachedValues() const // const because it only regenerates mutable cached fields.
 {
     // Caculate front (heading) vector from the camera yaw, pitch, roll values.
-    m_front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-    m_front.y = sin(glm::radians(m_pitch));
-    m_front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-    m_front = glm::normalize(m_front);
+    glm::vec3 forward;
+
+    forward.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    forward.y = sin(glm::radians(m_pitch));
+    forward.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+
+    m_forward = glm::normalize(forward);
 
     // Recalculate the right and up vector once the new front vector is calculated.
     // Note that these are normalized because their length gets close to zero the more a player looks up or down and
     // this results in slower movement.
-    m_right = glm::normalize(glm::cross(m_front, m_worldUp));
-    m_up = glm::normalize(glm::cross(m_right, m_front));
+    m_right = glm::normalize(glm::cross(m_forward, m_worldUp));
+    m_up = glm::normalize(glm::cross(m_right, m_forward));
 
-    //m_view = glm::lookAt(
     m_view = createLookAt(
         m_position,
-        m_position + m_front,
+        m_position + m_forward,
         m_up);
 }
 
@@ -190,13 +192,13 @@ glm::mat4 Camera::createLookAt(
     glm::mat4 rotation(1);
 
     rotation[0][0] = xAxis.x;               // First column, first row.
-    rotation[0][1] = xAxis.y;               // ...           second row.
-    rotation[0][2] = xAxis.z;               // ...           third row.
-    rotation[1][0] = yAxis.x;               // Second column, first row.
+    rotation[1][0] = xAxis.y;               // ...           second row.
+    rotation[2][0] = xAxis.z;               // ...           third row.
+    rotation[0][1] = yAxis.x;               // Second column, first row.
     rotation[1][1] = yAxis.y;               // ...            second row.
-    rotation[1][2] = yAxis.z;               // ...            third row.
-    rotation[2][0] = zAxis.x;               // Third column, first row.
-    rotation[2][1] = zAxis.y;               // ...           second row.
+    rotation[2][1] = yAxis.z;               // ...            third row.
+    rotation[0][2] = zAxis.x;               // Third column, first row.
+    rotation[1][2] = zAxis.y;               // ...           second row.
     rotation[2][2] = zAxis.z;               // ...           third row.
 
     // Order: translation then rotation although reversed in code because left - right ordering.
