@@ -168,6 +168,9 @@
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
+    <ClInclude Include="Renderer\RenderContext.h" />
+    <ClInclude Include="Renderer\Phong\PhongLightingEffect.h" />
+    <ClInclude Include="Renderer\Phong\PhongLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Phong\PhongMaterial.h" />
@@ -176,11 +179,11 @@
     <ClInclude Include="Input\InputKeys.h" />
     <ClInclude Include="Input\SdlInputSource.h" />
     <ClInclude Include="Renderer\BindableResource.h" />
-    <ClInclude Include="Renderer\IIndexBuffer.h" />
-    <ClInclude Include="Renderer\IMesh.h" />
+    <ClInclude Include="Renderer\IndexBuffer.h" />
+    <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\InputLayout.h" />
     <ClInclude Include="Graphics\MeshData.h" />
-    <ClInclude Include="Renderer\IVertexBuffer.h" />
+    <ClInclude Include="Renderer\VertexBuffer.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\FirstPersonCameraController.h" />
     <ClInclude Include="Scene\Scene.h" />
@@ -197,6 +200,8 @@
     <ClCompile Include="Input\InputKeys.cpp" />
     <ClCompile Include="Input\SdlInputSource.cpp" />
     <ClCompile Include="Graphics\MeshData.cpp" />
+    <ClCompile Include="Renderer\Mesh.cpp" />
+    <ClCompile Include="Renderer\Phong\PhongLightingEffect.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\FirstPersonCameraController.cpp" />

@@ -9,6 +9,7 @@ namespace Daybreak
 {
     class Camera;
     class Scene;
+    class Mesh;
     class ITexture2d;
 }
 
@@ -72,11 +73,10 @@ private:
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
     std::unique_ptr<Daybreak::OpenGlRenderer::OglShader> m_standardShader;
     std::unique_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
-    std::unique_ptr<Daybreak::ITexture2d> m_diffuseTexture;
-    std::unique_ptr<Daybreak::ITexture2d> m_specularTexture;
+//    std::unique_ptr<Daybreak::ITexture2d> m_diffuseTexture;
+//    std::unique_ptr<Daybreak::ITexture2d> m_specularTexture;
     std::shared_ptr<Daybreak::Camera> m_camera;
 
-    std::unique_ptr<Daybreak::OpenGlRenderer::OglVertexBuffer> m_vertexBuffer;
-    std::unique_ptr<Daybreak::OpenGlRenderer::OglIndexBuffer> m_indexBuffer;
+    std::unique_ptr<Daybreak::Mesh> m_mesh;
 };
 

@@ -1,12 +1,12 @@
 #pragma once
-#include "Renderer/IVertexBuffer.h"
+#include "Renderer/VertexBuffer.h"
 #include <glad\glad.h>
 #include <memory>
 
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL vertex buffer encapsulation.
-    class OglVertexBuffer : public IVertexBuffer
+    class OglVertexBuffer final : public IVertexBuffer
     {
     public:
         // Constructor.

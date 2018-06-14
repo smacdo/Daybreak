@@ -6,7 +6,7 @@
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL vertex array object encapsulation.
-    class OglInputLayout : public IInputLayout
+    class OglInputLayout final : public IInputLayout
     {
     public:
         // Constructor.

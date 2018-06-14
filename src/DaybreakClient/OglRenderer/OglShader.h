@@ -9,7 +9,7 @@
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL shader encapsulation.
-    class OglShader : IShader
+    class OglShader final : public IShader
     {
     public:
         // Constructor.

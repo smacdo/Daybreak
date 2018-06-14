@@ -6,6 +6,8 @@
 #include "OglRenderer/OglVertexBuffer.h"
 #include "OglRenderer/OglIndexBuffer.h"
 #include "OglRenderer/OglTexture.h"
+#include "Renderer/Mesh.h"
+#include "Renderer/Phong/PhongMaterial.h"
 #include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Image.h"
 #include "Scene/Scene.h"
@@ -95,17 +97,43 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     m_standardShader->setMatrix4("projection", projection);
 
     // Set material shader params.
-    m_diffuseTexture->bind(0);
-    m_specularTexture->bind(1);
+    auto material = m_mesh->material();
 
-    m_standardShader->setVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);
-    m_standardShader->setInt("material.diffuse", 0);
-    m_standardShader->setVector3f("material.diffuseColor", 0.0f, 0.0f, 0.0f);
-    m_standardShader->setBool("material.hasDiffuseTexture", true);
-    m_standardShader->setInt("material.specular", 1);
-    m_standardShader->setVector3f("material.specularColor", 0.0f, 0.0f, 0.0f);
-    m_standardShader->setBool("material.hasSpecularTexture", true);
-    m_standardShader->setFloat("material.shininess", 32.0f);
+    if (material->hasDiffuseTexture())
+    {
+        auto texture = static_cast<OglTexture2d*>(material->diffuseTexture().get());
+        texture->bind(0);
+
+        m_standardShader->setInt("material.diffuse", 0);
+
+        m_standardShader->setBool("material.hasDiffuseTexture", true);
+        m_standardShader->setVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);   // TODO: not needed.
+        m_standardShader->setVector3f("material.diffuseColor", 0.0f, 0.0f, 0.0f);   // TODO: not needed.
+    }
+    else
+    {
+        m_standardShader->setBool("material.hasDiffuseTexture", false);
+        m_standardShader->setVector3f("material.ambientColor", material->ambientColor());
+        m_standardShader->setVector3f("material.diffuseColor", material->diffuseColor());
+    }
+    
+    if (material->hasSpecularTexture())
+    {
+        auto texture = static_cast<OglTexture2d*>(material->specularTexture().get());
+        texture->bind(1);
+
+        m_standardShader->setInt("material.specular", 1);
+
+        m_standardShader->setBool("material.hasSpecularTexture", true);
+        m_standardShader->setVector3f("material.specularColor", 0.0f, 0.0f, 0.0f);      // TODO: not needed.
+    }
+    else
+    {
+        m_standardShader->setBool("material.hasSpecularTexture", false);
+        m_standardShader->setVector3f("material.specularColor", material->specularColor());
+    }
+    
+    m_standardShader->setFloat("material.shininess", material->shininess());
 
     // Set lighting shader params.
     m_standardShader->setInt("directionalLightCount", 1);
@@ -124,8 +152,14 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     m_standardShader->setFloat("pointLights[0].quadratic", 0.032f);
     
     // Render each box.
-    m_vertexBuffer->bind();
-    m_indexBuffer->bind();
+    //  TODO: Move to context?
+    {
+        auto vb = m_mesh->vertexBuffer();
+        auto ib = m_mesh->indexBuffer();
+
+        static_cast<OglVertexBuffer*>(vb.get())->bind();
+        static_cast<OglIndexBuffer*>(ib.get())->bind();
+    }
 
     float i = 1;
 
@@ -193,6 +227,13 @@ void SceneRenderer::CreateDefaultScene()
     // Enable depth testing by default.
     glEnable(GL_DEPTH_TEST);
 
+    // Load textures.
+    auto diffuseImage = Image::LoadFromFile("Content\\cube_diffuse.png");
+    auto diffuseTexture = OglTexture2d::generate(*diffuseImage.get(), TextureParameters(), TextureFormat::RGB);
+
+    auto specularImage = Image::LoadFromFile("Content\\cube_specular.png");
+    auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
+
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
     m_standardInputLayout = OglInputLayout::Generate();
 
@@ -200,15 +241,23 @@ void SceneRenderer::CreateDefaultScene()
     auto cubeVertices = BasicGeometryGenerator::MakeCubeVertices();
     auto cubeIndices = BasicGeometryGenerator::MakeCubeIndices();
 
-    m_vertexBuffer = OglVertexBuffer::generate(
+    auto vertexBuffer = OglVertexBuffer::generate(
         cubeVertices.data(),
         sizeof(BasicGeometryGenerator::VertexValueType),
         cubeVertices.size());
 
-    m_indexBuffer = OglIndexBuffer::generate(
+    auto indexBuffer = OglIndexBuffer::generate(
         cubeIndices.data(),
         sizeof(BasicGeometryGenerator::IndexValueType),
         cubeIndices.size());
+
+    auto material = std::make_shared<PhongMaterial>();
+
+    material->setDiffuseTexture(std::move(diffuseTexture));
+    material->setSpecularTexture(std::move(specularTexture));
+    material->setShininess(32.0f);
+
+    m_mesh = std::make_unique<Mesh>(std::move(vertexBuffer), std::move(indexBuffer), material);
 
     // Generate vertex attributes for the standard shader.
     // TODO: Move this work into a fluent-ish interface inside InputLayout.
@@ -230,8 +279,16 @@ void SceneRenderer::CreateDefaultScene()
     m_lightInputLayout = OglInputLayout::Generate();
     m_lightInputLayout->bind();
 
-    m_vertexBuffer->bind();
-    m_indexBuffer->bind(); // ?? not sure if needed
+    // TODO: Move this to context (RenderContext::bindMesh)
+    {
+        auto vb = m_mesh->vertexBuffer();
+        auto ib = m_mesh->indexBuffer();
+
+        static_cast<OglVertexBuffer*>(vb.get())->bind();
+        static_cast<OglIndexBuffer*>(ib.get())->bind();
+    }
+    //m_vertexBuffer->bind();
+    //m_indexBuffer->bind(); // ?? not sure if needed
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -251,13 +308,6 @@ void SceneRenderer::CreateDefaultScene()
             "Standard",
             "Content\\Shaders\\LightDebug_vs.glsl",
             "Content\\Shaders\\LightDebug_fs.glsl"));
-
-    // Load textures.
-    auto image = Image::LoadFromFile("Content\\cube_diffuse.png");
-    m_diffuseTexture = OglTexture2d::generate(*image.get(), TextureParameters(), TextureFormat::RGB);
-
-    auto image2 = Image::LoadFromFile("Content\\cube_specular.png");
-    m_specularTexture = OglTexture2d::generate(*image2.get(), TextureParameters(), TextureFormat::RGB);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

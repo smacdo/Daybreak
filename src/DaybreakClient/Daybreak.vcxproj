@@ -213,7 +213,8 @@
     <ClInclude Include="OglRenderer\OglException.h" />
     <ClInclude Include="OglRenderer\OglIndexBuffer.h" />
     <ClInclude Include="OglRenderer\OglInputLayout.h" />
-    <ClInclude Include="OglRenderer\OglMesh.h" />
+    <ClInclude Include="OglRenderer\OglPhongLightingEffect.h" />
+    <ClInclude Include="OglRenderer\OglRenderContext.h" />
     <ClInclude Include="OglRenderer\OglTexture.h" />
     <ClInclude Include="OglRenderer\OglVertexBuffer.h" />
     <ClInclude Include="resource.h" />
@@ -231,7 +232,8 @@
     <ClCompile Include="OglRenderer\OglException.cpp" />
     <ClCompile Include="OglRenderer\OglIndexBuffer.cpp" />
     <ClCompile Include="OglRenderer\OglInputLayout.cpp" />
-    <ClCompile Include="OglRenderer\OglMesh.cpp" />
+    <ClCompile Include="OglRenderer\OglPhongLightingEffect.cpp" />
+    <ClCompile Include="OglRenderer\OglRenderContext.cpp" />
     <ClCompile Include="OglRenderer\OglTexture.cpp" />
     <ClCompile Include="OglRenderer\OglVertexBuffer.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />

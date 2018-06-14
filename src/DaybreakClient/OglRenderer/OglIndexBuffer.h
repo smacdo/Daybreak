@@ -1,12 +1,12 @@
 #pragma once
-#include "Renderer/IIndexBuffer.h"
+#include "Renderer/IndexBuffer.h"
 #include <glad\glad.h>
 #include <memory>
 
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL index buffer encapsulation.
-    class OglIndexBuffer : public IIndexBuffer
+    class OglIndexBuffer final : public IIndexBuffer
     {
     public:
         // Constructor.

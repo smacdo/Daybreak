@@ -48,9 +48,6 @@
     <ClInclude Include="OglRenderer\OglInputLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OglRenderer\OglMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OglRenderer\OglVertexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -61,6 +58,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OglRenderer\OglShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OglRenderer\OglPhongLightingEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OglRenderer\OglRenderContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -92,9 +95,6 @@
     <ClCompile Include="OglRenderer\OglInputLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OglRenderer\OglMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OglRenderer\OglVertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -105,6 +105,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OglRenderer\OglShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OglRenderer\OglPhongLightingEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OglRenderer\OglRenderContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
