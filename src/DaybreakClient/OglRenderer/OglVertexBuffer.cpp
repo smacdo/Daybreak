@@ -38,13 +38,7 @@ void OglVertexBuffer::destroy()
 //---------------------------------------------------------------------------------------------------------------------
 void OglVertexBuffer::bind()
 {
-    if (m_vbo == 0)
-    {
-        throw std::runtime_error("Vertex buffer was not assigned a valid buffer before being bound");
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glCheckForErrors();
+    // TODO: Delete and remove IBindable base.
 }
 
 //---------------------------------------------------------------------------------------------------------------------

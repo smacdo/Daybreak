@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SceneRenderer.h"
+#include "OglRenderer/OglRenderContext.h"
 #include "OglRenderer/OglShader.h"
 #include "OglRenderer/OglError.h"
 #include "OglRenderer/OglInputLayout.h"
@@ -8,6 +9,7 @@
 #include "OglRenderer/OglTexture.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Phong/PhongMaterial.h"
+#include "Renderer/RenderContext.h"
 #include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Image.h"
 #include "Scene/Scene.h"
@@ -61,14 +63,14 @@ SceneRenderer::~SceneRenderer()
 void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTime)
 {
     // Clear display from last render.
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_renderContext->clearColorAndDepthBuffers();
 
     // Enable wireframe rendering if requested otherwise use solid mode.
-    glPolygonMode(GL_FRONT_AND_BACK, IsWireframeEnabled() ? GL_LINE : GL_FILL);
+    m_renderContext->setWireframeEnabled(IsWireframeEnabled());
     
     // Bind the standard shader and standard vertex layout for cube rendering.
-    m_standardShader->bind();
-    m_standardInputLayout->bind();
+    m_renderContext->bindShader(m_standardShader);
+    m_renderContext->bindInputLayout(m_standardInputLayout);
     
     // Update elapsed time and pass it to the shader.
     m_renderTime += deltaTime;
@@ -101,14 +103,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
     if (material->hasDiffuseTexture())
     {
-        auto texture = static_cast<OglTexture2d*>(material->diffuseTexture().get());
-        texture->bind(0);
+        m_renderContext->bindTexture(material->diffuseTexture(), 0);
 
         m_standardShader->setInt("material.diffuse", 0);
-
         m_standardShader->setBool("material.hasDiffuseTexture", true);
-        m_standardShader->setVector3f("material.ambientColor", 0.0f, 0.0f, 0.0f);   // TODO: not needed.
-        m_standardShader->setVector3f("material.diffuseColor", 0.0f, 0.0f, 0.0f);   // TODO: not needed.
     }
     else
     {
@@ -119,13 +117,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     
     if (material->hasSpecularTexture())
     {
-        auto texture = static_cast<OglTexture2d*>(material->specularTexture().get());
-        texture->bind(1);
+        m_renderContext->bindTexture(material->specularTexture(), 1);
 
         m_standardShader->setInt("material.specular", 1);
-
         m_standardShader->setBool("material.hasSpecularTexture", true);
-        m_standardShader->setVector3f("material.specularColor", 0.0f, 0.0f, 0.0f);      // TODO: not needed.
     }
     else
     {
@@ -152,14 +147,8 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     m_standardShader->setFloat("pointLights[0].quadratic", 0.032f);
     
     // Render each box.
-    //  TODO: Move to context?
-    {
-        auto vb = m_mesh->vertexBuffer();
-        auto ib = m_mesh->indexBuffer();
-
-        static_cast<OglVertexBuffer*>(vb.get())->bind();
-        static_cast<OglIndexBuffer*>(ib.get())->bind();
-    }
+    m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
+    m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
 
     float i = 1;
 
@@ -190,12 +179,11 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         m_standardShader->setMatrix3("normalMatrix", normal);
 
         // Draw cube.
-        //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        m_renderContext->drawTriangles(0, 36);
     }
 
     // Draw the lamp.
-    m_lightDebugShader->bind();
+    m_renderContext->bindShader(m_lightDebugShader);
 
     m_lightDebugShader->setMatrix4("view", view);
     m_lightDebugShader->setMatrix4("projection", projection);
@@ -209,25 +197,21 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
     m_lightDebugShader->setVector3f("tint", m_lightColor);
 
-    m_lightInputLayout->bind();
+    m_renderContext->bindInputLayout(m_lightInputLayout);
      
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-    // Unbind vertex array.
-    glBindVertexArray(0);
-
-    // Make sure no errors happened while drawing.
-    glCheckForErrors();
+    m_renderContext->drawTriangles(0, 36);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::CreateDefaultScene()
 {
+    m_renderContext = std::make_unique<OglRenderContext>();
+
     // Enable depth testing by default.
-    glEnable(GL_DEPTH_TEST);
+    m_renderContext->setDepthTestEnabled(true);
 
     // Load textures.
+    //  TODO: Use render context -> device -> createTexture
     auto diffuseImage = Image::LoadFromFile("Content\\cube_diffuse.png");
     auto diffuseTexture = OglTexture2d::generate(*diffuseImage.get(), TextureParameters(), TextureFormat::RGB);
 
@@ -235,9 +219,11 @@ void SceneRenderer::CreateDefaultScene()
     auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
 
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
+    //  TODO: Use render context -> device -> createInputLayout
     m_standardInputLayout = OglInputLayout::Generate();
 
     // Create a simple cube to render.
+    //  TODO: Use render context -> device -> createXXX
     auto cubeVertices = BasicGeometryGenerator::MakeCubeVertices();
     auto cubeIndices = BasicGeometryGenerator::MakeCubeIndices();
 
@@ -261,7 +247,7 @@ void SceneRenderer::CreateDefaultScene()
 
     // Generate vertex attributes for the standard shader.
     // TODO: Move this work into a fluent-ish interface inside InputLayout.
-    m_standardInputLayout->bind();
+    m_renderContext->bindInputLayout(m_standardInputLayout);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -277,18 +263,11 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create debug light input layout.
     m_lightInputLayout = OglInputLayout::Generate();
-    m_lightInputLayout->bind();
+    m_renderContext->bindInputLayout(m_lightInputLayout);
 
-    // TODO: Move this to context (RenderContext::bindMesh)
-    {
-        auto vb = m_mesh->vertexBuffer();
-        auto ib = m_mesh->indexBuffer();
-
-        static_cast<OglVertexBuffer*>(vb.get())->bind();
-        static_cast<OglIndexBuffer*>(ib.get())->bind();
-    }
-    //m_vertexBuffer->bind();
-    //m_indexBuffer->bind(); // ?? not sure if needed
+    // TODO: Do we need to rebind for light?
+    m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
+    m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);

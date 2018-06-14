@@ -38,13 +38,7 @@ void OglIndexBuffer::destroy()
 //---------------------------------------------------------------------------------------------------------------------
 void OglIndexBuffer::bind()
 {
-    if (m_ebo == 0)
-    {
-        throw std::runtime_error("Index buffer was not assigned before being bound");
-    }
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glCheckForErrors();
+    // TODO: Delete and remove IBindable base.
 }
 
 //---------------------------------------------------------------------------------------------------------------------

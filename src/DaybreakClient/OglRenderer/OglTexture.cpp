@@ -101,19 +101,7 @@ void OglTexture2d::destroy()
 //---------------------------------------------------------------------------------------------------------------------
 void OglTexture2d::bind(unsigned int textureUnit)
 {
-    // TODO: Test at runtime max number of slots and check that this slot is valid. Throw exception not assert.
-    EXPECT(textureUnit < 16, "Must be a valid texture unit slot");
-
-    if (m_id == 0)
-    {
-        throw std::runtime_error("Texture was not assigned before being bound");
-    }
-
-    glActiveTexture(GL_TEXTURE0 + textureUnit);
-    glCheckForErrors();
-
-    glBindTexture(GL_TEXTURE_2D, m_id);
-    glCheckForErrors();
+    // TODO: Delete and remove IBindable base.
 }
 
 //---------------------------------------------------------------------------------------------------------------------

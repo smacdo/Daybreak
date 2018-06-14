@@ -11,6 +11,7 @@ namespace Daybreak
     class Scene;
     class Mesh;
     class ITexture2d;
+    class IRenderContext;
 }
 
 namespace Daybreak::OpenGlRenderer
@@ -66,15 +67,15 @@ private:
     // Amount of accumulated rendering time.
     Daybreak::TimeSpan m_renderTime;
 
-    glm::vec3 m_lightPos = { 1.2f, 0.0f, 2.0f };
-    glm::vec3 m_lightColor = { 0.8f, 0.8f, 1.0f };
+    std::unique_ptr<Daybreak::IRenderContext> m_renderContext;
+
+    glm::vec3 m_lightPos = { 1.2f, 0.0f, 2.0f };        // TODO: Move to scene.
+    glm::vec3 m_lightColor = { 0.8f, 0.8f, 1.0f };      // TODO: Move to scene.
 
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout;
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
-    std::unique_ptr<Daybreak::OpenGlRenderer::OglShader> m_standardShader;
-    std::unique_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
-//    std::unique_ptr<Daybreak::ITexture2d> m_diffuseTexture;
-//    std::unique_ptr<Daybreak::ITexture2d> m_specularTexture;
+    std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_standardShader;
+    std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
     std::shared_ptr<Daybreak::Camera> m_camera;
 
     std::unique_ptr<Daybreak::Mesh> m_mesh;

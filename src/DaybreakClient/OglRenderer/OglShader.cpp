@@ -42,14 +42,7 @@ void OglShader::destroy()
 //---------------------------------------------------------------------------------------------------------------------
 void OglShader::bind()
 {
-    // TODO: Better exception.
-    if (m_shaderProgram == 0)
-    {
-        throw std::runtime_error("Shader was not assigned before being bound");
-    }
-
-    glUseProgram(m_shaderProgram);
-    glCheckForErrors();
+    // TODO: Delete and remove IBindable base.
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -38,13 +38,7 @@ void OglInputLayout::destroy()
 //---------------------------------------------------------------------------------------------------------------------
 void OglInputLayout::bind()
 {
-    if (m_vao == 0)
-    {
-        throw std::runtime_error("vao object was never assigned before being bound");
-    }
-
-    glBindVertexArray(m_vao);
-    glCheckForErrors();
+    // TODO: Delete and remove IBindable base.
 }
 
 //---------------------------------------------------------------------------------------------------------------------
