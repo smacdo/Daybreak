@@ -40,6 +40,41 @@ namespace Daybreak::OpenGlRenderer
         // Bind vertex buffer to pipeline for rendering.
         virtual void bindVertexBuffer(const std::shared_ptr<const Daybreak::IVertexBuffer>& vertexBuffer) override;
 
+    // Shader variables.
+    public:
+        // Set int shader parameter.
+        virtual void setShaderInt(const ShaderVariable& v, int value) override;
+
+        // Set float shader parameter.
+        virtual void setShaderFloat(const ShaderVariable& v, float value) override;
+
+        // Set bool shader parameter.
+        virtual void setShaderBool(const ShaderVariable& v, bool value) override;
+
+        // Set float2 shader parameter.
+        virtual void setShaderVector2f(const ShaderVariable& v, float x, float y) override;
+
+        // Set float2 shader parameter.
+        virtual void setShaderVector2f(const ShaderVariable& v, const glm::vec2& vec) override;
+
+        // Set float3 shader parameter.
+        virtual void setShaderVector3f(const ShaderVariable& v, float x, float y, float z) override;
+
+        // Set float3 shader parameter.
+        virtual void setShaderVector3f(const ShaderVariable& v, const glm::vec3& vec) override;
+
+        // Set float4 shader parameter.
+        virtual void setShaderVector4f(const ShaderVariable& v, float x, float y, float z, float w) override;
+
+        // Set float4 shader parameter.
+        virtual void setShaderVector4f(const ShaderVariable& v, const glm::vec4& vec) override;
+
+        // Set matrix4x4 shader parameter.
+        virtual void setShaderMatrix3(const ShaderVariable& v, const glm::mat3& vec) override;
+
+        // Set matrix4x4 shader parameter.
+        virtual void setShaderMatrix4(const ShaderVariable& v, const glm::mat4& vec) override;
+
     // Contextual commands.
     public:
         virtual void drawTriangles(unsigned int offset, unsigned int count) override;

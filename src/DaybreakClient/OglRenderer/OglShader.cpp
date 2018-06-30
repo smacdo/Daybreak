@@ -3,8 +3,6 @@
 #include "OglError.h"
 
 #include <glad\glad.h>
-#include <glm\glm.hpp>
-#include <glm\gtc\type_ptr.hpp>
 #include <string>
 #include <fstream>
 
@@ -40,12 +38,6 @@ void OglShader::destroy()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglShader::bind()
-{
-    // TODO: Delete and remove IBindable base.
-}
-
-//---------------------------------------------------------------------------------------------------------------------
 void OglShader::setShaderProgram(GLuint id)
 {
     if (glIsProgram(id) == GL_FALSE)
@@ -57,80 +49,20 @@ void OglShader::setShaderProgram(GLuint id)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglShader::setInt(const std::string& name, int value) const
+Daybreak::ShaderVariable OglShader::getVariable(const std::string& name) const
 {
-    glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
-    glCheckForErrors();
-}
+    CHECK_NOT_EMPTY(name);
 
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setFloat(const std::string& name, float value) const
-{
-    glUniform1f(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    auto address = glGetUniformLocation(m_shaderProgram, name.c_str());
     glCheckForErrors();
-}
 
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setBool(const std::string& name, bool value) const
-{
-    glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), static_cast<int>(value));
-    glCheckForErrors();
-}
+    if (address < 0)
+    {
+        // TODO: Better exception.
+        throw new std::runtime_error("Shader variable name is not valid");
+    }
 
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setVector2f(const std::string& name, float x, float y) const
-{
-    glUniform2f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y);
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setVector2f(const std::string& name, const glm::vec2& v) const
-{
-    glUniform2f(glGetUniformLocation(m_shaderProgram, name.c_str()), v.x, v.y);
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setVector3f(const std::string& name, float x, float y, float z) const
-{
-    glUniform3f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y, z);
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setVector3f(const std::string& name, const glm::vec3& v) const
-{
-    glUniform3f(glGetUniformLocation(m_shaderProgram, name.c_str()), v.x, v.y, v.z);
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setVector4f(const std::string& name, float x, float y, float z, float w) const
-{
-    glUniform4f(glGetUniformLocation(m_shaderProgram, name.c_str()), x, y, z, w);
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setVector4f(const std::string& name, const glm::vec4& v) const
-{
-    glUniform4f(glGetUniformLocation(m_shaderProgram, name.c_str()), v.x, v.y, v.z, v.w);
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setMatrix3(const std::string& name, const glm::mat3& v) const
-{
-    glUniformMatrix3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));
-    glCheckForErrors();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglShader::setMatrix4(const std::string& name, const glm::mat4& v) const
-{
-    glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(v));
-    glCheckForErrors();
+    return ShaderVariable(address);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

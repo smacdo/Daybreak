@@ -18,41 +18,8 @@ namespace Daybreak::OpenGlRenderer
         // Destructor.
         virtual ~OglShader();
 
-        // Activate shader.
-        virtual void bind() override;
-
-        // Set int shader parameter.
-        virtual void setInt(const std::string& name, int value) const override;
-
-        // Set float shader parameter.
-        virtual void setFloat(const std::string& name, float value) const override;
-
-        // Set bool shader parameter.
-        virtual void setBool(const std::string& name, bool value) const override;
-
-        // Set float2 shader parameter.
-        virtual void setVector2f(const std::string& name, float x, float y) const override;
-
-        // Set float2 shader parameter.
-        virtual void setVector2f(const std::string& name, const glm::vec2& v) const override;
-
-        // Set float3 shader parameter.
-        virtual void setVector3f(const std::string& name, float x, float y, float z) const override;
-
-        // Set float3 shader parameter.
-        virtual void setVector3f(const std::string& name, const glm::vec3& v) const override;
-
-        // Set float4 shader parameter.
-        virtual void setVector4f(const std::string& name, float x, float y, float z, float w) const override;
-
-        // Set float4 shader parameter.
-        virtual void setVector4f(const std::string& name, const glm::vec4& v) const override;
-
-        // Set matrix4x4 shader parameter.
-        virtual void setMatrix3(const std::string& name, const glm::mat3& v) const override;
-
-        // Set matrix4x4 shader parameter.
-        virtual void setMatrix4(const std::string& name, const glm::mat4& v) const override;
+        // Get shader uniform address.
+        virtual ShaderVariable getVariable(const std::string& name) const override;
 
         // Get name of shader.
         virtual std::string name() const override { return m_name; }

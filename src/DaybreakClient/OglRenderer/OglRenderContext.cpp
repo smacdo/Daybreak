@@ -7,6 +7,10 @@
 #include "OglShader.h"
 #include "OglTexture.h"
 
+#include <glad\glad.h>
+#include <glm\glm.hpp>
+#include <glm\gtc\type_ptr.hpp>
+
 using namespace Daybreak;
 using namespace Daybreak::OpenGlRenderer;
 
@@ -167,6 +171,83 @@ bool OglRenderContext::isWireframeEnabled() const
 {
     // TODO: In debug mode test if flag matches OpenGL state.
     return m_wireframeEnabled;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderInt(const ShaderVariable& v, int value)
+{
+    glUniform1i(v.address(), value);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderFloat(const ShaderVariable& v, float value)
+{
+    glUniform1f(v.address(), value);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderBool(const ShaderVariable& v, bool value)
+{
+    glUniform1i(v.address(), static_cast<int>(value));
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderVector2f(const ShaderVariable& v, float x, float y)
+{
+    glUniform2f(v.address(), x, y);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderVector2f(const ShaderVariable& v, const glm::vec2& vec)
+{
+    glUniform2f(v.address(), vec.x, vec.y);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderVector3f(const ShaderVariable& v, float x, float y, float z)
+{
+    glUniform3f(v.address(), x, y, z);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderVector3f(const ShaderVariable& v, const glm::vec3& vec)
+{
+    glUniform3f(v.address(), vec.x, vec.y, vec.z);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderVector4f(const ShaderVariable& v, float x, float y, float z, float w)
+{
+    glUniform4f(v.address(), x, y, z, w);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderVector4f(const ShaderVariable& v, const glm::vec4& vec)
+{
+    glUniform4f(v.address(), vec.x, vec.y, vec.z, vec.w);
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderMatrix3(const ShaderVariable& v, const glm::mat3& vec)
+{
+    glUniformMatrix3fv(v.address(), 1, GL_FALSE, glm::value_ptr(vec));
+    glCheckForErrors();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void OglRenderContext::setShaderMatrix4(const ShaderVariable& v, const glm::mat4& vec)
+{
+    glUniformMatrix4fv(v.address(), 1, GL_FALSE, glm::value_ptr(vec));
+    glCheckForErrors();
 }
 
 //---------------------------------------------------------------------------------------------------------------------

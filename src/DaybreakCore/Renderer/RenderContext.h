@@ -1,5 +1,8 @@
 #pragma once
 #include <memory>
+#include <glm/glm.hpp>
+
+#include "Renderer/ShaderAttribute.h"
 
 namespace Daybreak
 {
@@ -13,8 +16,17 @@ namespace Daybreak
     class IRenderContext
     {
     public:
+        // Constructor.
+        IRenderContext() = default;
+
+        // Copy constructor (deleted).
+        IRenderContext(const IRenderContext&) = delete;
+
         // Base virtual destructor.
         virtual ~IRenderContext() = default;
+
+        // Assignment operator (deleted).
+        IRenderContext& operator =(const IRenderContext&) = delete;
 
     // Global methods.
     public:
@@ -40,6 +52,41 @@ namespace Daybreak
 
         // Bind vertex buffer to pipeline for rendering.
         virtual void bindVertexBuffer(const std::shared_ptr<const IVertexBuffer>& vertexBuffer) = 0;
+
+    // Shader variables.
+    public:
+        // Set int shader parameter.
+        virtual void setShaderInt(const ShaderVariable& v, int value) = 0;
+
+        // Set float shader parameter.
+        virtual void setShaderFloat(const ShaderVariable& v, float value) = 0;
+
+        // Set bool shader parameter.
+        virtual void setShaderBool(const ShaderVariable& v, bool value) = 0;
+
+        // Set float2 shader parameter.
+        virtual void setShaderVector2f(const ShaderVariable& v, float x, float y) = 0;
+
+        // Set float2 shader parameter.
+        virtual void setShaderVector2f(const ShaderVariable& v, const glm::vec2& vec) = 0;
+
+        // Set float3 shader parameter.
+        virtual void setShaderVector3f(const ShaderVariable& v, float x, float y, float z) = 0;
+
+        // Set float3 shader parameter.
+        virtual void setShaderVector3f(const ShaderVariable& v, const glm::vec3& vec) = 0;
+
+        // Set float4 shader parameter.
+        virtual void setShaderVector4f(const ShaderVariable& v, float x, float y, float z, float w) = 0;
+
+        // Set float4 shader parameter.
+        virtual void setShaderVector4f(const ShaderVariable& v, const glm::vec4& vec) = 0;
+
+        // Set matrix4x4 shader parameter.
+        virtual void setShaderMatrix3(const ShaderVariable& v, const glm::mat3& vec) = 0;
+
+        // Set matrix4x4 shader parameter.
+        virtual void setShaderMatrix4(const ShaderVariable& v, const glm::mat4& vec) = 0;
 
     // Contextual commands.
     public:

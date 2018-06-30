@@ -74,8 +74,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     
     // Update elapsed time and pass it to the shader.
     m_renderTime += deltaTime;
-    m_standardShader->setFloat("renderTime", static_cast<float>(m_renderTime.totalSeconds()));
-
+//    m_renderContext->setShaderFloat(
+//        m_standardShader->getVariable("renderTime"),
+//        static_cast<float>(m_renderTime.totalSeconds()));
+  
     // Pass camera transformation matrices to the shader.
     //  Rotate objects around camera.
     float radius = 10.0f;
@@ -85,8 +87,8 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     // Copy camera matrix to shader.
     auto view = m_camera->view();
 
-    m_standardShader->setMatrix4("view", view);
-    m_standardShader->setVector3f("viewPos", m_camera->position());
+    m_renderContext->setShaderMatrix4(m_standardShader->getVariable("view"), view);
+    m_renderContext->setShaderVector3f(m_standardShader->getVariable("viewPos"), m_camera->position());
 
     // Copy projection matrix to shader.
     glm::mat4 projection(1);
@@ -96,7 +98,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         0.1f,
         100.0f);
 
-    m_standardShader->setMatrix4("projection", projection);
+    m_renderContext->setShaderMatrix4(m_standardShader->getVariable("projection"), projection);
 
     // Set material shader params.
     auto material = m_mesh->material();
@@ -105,47 +107,69 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     {
         m_renderContext->bindTexture(material->diffuseTexture(), 0);
 
-        m_standardShader->setInt("material.diffuse", 0);
-        m_standardShader->setBool("material.hasDiffuseTexture", true);
+        m_renderContext->setShaderInt(m_standardShader->getVariable("material.diffuse"), 0);
+        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasDiffuseTexture"), true);
     }
     else
     {
-        m_standardShader->setBool("material.hasDiffuseTexture", false);
-        m_standardShader->setVector3f("material.ambientColor", material->ambientColor());
-        m_standardShader->setVector3f("material.diffuseColor", material->diffuseColor());
+        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasDiffuseTexture"), false);
+        m_renderContext->setShaderVector3f(
+            m_standardShader->getVariable("material.ambientColor"),
+            material->ambientColor());
+        m_renderContext->setShaderVector3f(
+            m_standardShader->getVariable("material.diffuseColor"),
+            material->diffuseColor());
     }
     
     if (material->hasSpecularTexture())
     {
         m_renderContext->bindTexture(material->specularTexture(), 1);
 
-        m_standardShader->setInt("material.specular", 1);
-        m_standardShader->setBool("material.hasSpecularTexture", true);
+        m_renderContext->setShaderInt(m_standardShader->getVariable("material.specular"), 1);
+        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasSpecularTexture"), true);
     }
     else
     {
-        m_standardShader->setBool("material.hasSpecularTexture", false);
-        m_standardShader->setVector3f("material.specularColor", material->specularColor());
+        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasSpecularTexture"), false);
+        m_renderContext->setShaderVector3f(
+            m_standardShader->getVariable("material.specularColor"),
+            material->specularColor());
     }
     
-    m_standardShader->setFloat("material.shininess", material->shininess());
+    m_renderContext->setShaderFloat(m_standardShader->getVariable("material.shininess"), material->shininess());
 
     // Set lighting shader params.
-    m_standardShader->setInt("directionalLightCount", 1);
-    m_standardShader->setVector3f("directionalLights[0].direction", { -0.2f, -1.0f, -0.3f });
-    m_standardShader->setVector3f("directionalLights[0].ambient", { 0.0f, 0.0f, 0.0f });
-    m_standardShader->setVector3f("directionalLights[0].diffuse", { 0.0f, 0.0f, 1.0f });
-    m_standardShader->setVector3f("directionalLights[0].specular", 1.0f, 1.0f, 1.0f);
+    m_renderContext->setShaderInt(m_standardShader->getVariable("directionalLightCount"), 1);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("directionalLights[0].direction"),
+        -0.2f, -1.0f, -0.3f);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("directionalLights[0].ambient"),
+        0.0f, 0.0f, 0.0f);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("directionalLights[0].diffuse"),
+        0.0f, 0.0f, 1.0f);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("directionalLights[0].specular"),
+        1.0f, 1.0f, 1.0f);
 
-    m_standardShader->setInt("pointLightCount", 1);
-    m_standardShader->setVector3f("pointLights[0].position", m_lightPos);
-    m_standardShader->setVector3f("pointLights[0].ambient", m_lightColor / 2.0f);
-    m_standardShader->setVector3f("pointLights[0].diffuse", m_lightColor);
-    m_standardShader->setVector3f("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-    m_standardShader->setFloat("pointLights[0].constant", 1.0f);
-    m_standardShader->setFloat("pointLights[0].linear", 0.09f);
-    m_standardShader->setFloat("pointLights[0].quadratic", 0.032f);
-    
+    m_renderContext->setShaderInt(m_standardShader->getVariable("pointLightCount"), 1);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("pointLights[0].position"),
+        m_lightPos);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("pointLights[0].ambient"),
+        m_lightColor / 2.0f);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("pointLights[0].diffuse"),
+        m_lightColor);
+    m_renderContext->setShaderVector3f(
+        m_standardShader->getVariable("pointLights[0].specular"),
+        1.0f, 1.0f, 1.0f);
+    m_renderContext->setShaderFloat(m_standardShader->getVariable("pointLights[0].constant"), 1.0f);
+    m_renderContext->setShaderFloat(m_standardShader->getVariable("pointLights[0].linear"), 0.09f);
+    m_renderContext->setShaderFloat(m_standardShader->getVariable("pointLights[0].quadratic"), 0.032f);
+
     // Render each box.
     m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
     m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
@@ -163,7 +187,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
         i += 1.0f;
 
-        m_standardShader->setMatrix4("model", model);
+        m_renderContext->setShaderMatrix4(m_standardShader->getVariable("model"), model);
 
         // Generate normal transformation matrix by taking the transpose of the inverse of the upper left corner
         // of the model matrix.
@@ -176,7 +200,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         normal = glm::inverse(normal);
         normal = glm::transpose(normal);
         
-        m_standardShader->setMatrix3("normalMatrix", normal);
+        m_renderContext->setShaderMatrix3(m_standardShader->getVariable("normalMatrix"), normal);
 
         // Draw cube.
         m_renderContext->drawTriangles(0, 36);
@@ -185,17 +209,16 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     // Draw the lamp.
     m_renderContext->bindShader(m_lightDebugShader);
 
-    m_lightDebugShader->setMatrix4("view", view);
-    m_lightDebugShader->setMatrix4("projection", projection);
+    m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("view"), view);
+    m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("projection"), projection);;
 
     glm::mat4 model(1);
 
     model = glm::translate(model, m_lightPos);
     model = glm::scale(model, glm::vec3{ 0.2f, 0.2f, 0.2f });
 
-    m_lightDebugShader->setMatrix4("model", model);
-
-    m_lightDebugShader->setVector3f("tint", m_lightColor);
+    m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("model"), model);
+    m_renderContext->setShaderVector3f(m_lightDebugShader->getVariable("tint"), m_lightColor);
 
     m_renderContext->bindInputLayout(m_lightInputLayout);
      
