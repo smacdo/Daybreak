@@ -67,7 +67,7 @@ private:
     // Amount of accumulated rendering time.
     Daybreak::TimeSpan m_renderTime;
 
-    std::unique_ptr<Daybreak::IRenderContext> m_renderContext;
+    std::shared_ptr<Daybreak::IRenderContext> m_renderContext;
 
     glm::vec3 m_lightPos = { 1.2f, 0.0f, 2.0f };        // TODO: Move to scene.
     glm::vec3 m_lightColor = { 0.8f, 0.8f, 1.0f };      // TODO: Move to scene.
@@ -78,6 +78,6 @@ private:
     std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
     std::shared_ptr<Daybreak::Camera> m_camera;
 
-    std::unique_ptr<Daybreak::Mesh> m_mesh;
+    std::shared_ptr<Daybreak::Mesh> m_mesh;
 };
 

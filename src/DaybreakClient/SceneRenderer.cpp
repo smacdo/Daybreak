@@ -218,9 +218,6 @@ void SceneRenderer::CreateDefaultScene()
     auto specularImage = Image::LoadFromFile("Content\\cube_specular.png");
     auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
 
-    // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
-    //  TODO: Use render context -> device -> createInputLayout
-    m_standardInputLayout = OglInputLayout::Generate();
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
@@ -247,34 +244,45 @@ void SceneRenderer::CreateDefaultScene()
 
     // Generate vertex attributes for the standard shader.
     // TODO: Move this work into a fluent-ish interface inside InputLayout.
-    m_renderContext->bindInputLayout(m_standardInputLayout);
+    m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glCheckForErrors();
+    // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
+    //  TODO: Use render context -> device -> createInputLayout
+    std::vector<IInputLayout::attribute_t> standardLayoutSlots =
+    {
+        { 0, IInputLayout::ElementType::Float, 3, false },
+        { 1, IInputLayout::ElementType::Float, 2, false },
+        { 2, IInputLayout::ElementType::Float, 3, false }
+    };
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glCheckForErrors();
-
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glCheckForErrors();
+    m_standardInputLayout = OglInputLayout::generate(
+        standardLayoutSlots,
+        m_renderContext,
+        m_mesh->vertexBuffer());
 
     // Create debug light input layout.
-    m_lightInputLayout = OglInputLayout::Generate();
-    m_renderContext->bindInputLayout(m_lightInputLayout);
+    std::vector<IInputLayout::attribute_t> debugLightLayoutSlots =
+    {
+        { 0, IInputLayout::ElementType::Float, 3, false }
+    };
+
+    // TODO: Need more support in input layout for more complex layouts like the debug light.
+    //  (eg notice how it makes the attribute pointer 0 be 8 elements for padding).
+    m_lightInputLayout = OglInputLayout::generate(
+        debugLightLayoutSlots,
+        m_renderContext,
+        m_mesh->vertexBuffer());
 
     // TODO: Do we need to rebind for light?
     m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
     m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
-
+    
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
-
+    
     // Construct scene shader.
     m_standardShader = std::move(
         OglShader::generateFromFile(
