@@ -54,7 +54,7 @@ namespace
         stream.seekg(0, std::ios::beg);
 
         // Read bytes from the stream.
-        std::unique_ptr<unsigned char[]> fileBytes(new unsigned char[size]);
+        std::unique_ptr<unsigned char[]> fileBytes(new unsigned char[static_cast<size_t>(size)]);
 
         stream.read(reinterpret_cast<char *>(fileBytes.get()), size);       // TODO: Check cast.
         stream.close();
@@ -62,7 +62,7 @@ namespace
         // Write the file size if the caller passed a valid pointer.
         if (pFileSizeOut != nullptr)
         {
-            *pFileSizeOut = size;
+            *pFileSizeOut = static_cast<size_t>(size);
         }
 
         // Return bytes read.

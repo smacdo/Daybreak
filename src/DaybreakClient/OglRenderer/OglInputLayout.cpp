@@ -77,7 +77,7 @@ OglInputLayout::OglInputLayout(GLuint vao, const std::vector<attribute_t>& attri
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttributeCount);
 
     EXPECT(maxAttributeCount > 0, "Maximum attribute count must be larger than zero");
-    EXPECT(attributes.size() < maxAttributeCount, "Attribute count must be smaller than OpenGL max");
+    EXPECT(attributes.size() < (size_t)maxAttributeCount, "Attribute count must be smaller than OpenGL max");
 
     // Only set VAO if constructor was initalized with a non-zero value.
     EXPECT(vao != 0, "OpenGL input layouts should always be initialized to a valid VAO object");
@@ -184,7 +184,7 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
 
     // Disable all vertex attribute slots prior to enabling some them.
     //  TODO: This can be optimized by remembering which slots were enabled or disabled.
-    for (size_t i = 0; i < maxAttributeCount; ++i)
+    for (size_t i = 0; i < static_cast<size_t>(maxAttributeCount); ++i)
     {
         glDisableVertexAttribArray(static_cast<GLuint>(i));
     }
