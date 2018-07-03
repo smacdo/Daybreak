@@ -20,12 +20,13 @@ namespace PhongLightingEffectConstants
 
 //---------------------------------------------------------------------------------------------------------------------
 OglPhongLightingEffect::OglPhongLightingEffect(_In_ std::shared_ptr<OglShader> shader)
-    : m_shader(shader),
-      m_directionalLights(PhongLightingEffectConstants::MaxDirectionalLightCount),
+    : PhongLightingEffect(
+        PhongLightingEffectConstants::MaxDirectionalLightCount,
+        PhongLightingEffectConstants::MaxPointLightCount,
+        PhongLightingEffectConstants::MaxSpotLightCount),
+      m_shader(shader),
       m_directionalLightVars(PhongLightingEffectConstants::MaxDirectionalLightCount),
-      m_pointLights(PhongLightingEffectConstants::MaxPointLightCount),
       m_pointLightVars(PhongLightingEffectConstants::MaxPointLightCount),
-      m_spotLights(PhongLightingEffectConstants::MaxSpotLightCount),
       m_spotLightVars(PhongLightingEffectConstants::MaxSpotLightCount)
 {
     CHECK_NOT_NULL(shader);
@@ -56,7 +57,7 @@ void OglPhongLightingEffect::InitShaderVariables()
     m_directionalLightCountVar = m_shader->getVariable("directionalLightCount");
     m_pointLightCountVar = m_shader->getVariable("pointLightCount");
 
-    for (size_t i = 0; i < m_directionalLights.size(); i++)
+    for (size_t i = 0; i < maxDirectionalLightCount(); i++)
     {
         std::string index = std::to_string(i);
 
@@ -66,7 +67,7 @@ void OglPhongLightingEffect::InitShaderVariables()
         m_directionalLightVars[i].specular = m_shader->getVariable("directionalLights[" + index + "].specular");
     }
 
-    for (size_t i = 0; i < m_pointLights.size(); i++)
+    for (size_t i = 0; i < maxPointLightCount(); i++)
     {
         std::string index = std::to_string(i);
 
@@ -81,12 +82,10 @@ void OglPhongLightingEffect::InitShaderVariables()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::onStartPass(IRenderContext& context) const
+void OglPhongLightingEffect::onStartPass(_In_ IRenderContext& context) const
 {
-    m_materialChanged = true;
-    m_directionalLightsChanged = true;
-    m_pointLightsChanged = true;
-    m_spotLightsChanged = true;
+    // Activate phong shader program.
+    context.bindShader(m_shader);
 
     // Set camera shader parameters.
     CHECK_NOT_NULL(m_camera);
@@ -97,20 +96,20 @@ void OglPhongLightingEffect::onStartPass(IRenderContext& context) const
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::onFinishPass(IRenderContext& context) const
+void OglPhongLightingEffect::onFinishPass(_In_ IRenderContext& context) const
 {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void OglPhongLightingEffect::onStartRenderObject(
-    IRenderContext& context,
-    unsigned int offset,
-    unsigned int count) const
+    _In_ IRenderContext& context,
+    _In_ unsigned int offset,
+    _In_ unsigned int count) const
 {
     // Apply material parameters.
-    if (m_materialChanged)
+    if (m_materialDirty)
     {
-        m_materialChanged = false;
+        m_materialDirty = false;
 
         if (m_material->hasDiffuseTexture())
         {
@@ -142,11 +141,10 @@ void OglPhongLightingEffect::onStartRenderObject(
         context.setShaderFloat(m_materialVars.shininess, m_material->shininess());
     }
     
-
     // Apply lighting parameters.
-    if (m_directionalLightsChanged)
+    if (m_directionalLightsDirty)
     {
-        m_directionalLightsChanged = false;
+        m_directionalLightsDirty = false;
 
         context.setShaderInt(m_directionalLightCountVar, (int)m_directionalLightCount);
 
@@ -159,9 +157,9 @@ void OglPhongLightingEffect::onStartRenderObject(
         }
     }
     
-    if (m_pointLightsChanged)
+    if (m_pointLightsDirty)
     {
-        m_pointLightsChanged = false;
+        m_pointLightsDirty = false;
 
         context.setShaderInt(m_pointLightCountVar, (int)m_pointLightCount);
 
@@ -178,104 +176,4 @@ void OglPhongLightingEffect::onStartRenderObject(
             context.setShaderVector3f(m_pointLightVars[i].specular, m_pointLights[i].specularColor());
         }
     }
-    
-    //auto& glContext = static_cast<OglRenderContext&>(context);
-    context.drawTriangles(offset, count);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setCamera(_In_ std::shared_ptr<const Daybreak::Camera> camera)
-{
-    m_camera = camera;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setMaterial(std::shared_ptr<const Daybreak::PhongMaterial> material)
-{
-    m_material = material;
-    m_materialChanged = true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setDirectionalLight(
-    _In_ size_t lightIndex,
-    _In_ const Daybreak::DirectionalPhongLight& light)
-{
-    if (lightIndex >= m_directionalLightCount)
-    {
-        // TODO: Better exception.
-        throw new std::runtime_error("Too many directional lights");
-    }
-
-    m_directionalLights[lightIndex] = light;
-    m_directionalLightsChanged = true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setPointLight(
-    _In_ size_t lightIndex,
-    _In_ const Daybreak::PointPhongLight& light)
-{
-    if (lightIndex >= m_pointLightCount)
-    {
-        // TODO: Better exception.
-        throw new std::runtime_error("Too many point lights");
-    }
-
-    m_pointLights[lightIndex] = light;
-    m_pointLightsChanged = true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setSpotLight(
-    _In_ size_t lightIndex,
-    _In_ const Daybreak::SpotPhongLight& light)
-{
-    if (lightIndex >= m_spotLightCount)
-    {
-        // TODO: Better exception.
-        throw new std::runtime_error("Too many spot lights");
-    }
-
-    m_spotLights[lightIndex] = light;
-    m_spotLightsChanged = true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setDirectionalLightCount(_In_ size_t count)
-{
-    if (count > m_directionalLights.size())
-    {
-        // TODO: Better exception.
-        throw std::runtime_error("Too many directional lights");
-    }
-
-    m_directionalLightCount = count;
-    m_directionalLightsChanged = true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setPointLightCount(_In_ size_t count)
-{
-    if (count > m_pointLights.size())
-    {
-        // TODO: Better exception.
-        throw std::runtime_error("Too many point lights");
-    }
-
-    m_pointLightCount = count;
-    m_spotLightsChanged = true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglPhongLightingEffect::setSpotLightCount(_In_ size_t count)
-{
-    if (count > m_spotLights.size())
-    {
-        // TODO: Better exception.
-        throw std::runtime_error("Too many spot lights");
-    }
-
-    m_spotLightCount = count;
-    m_spotLightsChanged = true;
 }

@@ -111,7 +111,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     // TODO: Spot lights.
 
     // Render each box.
-    m_phong->onStartPass(*m_renderContext.get());
+    m_phong->startPass(*m_renderContext.get());
 
     m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
     m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
@@ -145,11 +145,11 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         m_renderContext->setShaderMatrix3(m_standardShader->getVariable("normalMatrix"), normal);
 
         // Draw cube.
-        m_phong->onStartRenderObject(*m_renderContext.get(), 0, 36);
+        m_phong->startRenderObject(*m_renderContext.get(), 0, 36);
     }
 
     // Finish pass.
-    m_phong->onFinishPass(*m_renderContext.get());
+    m_phong->finishPass(*m_renderContext.get());
 
     // Draw the lamp.
     m_renderContext->bindShader(m_lightDebugShader);
