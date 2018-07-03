@@ -168,11 +168,13 @@
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
+    <ClInclude Include="Renderer\Phong\PhongEffectShaderVars.h" />
+    <ClInclude Include="Renderer\RendererEffect.h" />
     <ClInclude Include="Renderer\RenderContext.h" />
     <ClInclude Include="Renderer\Phong\PhongLightingEffect.h" />
     <ClInclude Include="Renderer\Phong\PhongLight.h" />
     <ClInclude Include="Renderer\Shader.h" />
-    <ClInclude Include="Renderer\ShaderAttribute.h" />
+    <ClInclude Include="Renderer\ShaderVariable.h" />
     <ClInclude Include="Renderer\Texture.h" />
     <ClInclude Include="Renderer\Phong\PhongMaterial.h" />
     <ClInclude Include="Graphics\stdafx.h" />

@@ -13,6 +13,9 @@ namespace Daybreak
         // Get camera front vector ("facing").
         glm::vec3 forward() const;
 
+        // Get field of view (Y axis).
+        float fieldOfViewY() const noexcept { return m_fovY; }
+
         // Get camera right vector.
         glm::vec3 right() const;
 
@@ -40,11 +43,23 @@ namespace Daybreak
         // Set camera position.
         void setPosition(const glm::vec3& position);
 
+        // Get camera perspective matrix.
+        glm::mat4 perspective() const noexcept;
+
+        // Set camera perspective matrix.
+        void setPerspective(float fovY, float zNear, float zFar);
+
         // Get camera up vector.
         glm::vec3 up() const;
 
         // Get view matrix.
         glm::mat4 view() const;
+
+        // Get viewport size.
+        glm::ivec2 viewportSize() const;
+
+        // Set viewport size.
+        void setViewportSize(unsigned int width, unsigned int height);
 
         // Get camera world up vector.
         glm::vec3 worldUp() const;
@@ -61,6 +76,12 @@ namespace Daybreak
         // Set pitch in degrees (rotation around Y axis).
         void setYaw(float degrees);
 
+        // Get zFar perspective value.
+        float zFar() const noexcept { return m_zFar; }
+
+        // Get zNear perspective value.
+        float zNear() const noexcept { return m_zNear; }
+
         // Calculate view matrix from a custom implementation of the standard "lookAt"  function.
         static glm::mat4 createLookAt(
             const glm::vec3& position,
@@ -68,10 +89,12 @@ namespace Daybreak
             const glm::vec3& worldUp);
 
     private:
-        void regenerateCachedValuesIfDirty() const;
-        void regenerateCachedValues() const;
-        
+        void regenerateCachedViewIfDirty() const;
+        void regenerateCachedView() const;
 
+        void regenerateCachedPerspectiveIfDirty() const;
+        void regenerateCachedPerspective() const;
+        
     private:
         static const glm::vec3 DefaultWorldUp;
         static const float InitialYawDegrees;
@@ -91,10 +114,28 @@ namespace Daybreak
         // Camera center position in world space.
         glm::vec3 m_position = { 0.0f, 0.0f, 0.0f };
 
+        // Viewport width.
+        unsigned int m_viewportWidth = 0;
+
+        // Viewport height.
+        unsigned int m_viewportHeight = 0;
+
+        // Perspective field of view.
+        float m_fovY = 0.0f;
+        
+        // Perspective zNear distance.
+        float m_zNear = 0.0f;
+
+        // Perspective zFar distance.
+        float m_zFar = 0.0f;
+
     private:
         // Cached derived values dirty flag. When set to true this flag indicates that cached values like the view
         // matrix are out of date and need to be regenerated.
-        mutable bool m_dirty = false;
+        mutable bool m_viewDirty = false;
+
+        // Cached derived perspective matrix dirty flag.
+        mutable bool m_perspectiveDirty = false;
 
         // Camera front vector ("heading").
         mutable glm::vec3 m_forward = { 0.0f, 0.0f, 0.0f };
@@ -107,5 +148,8 @@ namespace Daybreak
 
         // Cached view matrix.
         mutable glm::mat4 m_view;
+
+        // Cached perspective matrix.
+        mutable glm::mat4 m_perspective;
     };
 }

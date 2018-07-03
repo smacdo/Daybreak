@@ -2,6 +2,7 @@
 #include "Camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <stdexcept>
 
 using namespace Daybreak;
 
@@ -16,15 +17,16 @@ const float Camera::InitialYawDegrees = -90.0f;
 Camera::Camera(const glm::vec3& position)
     : m_worldUp(DefaultWorldUp),
       m_yaw(InitialYawDegrees),
-      m_position(position)
+      m_position(position),
+      m_perspective(1) // TODO: Required?
 {
-    regenerateCachedValues();
+    regenerateCachedView();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 glm::vec3 Camera::forward() const
 {
-    regenerateCachedValuesIfDirty();
+    regenerateCachedViewIfDirty();
     return m_forward;
 }
 
@@ -44,13 +46,13 @@ void Camera::addRoll(float degrees)
 void Camera::setRoll(float degrees)
 {
     m_roll = fmod(degrees, 360.0f);
-    m_dirty = true;
+    m_viewDirty = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 glm::vec3 Camera::right() const
 {
-    regenerateCachedValuesIfDirty();
+    regenerateCachedViewIfDirty();
     return m_right;
 }
 
@@ -70,7 +72,7 @@ void Camera::addPitch(float degrees)
 void Camera::setPitch(float degrees)
 {
     m_pitch = degrees;// fmod(degrees, 360.0f);
-    m_dirty = true;
+    m_viewDirty = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -83,21 +85,74 @@ glm::vec3 Camera::position() const
 void Camera::setPosition(const glm::vec3& position)
 {
     m_position = position;
-    m_dirty = true;
+    m_viewDirty = true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+glm::mat4 Camera::perspective() const noexcept
+{
+    regenerateCachedPerspectiveIfDirty();
+    return m_perspective;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void Camera::setPerspective(float fovY, float zNear, float zFar)
+{
+    if (fovY <= 0.0f)
+    {
+        // TODO: Better exception.
+        throw std::runtime_error("Field of V is must be larger than zero");
+    }
+
+    if (zNear <= 0.0f)
+    {
+        throw std::runtime_error("Camera zNear must be larger than zero");
+    }
+
+    if (zFar <= zNear)
+    {
+        throw std::runtime_error("Camera zFar must be larger than zNear");
+    }
+    
+    // Save perspective variables and mark the perspective matrix as dirty (so it is regenerated next time it is
+    // accessed).
+    m_fovY = fovY;
+    m_zNear = zNear;
+    m_zFar = zFar;
+
+    m_perspectiveDirty = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 glm::vec3 Camera::up() const
 {
-    regenerateCachedValuesIfDirty();
+    regenerateCachedViewIfDirty();
     return m_up;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 glm::mat4 Camera::view() const
 {
-    regenerateCachedValuesIfDirty();
+    regenerateCachedViewIfDirty();
     return m_view;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+glm::ivec2 Camera::viewportSize() const
+{
+    return { m_viewportWidth, m_viewportHeight };
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void Camera::setViewportSize(unsigned int width, unsigned int height)
+{
+    assert(width > 0 && "Viewport width must be larger than zero");
+    assert(height > 0 && "Viewport height must be larger than zero");
+
+    m_viewportWidth = width;
+    m_viewportHeight = height;
+
+    m_perspectiveDirty = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -110,7 +165,7 @@ glm::vec3 Camera::worldUp() const
 void Camera::setWorldUp(const glm::vec3& up)
 {
     m_worldUp = up;
-    m_dirty = true;
+    m_viewDirty = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -129,21 +184,41 @@ void Camera::addYaw(float degrees)
 void Camera::setYaw(float degrees)
 {
     m_yaw = degrees;// fmod(degrees, 360.0f);
-    m_dirty = true;
+    m_viewDirty = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Camera::regenerateCachedValuesIfDirty() const
+void Camera::regenerateCachedPerspectiveIfDirty() const
 {
-    if (m_dirty)
+    if (m_perspectiveDirty)
     {
-        regenerateCachedValues();
-        m_dirty = false;
+        regenerateCachedPerspective();
+        m_perspectiveDirty = false;
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Camera::regenerateCachedValues() const // const because it only regenerates mutable cached fields.
+void Camera::regenerateCachedPerspective() const
+{
+    m_perspective = glm::perspective(
+        glm::radians(m_fovY),
+        static_cast<float>(m_viewportWidth) / static_cast<float>(m_viewportHeight),
+        m_zNear,
+        m_zFar);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void Camera::regenerateCachedViewIfDirty() const
+{
+    if (m_viewDirty)
+    {
+        regenerateCachedView();
+        m_viewDirty = false;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void Camera::regenerateCachedView() const // const because it only regenerates mutable cached fields.
 {
     // Caculate front (heading) vector from the camera yaw, pitch, roll values.
     glm::vec3 forward;

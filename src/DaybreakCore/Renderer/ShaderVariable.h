@@ -6,6 +6,12 @@ namespace Daybreak
     class ShaderVariable
     {
     public:
+        // Constructor (invalid address).
+        ShaderVariable()
+            : m_address(-1)
+        {
+        }
+
         // Constructor.
         explicit ShaderVariable(unsigned int address)
             : m_address(address)

@@ -1,27 +1,21 @@
 #pragma once
-#include "Renderer/Texture.h"
-#include <glm/vec3.hpp>
+#include "Renderer/RendererEffect.h"
+#include "Renderer/Phong/PhongLight.h"
+
 #include <vector>
-#include "PhongLight.h"
 
 namespace Daybreak
 {
     // Phong lighting shader program interface.
-    class PhongLightingEffect
+    class PhongLightingEffect : public IRendererEffect
     {
     public:
         // Constructor.
-        PhongLightingEffect(size_t maxDirectionalLights, size_t maxPointLights, size_t maxSpotLights);
+        PhongLightingEffect() = default;
 
         // Destructor.
-        virtual ~PhongLightingEffect();
+        virtual ~PhongLightingEffect() = default;
 
     private:
-        size_t m_maxDirectionalLightCount = 0;
-        size_t m_maxPointLightCount = 0;
-        size_t m_maxSpotLightCount = 0;
-        std::vector<DirectionalPhongLight> m_directionalLights;
-        std::vector<PointPhongLight> m_pointLights;
-        std::vector<SpotPhongLight> m_spotLights;
     };
 }

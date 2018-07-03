@@ -2,7 +2,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-#include "Renderer/ShaderAttribute.h"
+#include "Renderer/ShaderVariable.h"
 
 namespace Daybreak
 {

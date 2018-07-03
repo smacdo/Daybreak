@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Renderer/ShaderAttribute.h"
+#include "Renderer/ShaderVariable.h"
 
 namespace Daybreak
 {

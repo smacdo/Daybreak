@@ -21,6 +21,7 @@ namespace Daybreak::OpenGlRenderer
     class OglIndexBuffer;
     class OglTexture2d;
     class OglShader;
+    class OglPhongLightingEffect;
 }
 
 // Responsible for rendering a graphical scene.
@@ -55,12 +56,6 @@ private:
     void CreateDefaultScene(); // TODO: Remove this once we have scene loading.
 
 private:
-    // Viewport width.
-    unsigned int m_viewportWidth = 0;
-    
-    // Viewport height.
-    unsigned int m_viewportHeight = 0;
-
     // Flag that is set if wireframe rendering should be used.
     bool m_wireframe = false;
 
@@ -69,15 +64,16 @@ private:
 
     std::shared_ptr<Daybreak::IRenderContext> m_renderContext;
 
-    glm::vec3 m_lightPos = { 1.2f, 0.0f, 2.0f };        // TODO: Move to scene.
-    glm::vec3 m_lightColor = { 0.8f, 0.8f, 1.0f };      // TODO: Move to scene.
-
-    std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout;
+    std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout; // TODO: Remove Ogl -> I.
     std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
     std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_standardShader;
     std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
     std::shared_ptr<Daybreak::Camera> m_camera;
 
     std::shared_ptr<Daybreak::Mesh> m_mesh;
+    std::unique_ptr<Daybreak::OpenGlRenderer::OglPhongLightingEffect> m_phong;
+
+    // TODO: Move to caller of SceneRenderr.
+    std::unique_ptr<Daybreak::Scene> m_scene;
 };
 

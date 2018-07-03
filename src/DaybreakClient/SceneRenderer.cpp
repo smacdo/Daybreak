@@ -7,8 +7,10 @@
 #include "OglRenderer/OglVertexBuffer.h"
 #include "OglRenderer/OglIndexBuffer.h"
 #include "OglRenderer/OglTexture.h"
+#include "OglRenderer/OglPhongLightingEffect.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Phong/PhongMaterial.h"
+#include "Renderer/Phong/PhongLight.h"
 #include "Renderer/RenderContext.h"
 #include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Image.h"
@@ -85,92 +87,32 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     float cameraZ = (float)cos(m_renderTime.totalSeconds()) * radius;
 
     // Copy camera matrix to shader.
-    auto view = m_camera->view();
-
-    m_renderContext->setShaderMatrix4(m_standardShader->getVariable("view"), view);
-    m_renderContext->setShaderVector3f(m_standardShader->getVariable("viewPos"), m_camera->position());
-
-    // Copy projection matrix to shader.
-    glm::mat4 projection(1);
-    projection = glm::perspective(
-        glm::radians(45.0f),
-        static_cast<float>(m_viewportWidth) / static_cast<float>(m_viewportHeight),
-        0.1f,
-        100.0f);
-
-    m_renderContext->setShaderMatrix4(m_standardShader->getVariable("projection"), projection);
+    m_phong->setCamera(m_camera);
 
     // Set material shader params.
     auto material = m_mesh->material();
-
-    if (material->hasDiffuseTexture())
-    {
-        m_renderContext->bindTexture(material->diffuseTexture(), 0);
-
-        m_renderContext->setShaderInt(m_standardShader->getVariable("material.diffuse"), 0);
-        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasDiffuseTexture"), true);
-    }
-    else
-    {
-        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasDiffuseTexture"), false);
-        m_renderContext->setShaderVector3f(
-            m_standardShader->getVariable("material.ambientColor"),
-            material->ambientColor());
-        m_renderContext->setShaderVector3f(
-            m_standardShader->getVariable("material.diffuseColor"),
-            material->diffuseColor());
-    }
-    
-    if (material->hasSpecularTexture())
-    {
-        m_renderContext->bindTexture(material->specularTexture(), 1);
-
-        m_renderContext->setShaderInt(m_standardShader->getVariable("material.specular"), 1);
-        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasSpecularTexture"), true);
-    }
-    else
-    {
-        m_renderContext->setShaderBool(m_standardShader->getVariable("material.hasSpecularTexture"), false);
-        m_renderContext->setShaderVector3f(
-            m_standardShader->getVariable("material.specularColor"),
-            material->specularColor());
-    }
-    
-    m_renderContext->setShaderFloat(m_standardShader->getVariable("material.shininess"), material->shininess());
+    m_phong->setMaterial(material);
 
     // Set lighting shader params.
-    m_renderContext->setShaderInt(m_standardShader->getVariable("directionalLightCount"), 1);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("directionalLights[0].direction"),
-        -0.2f, -1.0f, -0.3f);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("directionalLights[0].ambient"),
-        0.0f, 0.0f, 0.0f);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("directionalLights[0].diffuse"),
-        0.0f, 0.0f, 1.0f);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("directionalLights[0].specular"),
-        1.0f, 1.0f, 1.0f);
+    m_phong->setDirectionalLightCount(m_scene->directionalLightCount());
 
-    m_renderContext->setShaderInt(m_standardShader->getVariable("pointLightCount"), 1);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("pointLights[0].position"),
-        m_lightPos);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("pointLights[0].ambient"),
-        m_lightColor / 2.0f);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("pointLights[0].diffuse"),
-        m_lightColor);
-    m_renderContext->setShaderVector3f(
-        m_standardShader->getVariable("pointLights[0].specular"),
-        1.0f, 1.0f, 1.0f);
-    m_renderContext->setShaderFloat(m_standardShader->getVariable("pointLights[0].constant"), 1.0f);
-    m_renderContext->setShaderFloat(m_standardShader->getVariable("pointLights[0].linear"), 0.09f);
-    m_renderContext->setShaderFloat(m_standardShader->getVariable("pointLights[0].quadratic"), 0.032f);
+    for (size_t i = 0; i < m_scene->directionalLightCount(); ++i)
+    {
+        m_phong->setDirectionalLight(i, m_scene->directionalLight(i));
+    }
+
+    m_phong->setPointLightCount(m_scene->pointLightCount());
+
+    for (size_t i = 0; i < m_scene->pointLightCount(); ++i)
+    {
+        m_phong->setPointLight(i, m_scene->pointLight(i));
+    }
+
+    // TODO: Spot lights.
 
     // Render each box.
+    m_phong->onStartPass(*m_renderContext.get());
+
     m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
     m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
 
@@ -203,22 +145,28 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         m_renderContext->setShaderMatrix3(m_standardShader->getVariable("normalMatrix"), normal);
 
         // Draw cube.
-        m_renderContext->drawTriangles(0, 36);
+        m_phong->onStartRenderObject(*m_renderContext.get(), 0, 36);
     }
+
+    // Finish pass.
+    m_phong->onFinishPass(*m_renderContext.get());
 
     // Draw the lamp.
     m_renderContext->bindShader(m_lightDebugShader);
+    
+    auto view = m_camera->view();
+    auto projection = m_camera->perspective();
 
     m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("view"), view);
     m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("projection"), projection);;
 
     glm::mat4 model(1);
 
-    model = glm::translate(model, m_lightPos);
+    model = glm::translate(model, m_scene->pointLight(0).position());
     model = glm::scale(model, glm::vec3{ 0.2f, 0.2f, 0.2f });
 
     m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("model"), model);
-    m_renderContext->setShaderVector3f(m_lightDebugShader->getVariable("tint"), m_lightColor);
+    m_renderContext->setShaderVector3f(m_lightDebugShader->getVariable("tint"), m_scene->pointLight(0).diffuseColor());
 
     m_renderContext->bindInputLayout(m_lightInputLayout);
      
@@ -228,7 +176,11 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::CreateDefaultScene()
 {
+    m_scene = std::make_unique<Scene>();
     m_renderContext = std::make_unique<OglRenderContext>();
+
+    // Configure camera.
+    m_camera->setPerspective(45.0f, 0.1f, 100.0f);
 
     // Enable depth testing by default.
     m_renderContext->setDepthTestEnabled(true);
@@ -240,7 +192,6 @@ void SceneRenderer::CreateDefaultScene()
 
     auto specularImage = Image::LoadFromFile("Content\\cube_specular.png");
     auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
-
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
@@ -313,11 +264,31 @@ void SceneRenderer::CreateDefaultScene()
             "Content\\Shaders\\Standard_vs.glsl",
             "Content\\Shaders\\Standard_fs.glsl")); 
 
+    m_phong = std::make_unique<OglPhongLightingEffect>(m_standardShader);
+
     m_lightDebugShader = std::move(
         OglShader::generateFromFile(
             "Standard",
             "Content\\Shaders\\LightDebug_vs.glsl",
             "Content\\Shaders\\LightDebug_fs.glsl"));
+
+    // Configure scene lights.
+    m_scene->setDirectionalLightCount(1);
+    m_scene->setDirectionalLight(0, {
+        { -0.2f, -1.0f, -0.3f },    // direction.
+        { 0.0f, 0.0f, 0.0f },       // ambient.
+        { 0.0f, 0.0f, 1.0f },       // diffuse.
+        { 1.0f, 1.0f, 1.0f }        // specular.
+    });
+
+    m_scene->setPointLightCount(1);
+    m_scene->setPointLight(0,{
+        { 1.2f, 0.0f, 2.0f },       // position.
+        1.0f, 0.09f, 0.032f,        // constant, linear, quadratic coefficients.
+        { 0.4f, 0.4f, 0.5f },       // ambient.
+        { 0.8f, 0.8f, 1.0f },       // diffuse.
+        { 1.0f, 1.0f, 1.0f }        // specular.
+    });
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -326,8 +297,8 @@ void SceneRenderer::SetViewportSize(unsigned int width, unsigned int height)
     assert(width > 0 && "Viewport width must be larger than zero");
     assert(height > 0 && "Viewport height must be larger than zero");
 
-    m_viewportWidth = width;
-    m_viewportHeight = height;
+    CHECK_NOT_NULL(m_camera);
+    m_camera->setViewportSize(width, height);
 
-    glViewport(0, 0, static_cast<int>(m_viewportWidth), static_cast<int>(m_viewportHeight));
+    glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
 }

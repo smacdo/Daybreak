@@ -106,7 +106,13 @@
     <ClInclude Include="Renderer\RenderContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\ShaderAttribute.h">
+    <ClInclude Include="Renderer\RendererEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ShaderVariable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Phong\PhongEffectShaderVars.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
