@@ -1,4 +1,5 @@
 #pragma once
+#include "Common/Error.h"
 
 namespace Daybreak
 {
@@ -22,15 +23,30 @@ namespace Daybreak
 
     public:
         // Called by renderer after applying per-scene information but before beginning any drawing.
-        virtual void onStartPass(IRenderContext& context) const = 0;
+        void startPass(_In_ IRenderContext& context) const;
 
         // Called by renderer after finishing drawing all objects in a pass.
-        virtual void onFinishPass(IRenderContext& context) const = 0;
+        void finishPass(_In_ IRenderContext& context) const;
 
-        // Called by renderer immediately before drawing triangles.
+        //
+        void startRenderObject(
+            _In_ IRenderContext& context,
+            _In_ unsigned int offset,
+            _In_ unsigned int count) const;
+
+    // Effect event implementations.
+    public:
+        // Called by renderer after applying per-scene information but before beginning any drawing.
+        virtual void onStartPass(_In_ IRenderContext& context) const;
+
+        // Called by renderer after finishing drawing all objects in a pass.
+        virtual void onFinishPass(_In_ IRenderContext& context) const;
+
+        //
         virtual void onStartRenderObject(
-            IRenderContext& context,
-            unsigned int offset,
-            unsigned int count) const = 0;
+            _In_ IRenderContext& context,
+            _In_ unsigned int offset,
+            _In_ unsigned int count) const;
+
     };
 }

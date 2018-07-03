@@ -205,6 +205,7 @@
     <ClCompile Include="Graphics\MeshData.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Phong\PhongLightingEffect.cpp" />
+    <ClCompile Include="Renderer\RenderEffect.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\FirstPersonCameraController.cpp" />

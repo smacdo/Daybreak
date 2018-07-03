@@ -2,8 +2,6 @@
 #include "Renderer/RendererEffect.h"
 #include "Renderer/Phong/PhongLight.h"
 
-#include <glm/glm.hpp>
-
 #include <vector>
 #include <memory>
 
@@ -24,20 +22,6 @@ namespace Daybreak
 
         // Destructor.
         virtual ~PhongLightingEffect();
-
-    // Effect events.
-    public:
-        // Called by renderer after applying per-scene information but before beginning any drawing.
-        void startPass(_In_ IRenderContext& context) const;
-
-        // Called by renderer after finishing drawing all objects in a pass.
-        void finishPass(_In_ IRenderContext& context) const;
-
-        //
-        void startRenderObject(
-            _In_ IRenderContext& context,
-            _In_ unsigned int offset,
-            _In_ unsigned int count) const;
 
     // Effect parameters.
     public:
@@ -85,6 +69,11 @@ namespace Daybreak
         // Set a spot light.
         void setSpotLight(_In_ size_t lightIndex, _In_ const SpotPhongLight& light);
 
+    // Effect events.
+    public:
+        // Called by renderer after applying per-scene information but before beginning any drawing.
+        virtual void onStartPass(_In_ IRenderContext& context) const override;
+
     protected:
         // Get if the material was changed.
         bool materialDirty() const noexcept { return m_materialDirty; }
@@ -109,19 +98,6 @@ namespace Daybreak
 
         // Set if spot lights were changed.
         void setSpotLightsDirty(_In_ bool isDirty) const noexcept { m_spotLightsDirty = isDirty; }
-
-    protected:
-        // Render specific implementation of startPass().
-        virtual void onStartPass(_In_ IRenderContext& context) const = 0;
-
-        // Render specific implementation of finishPass().
-        virtual void onFinishPass(_In_ IRenderContext& context) const = 0;
-
-        // Render specific implementation of startRenderObject().
-        virtual void onStartRenderObject(
-            _In_ IRenderContext& context,
-            _In_ unsigned int offset,
-            _In_ unsigned int count) const = 0;
 
     protected:
         // State caching flags for optimization.

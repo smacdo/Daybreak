@@ -84,6 +84,8 @@ void OglPhongLightingEffect::InitShaderVariables()
 //---------------------------------------------------------------------------------------------------------------------
 void OglPhongLightingEffect::onStartPass(_In_ IRenderContext& context) const
 {
+    PhongLightingEffect::onStartPass(context);
+
     // Activate phong shader program.
     context.bindShader(m_shader);
 
@@ -98,6 +100,7 @@ void OglPhongLightingEffect::onStartPass(_In_ IRenderContext& context) const
 //---------------------------------------------------------------------------------------------------------------------
 void OglPhongLightingEffect::onFinishPass(_In_ IRenderContext& context) const
 {
+    PhongLightingEffect::onFinishPass(context);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -106,6 +109,8 @@ void OglPhongLightingEffect::onStartRenderObject(
     _In_ unsigned int offset,
     _In_ unsigned int count) const
 {
+    PhongLightingEffect::onStartRenderObject(context, offset, count);
+
     // Apply material parameters.
     if (m_materialDirty)
     {

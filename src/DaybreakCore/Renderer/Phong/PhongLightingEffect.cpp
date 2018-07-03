@@ -23,30 +23,12 @@ PhongLightingEffect::PhongLightingEffect(
 PhongLightingEffect::~PhongLightingEffect() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
-void PhongLightingEffect::startPass(_In_ IRenderContext& context) const
+void PhongLightingEffect::onStartPass(_In_ IRenderContext& context) const
 {
     m_materialDirty = true;
     m_directionalLightsDirty = true;
     m_pointLightsDirty = true;
     m_spotLightsDirty = true;
-
-    onStartPass(context);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void PhongLightingEffect::finishPass(_In_ IRenderContext& context) const
-{
-    onFinishPass(context);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void PhongLightingEffect::startRenderObject(
-    _In_ IRenderContext& context,
-    _In_ unsigned int offset,
-    _In_ unsigned int count) const
-{
-    onStartRenderObject(context, offset, count);
-    context.drawTriangles(offset, count);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
