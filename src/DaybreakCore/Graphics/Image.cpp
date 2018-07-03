@@ -35,7 +35,7 @@ namespace
         case 4:
             return ImagePixelFormat::RGBA;
         default:
-            throw InvalidEnumerationValueException("ImagePixelFormat", channelCount);
+            THROW_ENUM_SWITCH_NOT_HANDLED(ImagePixelFormat, channelCount);
         }
     }
 

@@ -10,54 +10,54 @@ using namespace Daybreak::OpenGlRenderer;
 //---------------------------------------------------------------------------------------------------------------------
 namespace
 {
-    GLenum ToGlElementType(IInputLayout::ElementType type)
+    GLenum ToGlElementType(InputLayout::ElementType type)
     {
         switch (type)
         {
-        case IInputLayout::ElementType::Byte:
+        case InputLayout::ElementType::Byte:
             return GL_BYTE;
-        case IInputLayout::ElementType::UnsignedByte:
+        case InputLayout::ElementType::UnsignedByte:
             return GL_UNSIGNED_BYTE;
-        case IInputLayout::ElementType::Short:
+        case InputLayout::ElementType::Short:
             return GL_SHORT;
-        case IInputLayout::ElementType::UnsignedShort:
+        case InputLayout::ElementType::UnsignedShort:
             return GL_UNSIGNED_SHORT;
-        case IInputLayout::ElementType::Int:
+        case InputLayout::ElementType::Int:
             return GL_INT;
-        case IInputLayout::ElementType::UnsignedInt:
+        case InputLayout::ElementType::UnsignedInt:
             return GL_UNSIGNED_INT;
-        case IInputLayout::ElementType::HalfFloat:
+        case InputLayout::ElementType::HalfFloat:
             return GL_HALF_FLOAT;
-        case IInputLayout::ElementType::Float:
+        case InputLayout::ElementType::Float:
             return GL_FLOAT;
-        case IInputLayout::ElementType::Double:
+        case InputLayout::ElementType::Double:
             return GL_DOUBLE;
         default:
             throw std::runtime_error("unknwon enum");
         }
     }
 
-    GLsizei GetElementSize(IInputLayout::ElementType type)
+    GLsizei GetElementSize(InputLayout::ElementType type)
     {
         switch (type)
         {
-        case IInputLayout::ElementType::Byte:
+        case InputLayout::ElementType::Byte:
             return 1;;
-        case IInputLayout::ElementType::UnsignedByte:
+        case InputLayout::ElementType::UnsignedByte:
             return 1;
-        case IInputLayout::ElementType::Short:
+        case InputLayout::ElementType::Short:
             return 2;
-        case IInputLayout::ElementType::UnsignedShort:
+        case InputLayout::ElementType::UnsignedShort:
             return 2;
-        case IInputLayout::ElementType::Int:
+        case InputLayout::ElementType::Int:
             return 4;
-        case IInputLayout::ElementType::UnsignedInt:
+        case InputLayout::ElementType::UnsignedInt:
             return 4;
-        case IInputLayout::ElementType::HalfFloat:
+        case InputLayout::ElementType::HalfFloat:
             return 2;
-        case IInputLayout::ElementType::Float:
+        case InputLayout::ElementType::Float:
             return 4;
-        case IInputLayout::ElementType::Double:
+        case InputLayout::ElementType::Double:
             return 8;
         default:
             throw std::runtime_error("unknwon enum");
@@ -113,7 +113,7 @@ size_t OglInputLayout::attributeCount() const noexcept
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-IInputLayout::attribute_t OglInputLayout::getAttributeByIndex(unsigned int index) const noexcept
+InputLayout::attribute_t OglInputLayout::getAttributeByIndex(unsigned int index) const noexcept
 {
     return m_attributes[index];
 }
@@ -134,7 +134,7 @@ void OglInputLayout::setVAO(GLuint vao)
 std::unique_ptr<OglInputLayout> OglInputLayout::generate(
     const std::vector<attribute_t>& attributes,
     const std::shared_ptr<Daybreak::IRenderContext>& renderContext,     // TODO: Remove.
-    const std::shared_ptr<const Daybreak::IVertexBuffer>& vertexBuffer)
+    const std::shared_ptr<const Daybreak::VertexBuffer>& vertexBuffer)
 {
     CHECK_NOT_NULL(renderContext);
     CHECK_NOT_NULL(vertexBuffer);

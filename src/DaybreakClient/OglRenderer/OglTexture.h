@@ -20,9 +20,6 @@ namespace Daybreak::OpenGlRenderer
         // Destructor.
         virtual ~OglTexture2d();
 
-        // Make texture buffer active.
-        virtual void bind(unsigned int textureUnit) override;
-
         // Get texture name. (Optional, might be empty.)
         virtual std::string name() const override { return m_name; }
 

@@ -7,7 +7,7 @@
 namespace Daybreak
 {
     class IRenderContext;
-    class IVertexBuffer;
+    class VertexBuffer;
 }
 
 namespace Daybreak::OpenGlRenderer
@@ -16,7 +16,7 @@ namespace Daybreak::OpenGlRenderer
     class OglVertexBuffer;
 
     // OpenGL vertex array object encapsulation.
-    class OglInputLayout final : public IInputLayout
+    class OglInputLayout final : public InputLayout
     {
     public:
         // Constructor.
@@ -42,7 +42,7 @@ namespace Daybreak::OpenGlRenderer
         static std::unique_ptr<OglInputLayout> generate(
             const std::vector<attribute_t>& attributes,
             const std::shared_ptr<Daybreak::IRenderContext>& renderContext,
-            const std::shared_ptr<const Daybreak::IVertexBuffer>& vertexBuffer);
+            const std::shared_ptr<const Daybreak::VertexBuffer>& vertexBuffer);
 
     private:
         // Destroy VAO.

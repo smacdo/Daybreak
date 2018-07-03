@@ -6,19 +6,28 @@
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL index buffer encapsulation.
-    class OglIndexBuffer final : public IIndexBuffer
+    class OglIndexBuffer final : public IndexBuffer
     {
     public:
+        // TODO: Default constructor?
+
         // Constructor.
-        explicit OglIndexBuffer(GLuint ebo = 0);
+        OglIndexBuffer(
+            _In_ IndexElementType elementType,
+            _In_ size_t elementCount,
+            _In_ GLuint ebo);
 
         // Destructor.
         virtual ~OglIndexBuffer();
 
-        // Make index buffer active.
-        virtual void bind() override;
+    public:
+        // Get the number of elements in the buffer.
+        virtual size_t elementCount() const noexcept override { return m_elementCount; }
 
-        // Get index buffer object.
+        // Get the type of elments in the buffer.
+        virtual IndexElementType elementType() const noexcept override { return m_elementType; }
+
+        // Get elmeent buffer object.
         GLuint ebo() const noexcept { return m_ebo; }
 
         // Set index buffer object.
@@ -26,14 +35,17 @@ namespace Daybreak::OpenGlRenderer
 
         // Create a new ebo object.
         static std::unique_ptr<OglIndexBuffer> generate(   // TODO: Improve interface with IMesh + IInputLayout
-            void * indexBufferData,
-            size_t elementSizeInBytes,
-            size_t elementCount);
+            _In_ IndexElementType elementType,
+            _In_ size_t elementCount,
+            _In_ void * indexBufferData);
 
     private:
         void destroy();
 
     private:
+        IndexElementType m_elementType;
+        size_t m_elementCount;
+
         GLuint m_ebo = 0;
     };
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer/RenderContext.h"
+#include "Renderer/IndexBuffer.h"
 #include <glad\glad.h>
 #include <memory>
 
@@ -24,10 +25,10 @@ namespace Daybreak::OpenGlRenderer
     // Resource binding.
     public:
         // Bind index buffer to pipeline.
-        virtual void bindIndexBuffer(const std::shared_ptr<const Daybreak::IIndexBuffer>& indexBuffer) override;
+        virtual void bindIndexBuffer(const std::shared_ptr<const Daybreak::IndexBuffer>& indexBuffer) override;
 
         // Bind input layout to pipeline.
-        virtual void bindInputLayout(const std::shared_ptr<const Daybreak::IInputLayout>& inputLayout) override;
+        virtual void bindInputLayout(const std::shared_ptr<const Daybreak::InputLayout>& inputLayout) override;
 
         // Bind shader to pipeline.
         virtual void bindShader(const std::shared_ptr<const Daybreak::IShader>& shader) override;
@@ -38,7 +39,7 @@ namespace Daybreak::OpenGlRenderer
             unsigned int slotIndex) override;
 
         // Bind vertex buffer to pipeline for rendering.
-        virtual void bindVertexBuffer(const std::shared_ptr<const Daybreak::IVertexBuffer>& vertexBuffer) override;
+        virtual void bindVertexBuffer(const std::shared_ptr<const Daybreak::VertexBuffer>& vertexBuffer) override;
 
     // Shader variables.
     public:
@@ -100,5 +101,8 @@ namespace Daybreak::OpenGlRenderer
     private:
         bool m_depthTestEnabled = false;        // TODO: Find out what is OpenGL default.
         bool m_wireframeEnabled = false;        // TODO: Find out what is OpenGL default.
+        
+        IndexElementType m_currentIndexElementType;
+        size_t m_currentIndexElementCount;
     };
 }

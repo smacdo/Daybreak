@@ -17,6 +17,26 @@ using namespace Daybreak;
 using namespace Daybreak::OpenGlRenderer;
 
 //---------------------------------------------------------------------------------------------------------------------
+namespace
+{
+    GLenum ToGlType(IndexElementType elementType)
+    {
+        switch (elementType)
+        {
+        case IndexElementType::UnsignedByte:
+            return GL_UNSIGNED_BYTE;
+        case IndexElementType::UnsignedShort:
+            return GL_UNSIGNED_SHORT;
+        case IndexElementType::UnsignedInt:
+            return GL_UNSIGNED_INT;
+        default:
+            THROW_ENUM_SWITCH_NOT_HANDLED(IndexElementType, elementType);
+            return 0;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 OglRenderContext::OglRenderContext()
     : IRenderContext()
 {
@@ -36,7 +56,7 @@ void OglRenderContext::clearColorAndDepthBuffers()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglRenderContext::bindIndexBuffer(const std::shared_ptr<const IIndexBuffer>& indexBuffer)
+void OglRenderContext::bindIndexBuffer(const std::shared_ptr<const IndexBuffer>& indexBuffer)
 {
     CHECK_NOT_NULL(indexBuffer);
 
@@ -50,10 +70,14 @@ void OglRenderContext::bindIndexBuffer(const std::shared_ptr<const IIndexBuffer>
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->ebo());
     glCheckForErrors();
+
+    // Cache index element type and count.
+    m_currentIndexElementType = indexBuffer->elementType();
+    m_currentIndexElementCount = indexBuffer->elementCount();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglRenderContext::bindInputLayout(const std::shared_ptr<const IInputLayout>& inputLayout)
+void OglRenderContext::bindInputLayout(const std::shared_ptr<const InputLayout>& inputLayout)
 {
     CHECK_NOT_NULL(inputLayout);
 
@@ -112,7 +136,7 @@ void OglRenderContext::bindTexture(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglRenderContext::bindVertexBuffer(const std::shared_ptr<const IVertexBuffer>& vertexBuffer)
+void OglRenderContext::bindVertexBuffer(const std::shared_ptr<const VertexBuffer>& vertexBuffer)
 {
     CHECK_NOT_NULL(vertexBuffer);
 
@@ -131,9 +155,16 @@ void OglRenderContext::bindVertexBuffer(const std::shared_ptr<const IVertexBuffe
 //---------------------------------------------------------------------------------------------------------------------
 void OglRenderContext::drawTriangles(unsigned int offset, unsigned int count)
 {
+    // TODO: Only do these checks in debug mode for performance.
     // TODO: Check offset, count bounds against currently bound index buffer (+vertex buffer).
     // TODO: Check that vertex, index everything bound as expected.
-    glDrawArrays(GL_TRIANGLES, offset, count);
+    EXPECT(offset + count <= m_currentIndexElementCount, "Can not exceed number of index elements when drawing");
+
+    glDrawElements(
+        GL_TRIANGLES,
+        count,
+        ToGlType(m_currentIndexElementType),
+        reinterpret_cast<void *>(static_cast<uintptr_t>(offset)));
     glCheckForErrors();
 }
 

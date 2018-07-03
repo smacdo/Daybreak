@@ -6,17 +6,17 @@
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL vertex buffer encapsulation.
-    class OglVertexBuffer final : public IVertexBuffer
+    class OglVertexBuffer final : public VertexBuffer
     {
     public:
         // Constructor.
-        explicit OglVertexBuffer(GLuint vbo = 0);
+        OglVertexBuffer(size_t elementCount, GLuint vbo = 0);
 
         // Destructor.
         virtual ~OglVertexBuffer();
 
-        // Make vertex buffer active.
-        virtual void bind() override;
+        // Get the number of elements in the buffer.
+        virtual size_t elementCount() const noexcept override;
 
         // Get vertex buffer object.
         GLuint vbo() const noexcept { return m_vbo; }
@@ -35,5 +35,6 @@ namespace Daybreak::OpenGlRenderer
 
     private:
         GLuint m_vbo = 0;
+        size_t m_elementCount = 0;
     };
 }

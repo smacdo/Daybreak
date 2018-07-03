@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Renderer/IndexBuffer.h"
 
 namespace Daybreak
 {

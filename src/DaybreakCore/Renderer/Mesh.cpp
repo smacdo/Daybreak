@@ -10,8 +10,8 @@ using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
 Mesh::Mesh(
-    std::shared_ptr<IVertexBuffer> vertexBuffer,
-    std::shared_ptr<IIndexBuffer> indexBuffer,
+    std::shared_ptr<VertexBuffer> vertexBuffer,
+    std::shared_ptr<IndexBuffer> indexBuffer,
     std::shared_ptr<PhongMaterial> material)
     : m_vertexBuffer(vertexBuffer),
       m_indexBuffer(indexBuffer),

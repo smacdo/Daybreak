@@ -62,11 +62,17 @@ std::string RuntimeCheckException::buildDetailsString(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-InvalidEnumerationValueException::InvalidEnumerationValueException(const std::string& enumTypeName, int value)
-    : DaybreakEngineException(
-        "Invalid or unexpected enumeration value",
-        "Enumeration type " + enumTypeName + ", value was " + std::to_string(value)),
-      m_enumTypeName(enumTypeName),
+InvalidEnumerationValueException::InvalidEnumerationValueException(
+    const char * typeName,
+    int value,
+    const char * file,
+    unsigned int lineNumber)
+    : RuntimeCheckException(
+        "Enumeration had an unexpected or unhandled value",
+        nullptr,
+        file,
+        lineNumber),
+      m_typeName(typeName),
       m_value(value)
 {
 }

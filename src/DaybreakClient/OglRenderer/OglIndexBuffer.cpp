@@ -6,11 +6,16 @@ using namespace Daybreak;
 using namespace Daybreak::OpenGlRenderer;
 
 //---------------------------------------------------------------------------------------------------------------------
-OglIndexBuffer::OglIndexBuffer(GLuint ebo)
-    : IIndexBuffer(),
+OglIndexBuffer::OglIndexBuffer(
+    _In_ IndexElementType elementType,
+    _In_ size_t elementCount,
+    _In_ GLuint ebo)
+    : m_elementType(elementType),
+      m_elementCount(elementCount),
       m_ebo(ebo)
 {
     // Only set ebo if constructor was initalized with a non-zero value.
+    //  TODO: Can we assert if zero and have default constructor?
     if (m_ebo != 0)
     {
         setEBO(m_ebo);
@@ -36,12 +41,6 @@ void OglIndexBuffer::destroy()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglIndexBuffer::bind()
-{
-    // TODO: Delete and remove IBindable base.
-}
-
-//---------------------------------------------------------------------------------------------------------------------
 void OglIndexBuffer::setEBO(GLuint ebo)
 {
     if (glIsBuffer(ebo) == GL_FALSE)
@@ -55,12 +54,11 @@ void OglIndexBuffer::setEBO(GLuint ebo)
 
 //---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<OglIndexBuffer> OglIndexBuffer::generate(
-    void * indexBufferData,
-    size_t elementSizeInBytes,
-    size_t elementCount)
+    _In_ IndexElementType elementType,
+    _In_ size_t elementCount,
+    _In_ void * indexBufferData)
 {
     CHECK_NOT_NULL(indexBufferData);
-    CHECK_NOT_ZERO(elementSizeInBytes);
     CHECK_NOT_ZERO(elementCount);
 
     GLuint ebo = 0;
@@ -77,10 +75,10 @@ std::unique_ptr<OglIndexBuffer> OglIndexBuffer::generate(
 
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        elementSizeInBytes * elementCount,
+        IndexBuffer::elementSizeInBytes(elementType) * elementCount,
         indexBufferData,
         GL_STATIC_DRAW);
     glCheckForErrors();
 
-    return std::make_unique<OglIndexBuffer>(ebo);
+    return std::make_unique<OglIndexBuffer>(elementType, elementCount, ebo);
 }

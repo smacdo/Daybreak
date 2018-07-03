@@ -6,9 +6,9 @@
 
 namespace Daybreak
 {
-    class IIndexBuffer;
-    class IInputLayout;
-    class IVertexBuffer;
+    class IndexBuffer;
+    class InputLayout;
+    class VertexBuffer;
     class IShader;
     class ITexture2d;
 
@@ -37,10 +37,10 @@ namespace Daybreak
     // Resource binding.
     public:
         // Bind index buffer to pipeline.
-        virtual void bindIndexBuffer(const std::shared_ptr<const IIndexBuffer>& indexBuffer) = 0;
+        virtual void bindIndexBuffer(const std::shared_ptr<const IndexBuffer>& indexBuffer) = 0;
 
         // Bind input layout to pipeline.
-        virtual void bindInputLayout(const std::shared_ptr<const IInputLayout>& inputLayout) = 0;
+        virtual void bindInputLayout(const std::shared_ptr<const InputLayout>& inputLayout) = 0;
 
         // Bind shader to pipeline.
         virtual void bindShader(const std::shared_ptr<const IShader>& shader) = 0;
@@ -51,7 +51,7 @@ namespace Daybreak
             unsigned int slotIndex) = 0;
 
         // Bind vertex buffer to pipeline for rendering.
-        virtual void bindVertexBuffer(const std::shared_ptr<const IVertexBuffer>& vertexBuffer) = 0;
+        virtual void bindVertexBuffer(const std::shared_ptr<const VertexBuffer>& vertexBuffer) = 0;
 
     // Shader variables.
     public:

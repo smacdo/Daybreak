@@ -204,9 +204,9 @@ void SceneRenderer::CreateDefaultScene()
         cubeVertices.size());
 
     auto indexBuffer = OglIndexBuffer::generate(
-        cubeIndices.data(),
-        sizeof(BasicGeometryGenerator::IndexValueType),
-        cubeIndices.size());
+        IndexElementType::UnsignedInt,      // TODO: Have generate return this.
+        cubeIndices.size(),
+        cubeIndices.data());
 
     auto material = std::make_shared<PhongMaterial>();
 
@@ -222,11 +222,11 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
     //  TODO: Use render context -> device -> createInputLayout
-    std::vector<IInputLayout::attribute_t> standardLayoutSlots =
+    std::vector<InputLayout::attribute_t> standardLayoutSlots =
     {
-        { 0, IInputLayout::ElementType::Float, 3, false },
-        { 1, IInputLayout::ElementType::Float, 2, false },
-        { 2, IInputLayout::ElementType::Float, 3, false }
+        { 0, InputLayout::ElementType::Float, 3, false },
+        { 1, InputLayout::ElementType::Float, 2, false },
+        { 2, InputLayout::ElementType::Float, 3, false }
     };
 
     m_standardInputLayout = OglInputLayout::generate(
@@ -235,9 +235,9 @@ void SceneRenderer::CreateDefaultScene()
         m_mesh->vertexBuffer());
 
     // Create debug light input layout.
-    std::vector<IInputLayout::attribute_t> debugLightLayoutSlots =
+    std::vector<InputLayout::attribute_t> debugLightLayoutSlots =
     {
-        { 0, IInputLayout::ElementType::Float, 3, false }
+        { 0, InputLayout::ElementType::Float, 3, false }
     };
 
     // TODO: Need more support in input layout for more complex layouts like the debug light.

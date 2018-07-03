@@ -168,6 +168,8 @@
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
+    <ClInclude Include="Renderer\GpuBuffer.h" />
+    <ClInclude Include="Renderer\GpuResource.h" />
     <ClInclude Include="Renderer\Phong\PhongEffectShaderVars.h" />
     <ClInclude Include="Renderer\RendererEffect.h" />
     <ClInclude Include="Renderer\RenderContext.h" />
@@ -181,7 +183,6 @@
     <ClInclude Include="Input\IInputSource.h" />
     <ClInclude Include="Input\InputKeys.h" />
     <ClInclude Include="Input\SdlInputSource.h" />
-    <ClInclude Include="Renderer\BindableResource.h" />
     <ClInclude Include="Renderer\IndexBuffer.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\InputLayout.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Input\InputKeys.cpp" />
     <ClCompile Include="Input\SdlInputSource.cpp" />
     <ClCompile Include="Graphics\MeshData.cpp" />
+    <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Phong\PhongLightingEffect.cpp" />
     <ClCompile Include="Renderer\RenderEffect.cpp" />

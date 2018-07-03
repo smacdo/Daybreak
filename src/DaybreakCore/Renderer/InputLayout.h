@@ -4,7 +4,7 @@
 namespace Daybreak
 {
     // Abstract base class for input layout.
-    class IInputLayout
+    class InputLayout
     {
     public:
         // Data types for input layout vertex attributes.
@@ -31,16 +31,16 @@ namespace Daybreak
 
     public:
         // Constructor.
-        IInputLayout() = default;
+        InputLayout() = default;
 
         // Copy constructor (deleted).
-        IInputLayout(const IInputLayout&) = delete;
+        InputLayout(const InputLayout&) = delete;
 
         // Destructor.
-        virtual ~IInputLayout() = default;
+        virtual ~InputLayout() = default;
 
         // Assignment operator (deleted).
-        IInputLayout& operator =(const IInputLayout&) = delete;
+        InputLayout& operator =(const InputLayout&) = delete;
 
         // Get number of attributes.
         virtual size_t attributeCount() const noexcept = 0;

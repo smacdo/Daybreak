@@ -1,5 +1,6 @@
 #pragma once
-#include "BindableResource.h"
+#include "GpuResource.h"
+#include <string>
 
 namespace Daybreak
 {
@@ -84,7 +85,7 @@ namespace Daybreak
     };
 
     // Render independent 2d texture interface.
-    class ITexture2d : public IBindableSlotResource
+    class ITexture2d : public GpuResource
     {
     public:
         // Destructor.

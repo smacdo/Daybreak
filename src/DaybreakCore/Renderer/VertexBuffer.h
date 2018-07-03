@@ -1,13 +1,16 @@
 #pragma once
-#include "BindableResource.h"
+#include "GpuBuffer.h"
 
 namespace Daybreak
 {
     // Graphics API independent vertex buffer.
-    class IVertexBuffer : public IBindableResource
+    class VertexBuffer : public GpuBuffer
     {
     public:
         // Destructor.
-        virtual ~IVertexBuffer() = default;
+        virtual ~VertexBuffer() = default;
+
+        // Get the number of elements in the buffer.
+        virtual size_t elementCount() const noexcept = 0;
     };
 }

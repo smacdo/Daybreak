@@ -6,8 +6,9 @@ using namespace Daybreak;
 using namespace Daybreak::OpenGlRenderer;
 
 //---------------------------------------------------------------------------------------------------------------------
-OglVertexBuffer::OglVertexBuffer(GLuint vbo)
-    : IVertexBuffer(),
+OglVertexBuffer::OglVertexBuffer(size_t elementCount, GLuint vbo)
+    : VertexBuffer(),
+      m_elementCount(elementCount),
       m_vbo(vbo)
 {
     // Only set VBO if constructor was initalized with a non-zero value.
@@ -36,9 +37,9 @@ void OglVertexBuffer::destroy()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglVertexBuffer::bind()
+size_t OglVertexBuffer::elementCount() const noexcept
 {
-    // TODO: Delete and remove IBindable base.
+    return m_elementCount;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -82,5 +83,7 @@ std::unique_ptr<OglVertexBuffer> OglVertexBuffer::generate(
         GL_STATIC_DRAW);
     glCheckForErrors();
 
-    return std::make_unique<OglVertexBuffer>(vbo);
+    // TODO: Element count isn't correct here - it should be a count of vertices but its currently a count of the
+    //       total number of floats in the vertex buffer.
+    return std::make_unique<OglVertexBuffer>(elementCount, vbo);
 }

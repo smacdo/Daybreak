@@ -3,8 +3,8 @@
 
 namespace Daybreak
 {
-    class IIndexBuffer;
-    class IVertexBuffer;
+    class IndexBuffer;
+    class VertexBuffer;
     class PhongMaterial;
 
     // Graphics API indepnedent renderable mesh object.
@@ -13,8 +13,8 @@ namespace Daybreak
     public:
         // Constructor.
         Mesh(
-            std::shared_ptr<IVertexBuffer> vertexBuffer,
-            std::shared_ptr<IIndexBuffer> indexBuffer,
+            std::shared_ptr<VertexBuffer> vertexBuffer,
+            std::shared_ptr<IndexBuffer> indexBuffer,
             std::shared_ptr<PhongMaterial> material);
 
         // Destructor.
@@ -22,22 +22,22 @@ namespace Daybreak
 
     public:
         // Get the vertex buffer.
-        std::shared_ptr<IVertexBuffer> vertexBuffer() const { return m_vertexBuffer; }
+        std::shared_ptr<VertexBuffer> vertexBuffer() const { return m_vertexBuffer; }
 
         // Get reference to vertex buffer.
-        const IVertexBuffer& vertexBufferRef() const { return *m_vertexBuffer.get(); }
+        const VertexBuffer& vertexBufferRef() const { return *m_vertexBuffer.get(); }
 
         // Set the vertex buffer.
-        void setVertexBuffer(std::shared_ptr<IVertexBuffer> vertexBuffer) { m_vertexBuffer = vertexBuffer; }
+        void setVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer) { m_vertexBuffer = vertexBuffer; }
 
         // Get the index buffer.
-        std::shared_ptr<IIndexBuffer> indexBuffer() const { return m_indexBuffer; }
+        std::shared_ptr<IndexBuffer> indexBuffer() const { return m_indexBuffer; }
 
         // Get reference to index buffer.
-        const IIndexBuffer& indexBufferRef() const { return *m_indexBuffer.get(); }
+        const IndexBuffer& indexBufferRef() const { return *m_indexBuffer.get(); }
 
         // Set the index buffer.
-        void setIndexBuffer(std::shared_ptr<IIndexBuffer> indexBuffer) { m_indexBuffer = indexBuffer; }
+        void setIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) { m_indexBuffer = indexBuffer; }
 
         // Get the material.
         std::shared_ptr<PhongMaterial> material() const { return m_material; }
@@ -49,8 +49,8 @@ namespace Daybreak
         void setIndexBuffer(std::shared_ptr<PhongMaterial> material) { m_material = material; }
 
     private:
-        std::shared_ptr<IVertexBuffer> m_vertexBuffer;
-        std::shared_ptr<IIndexBuffer> m_indexBuffer;
+        std::shared_ptr<VertexBuffer> m_vertexBuffer;
+        std::shared_ptr<IndexBuffer> m_indexBuffer;
         std::shared_ptr<PhongMaterial> m_material;
     };
 }

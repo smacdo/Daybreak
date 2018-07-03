@@ -66,20 +66,24 @@ private:
 };
 
 /** Invalid or unsupported enumeration value. */
-class InvalidEnumerationValueException : public DaybreakEngineException
+class InvalidEnumerationValueException : public RuntimeCheckException
 {
 public:
     /** Constructor. */
-    InvalidEnumerationValueException(const std::string& enumTypeName, int value);
+    InvalidEnumerationValueException(
+        const char * typeName,
+        int value,
+        const char * file,
+        unsigned int lineNumber);
 
     /** Get enumeration type name. */
-    std::string EnumTypeName() const { return m_enumTypeName; }
+    std::string TypeName() const { return m_typeName; }
 
     /** Get invalid value. */
-    int InvalidValue() const { return m_value; }
+    int Value() const { return m_value; }
 
 private:
-    std::string m_enumTypeName;
+    const char * m_typeName;
     int m_value;
 };
 
@@ -190,3 +194,5 @@ private:
     throw RuntimeCheckException("Expected " ## #x " to not be zero", #x ## " != 0", __FILE__, __LINE__); }
 #define CHECK_NOT_EMPTY(x) if ((x).empty()) { \
     throw RuntimeCheckException("Expected " ## #x " to not be empty", #x ## ".empty() == false", __FILE__, __LINE__); }
+#define THROW_ENUM_SWITCH_NOT_HANDLED(enumType, value) \
+    throw InvalidEnumerationValueException(#enumType, (int)(value), __FILE__, __LINE__)

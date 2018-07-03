@@ -28,7 +28,7 @@ namespace
         case TextureWrapMode::ClampBorder:
             return GL_CLAMP_TO_BORDER;
         default:
-            throw InvalidEnumerationValueException("TextureWrapMode", static_cast<int>(mode));
+            THROW_ENUM_SWITCH_NOT_HANDLED(TextureWrapMode, mode);
         }
     }
 
@@ -46,7 +46,7 @@ namespace
         case ImagePixelFormat::RGBA:
             return GL_RGBA;
         default:
-            throw InvalidEnumerationValueException("ImagePixelFormat", static_cast<int>(format));
+            THROW_ENUM_SWITCH_NOT_HANDLED(ImagePixelFormat, format);
         }
     }
 
@@ -64,7 +64,7 @@ namespace
         case TextureFormat::RGBA:
             return GL_RGBA;
         default:
-            throw InvalidEnumerationValueException("TextureFormat", static_cast<int>(format));
+            THROW_ENUM_SWITCH_NOT_HANDLED(TextureFormat, format);
         }
     }
 }
@@ -96,12 +96,6 @@ void OglTexture2d::destroy()
 
         m_id = 0;
     }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void OglTexture2d::bind(unsigned int textureUnit)
-{
-    // TODO: Delete and remove IBindable base.
 }
 
 //---------------------------------------------------------------------------------------------------------------------
