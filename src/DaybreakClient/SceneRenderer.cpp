@@ -13,6 +13,7 @@
 #include "Renderer/Phong/PhongLight.h"
 #include "Renderer/RenderContext.h"
 #include "Graphics/BasicGeometryGenerator.h"
+#include "Graphics/Mesh/MeshData.h"
 #include "Graphics/Image.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
@@ -71,8 +72,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     m_renderContext->setWireframeEnabled(IsWireframeEnabled());
     
     // Bind the standard shader and standard vertex layout for cube rendering.
-    m_renderContext->bindShader(m_standardShader);
-    m_renderContext->bindInputLayout(m_standardInputLayout);
+    m_renderContext->bindInputLayout(m_standardInputLayout);        // TODO: Should happen when changing mesh vformat.
     
     // Update elapsed time and pass it to the shader.
     m_renderTime += deltaTime;
@@ -80,20 +80,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 //        m_standardShader->getVariable("renderTime"),
 //        static_cast<float>(m_renderTime.totalSeconds()));
   
-    // Pass camera transformation matrices to the shader.
-    //  Rotate objects around camera.
-    float radius = 10.0f;
-    float cameraX = (float)sin(m_renderTime.totalSeconds()) * radius;
-    float cameraZ = (float)cos(m_renderTime.totalSeconds()) * radius;
-
-    // Copy camera matrix to shader.
+    // Set per-pass shader parameters
     m_phong->setCamera(m_camera);
+    m_phong->setMaterial(m_mesh->material());
 
-    // Set material shader params.
-    auto material = m_mesh->material();
-    m_phong->setMaterial(material);
-
-    // Set lighting shader params.
     m_phong->setDirectionalLightCount(m_scene->directionalLightCount());
 
     for (size_t i = 0; i < m_scene->directionalLightCount(); ++i)
@@ -107,8 +97,6 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     {
         m_phong->setPointLight(i, m_scene->pointLight(i));
     }
-
-    // TODO: Spot lights.
 
     // Render each box.
     m_phong->startPass(*m_renderContext.get());
@@ -129,7 +117,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
         i += 1.0f;
 
-        m_renderContext->setShaderMatrix4(m_standardShader->getVariable("model"), model);
+        m_phong->setModelMatrix(model);
 
         // Generate normal transformation matrix by taking the transpose of the inverse of the upper left corner
         // of the model matrix.
@@ -142,7 +130,7 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         normal = glm::inverse(normal);
         normal = glm::transpose(normal);
         
-        m_renderContext->setShaderMatrix3(m_standardShader->getVariable("normalMatrix"), normal);
+        m_phong->setNormalMatrix(normal);
 
         // Draw cube.
         m_phong->startRenderObject(*m_renderContext.get(), 0, 36);
@@ -167,8 +155,6 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
 
     m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("model"), model);
     m_renderContext->setShaderVector3f(m_lightDebugShader->getVariable("tint"), m_scene->pointLight(0).diffuseColor());
-
-    m_renderContext->bindInputLayout(m_lightInputLayout);
      
     m_renderContext->drawTriangles(0, 36);
 }
@@ -195,18 +181,10 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
-    auto cubeVertices = BasicGeometryGenerator::MakeCubeVertices();
-    auto cubeIndices = BasicGeometryGenerator::MakeCubeIndices();
+    auto cubeMesh = BasicGeometryGenerator::MakeCube();
 
-    auto vertexBuffer = OglVertexBuffer::generate(
-        cubeVertices.data(),
-        sizeof(BasicGeometryGenerator::VertexValueType),
-        cubeVertices.size());
-
-    auto indexBuffer = OglIndexBuffer::generate(
-        IndexElementType::UnsignedInt,      // TODO: Have generate return this.
-        cubeIndices.size(),
-        cubeIndices.data());
+    auto vertexBuffer = OglVertexBuffer::generate(*cubeMesh.get());
+    auto indexBuffer = OglIndexBuffer::generate(*cubeMesh.get());
 
     auto material = std::make_shared<PhongMaterial>();
 
@@ -222,49 +200,24 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
     //  TODO: Use render context -> device -> createInputLayout
-    std::vector<InputLayout::attribute_t> standardLayoutSlots =
+    std::vector<vertex_attribute_t> standardVertexAttributes =
     {
-        { 0, InputLayout::ElementType::Float, 3, false },
-        { 1, InputLayout::ElementType::Float, 2, false },
-        { 2, InputLayout::ElementType::Float, 3, false }
+        { VertexAttributeName::Position, VertexAttributeStorage::Float3, 0 },
+        { VertexAttributeName::Texture, VertexAttributeStorage::Float2, 0 },
+        { VertexAttributeName::Normal, VertexAttributeStorage::Float3, 0 }
     };
 
     m_standardInputLayout = OglInputLayout::generate(
-        standardLayoutSlots,
+        InputLayout::createInputLayoutAttributesFor(standardVertexAttributes),
         m_renderContext,
         m_mesh->vertexBuffer());
 
-    // Create debug light input layout.
-    std::vector<InputLayout::attribute_t> debugLightLayoutSlots =
-    {
-        { 0, InputLayout::ElementType::Float, 3, false }
-    };
-
-    // TODO: Need more support in input layout for more complex layouts like the debug light.
-    //  (eg notice how it makes the attribute pointer 0 be 8 elements for padding).
-    m_lightInputLayout = OglInputLayout::generate(
-        debugLightLayoutSlots,
-        m_renderContext,
-        m_mesh->vertexBuffer());
-
-    // TODO: Do we need to rebind for light?
-    m_renderContext->bindVertexBuffer(m_mesh->vertexBuffer());
-    m_renderContext->bindIndexBuffer(m_mesh->indexBuffer());
-    
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-    
     // Construct scene shader.
-    m_standardShader = std::move(
+    m_phong = std::make_unique<OglPhongLightingEffect>(
         OglShader::generateFromFile(
             "Standard",
             "Content\\Shaders\\Standard_vs.glsl",
-            "Content\\Shaders\\Standard_fs.glsl")); 
-
-    m_phong = std::make_unique<OglPhongLightingEffect>(m_standardShader);
+            "Content\\Shaders\\Standard_fs.glsl"));
 
     m_lightDebugShader = std::move(
         OglShader::generateFromFile(

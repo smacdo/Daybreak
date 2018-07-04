@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "OglIndexBuffer.h"
 #include "OglError.h"
+#include "Graphics/Mesh/MeshData.h"
 
 using namespace Daybreak;
 using namespace Daybreak::OpenGlRenderer;
@@ -53,17 +54,14 @@ void OglIndexBuffer::setEBO(GLuint ebo)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<OglIndexBuffer> OglIndexBuffer::generate(
-    _In_ IndexElementType elementType,
-    _In_ size_t elementCount,
-    _In_ void * indexBufferData)
+std::unique_ptr<OglIndexBuffer> OglIndexBuffer::generate(_In_ const MeshData& mesh)
 {
-    CHECK_NOT_NULL(indexBufferData);
-    CHECK_NOT_ZERO(elementCount);
-
-    GLuint ebo = 0;
+    CHECK_NOT_ZERO(mesh.indexCount());
+    CHECK_NOT_ZERO(mesh.indexElementSizeInBytes());
 
     // Create the index buffer object.
+    GLuint ebo = 0;
+
     glGenBuffers(1, &ebo);
     glCheckForErrors();
 
@@ -75,10 +73,10 @@ std::unique_ptr<OglIndexBuffer> OglIndexBuffer::generate(
 
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        IndexBuffer::elementSizeInBytes(elementType) * elementCount,
-        indexBufferData,
+        mesh.indexElementSizeInBytes() * mesh.indexCount(),
+        mesh.rawIndexBufferData(),
         GL_STATIC_DRAW);
     glCheckForErrors();
 
-    return std::make_unique<OglIndexBuffer>(elementType, elementCount, ebo);
+    return std::make_unique<OglIndexBuffer>(mesh.indexElementType(), mesh.indexCount(), ebo);
 }

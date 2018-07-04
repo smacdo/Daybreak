@@ -40,8 +40,24 @@ void PhongLightingEffect::setCamera(_In_ std::shared_ptr<const Camera> camera)
 //---------------------------------------------------------------------------------------------------------------------
 void PhongLightingEffect::setMaterial(_In_ std::shared_ptr<const PhongMaterial> material)
 {
-    m_material = material;
-    m_materialDirty = true;
+    // Only change material parametrs if it is a new instance.
+    if (material != m_material)
+    {
+        m_material = material;
+        m_materialDirty = true;
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void PhongLightingEffect::setModelMatrix(_In_ const glm::mat4& model)
+{
+    m_modelMatrix = model;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void PhongLightingEffect::setNormalMatrix(_In_ const glm::mat3& normal)
+{
+    m_normalMatrix = normal;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

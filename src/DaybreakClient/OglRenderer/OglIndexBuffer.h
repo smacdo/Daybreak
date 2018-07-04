@@ -3,6 +3,11 @@
 #include <glad\glad.h>
 #include <memory>
 
+namespace Daybreak
+{
+    class MeshData;
+}
+
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL index buffer encapsulation.
@@ -34,10 +39,7 @@ namespace Daybreak::OpenGlRenderer
         void setEBO(GLuint ebo);
 
         // Create a new ebo object.
-        static std::unique_ptr<OglIndexBuffer> generate(   // TODO: Improve interface with IMesh + IInputLayout
-            _In_ IndexElementType elementType,
-            _In_ size_t elementCount,
-            _In_ void * indexBufferData);
+        static std::unique_ptr<OglIndexBuffer> generate(_In_ const MeshData& mesh);
 
     private:
         void destroy();

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "OglVertexBuffer.h"
 #include "OglError.h"
+#include "Graphics/Mesh/MeshData.h"
+#include "Graphics/Mesh/VertexFormat.h"
 
 using namespace Daybreak;
 using namespace Daybreak::OpenGlRenderer;
@@ -55,18 +57,14 @@ void OglVertexBuffer::setVBO(GLuint vbo)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<OglVertexBuffer> OglVertexBuffer::generate(
-    void * vertexBufferData,
-    size_t elementSizeInBytes,
-    size_t elementCount)
+std::unique_ptr<OglVertexBuffer> OglVertexBuffer::generate(const MeshData& mesh)
 {
-    CHECK_NOT_NULL(vertexBufferData);
-    CHECK_NOT_ZERO(elementSizeInBytes);
-    CHECK_NOT_ZERO(elementCount);
-
-    GLuint vbo = 0;
+    CHECK_NOT_ZERO(mesh.vertexCount());
+    CHECK_NOT_ZERO(mesh.vertexElementSizeInBytes());
 
     // Create the vertex buffer object.
+    GLuint vbo = 0;
+
     glGenBuffers(1, &vbo);
     glCheckForErrors();
 
@@ -78,12 +76,10 @@ std::unique_ptr<OglVertexBuffer> OglVertexBuffer::generate(
 
     glBufferData(
         GL_ARRAY_BUFFER,
-        elementSizeInBytes * elementCount,
-        vertexBufferData,
+        mesh.vertexElementSizeInBytes() * mesh.vertexCount(),
+        mesh.rawVertexBufferData(),
         GL_STATIC_DRAW);
     glCheckForErrors();
 
-    // TODO: Element count isn't correct here - it should be a count of vertices but its currently a count of the
-    //       total number of floats in the vertex buffer.
-    return std::make_unique<OglVertexBuffer>(elementCount, vbo);
+    return std::make_unique<OglVertexBuffer>(mesh.vertexCount(), vbo);
 }

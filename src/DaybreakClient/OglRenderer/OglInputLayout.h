@@ -25,12 +25,6 @@ namespace Daybreak::OpenGlRenderer
         // Destructor.
         virtual ~OglInputLayout();
 
-        // Get attribute count (number of individual elements in layout).
-        virtual size_t attributeCount() const noexcept override;
-
-        // Get an attribute by index.
-        virtual attribute_t getAttributeByIndex(unsigned int index) const noexcept override;
-
         // Get vao object.
         GLuint vao() const noexcept { return m_vao; }
 
@@ -48,8 +42,9 @@ namespace Daybreak::OpenGlRenderer
         // Destroy VAO.
         void destroy();
 
+        static attribute_t CreateInputAttributeFor(const vertex_attribute_t& attribute);
+
     private:
-        std::vector<attribute_t> m_attributes;
         GLuint m_vao = 0;
     };
 }

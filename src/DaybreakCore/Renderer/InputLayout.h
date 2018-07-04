@@ -1,4 +1,6 @@
 #pragma once
+#include "Graphics/Mesh/VertexFormat.h"
+
 #include <vector>
 
 namespace Daybreak
@@ -7,8 +9,8 @@ namespace Daybreak
     class InputLayout
     {
     public:
-        // Data types for input layout vertex attributes.
-        enum class ElementType
+        // Underlying storage type for an input attribute.
+        enum class StorageType
         {
             Byte,
             UnsignedByte,
@@ -24,14 +26,14 @@ namespace Daybreak
         struct attribute_t
         {
             unsigned int slot;
-            ElementType type;
-            unsigned int count;
+            StorageType type;
+            unsigned int elementCount;
             bool shouldNormalize;
         };
 
     public:
         // Constructor.
-        InputLayout() = default;
+        InputLayout(_In_ const std::vector<attribute_t>& attributes);
 
         // Copy constructor (deleted).
         InputLayout(const InputLayout&) = delete;
@@ -43,9 +45,20 @@ namespace Daybreak
         InputLayout& operator =(const InputLayout&) = delete;
 
         // Get number of attributes.
-        virtual size_t attributeCount() const noexcept = 0;
+        size_t attributeCount() const noexcept;
 
         // Get an attribute by index.
-        virtual attribute_t getAttributeByIndex(unsigned int index) const noexcept = 0;
+        attribute_t getAttributeByIndex(unsigned int index) const noexcept;
+
+    public:
+        // Convert a vertex format into an array of input layout attributes.
+        static std::vector<attribute_t> createInputLayoutAttributesFor(
+            _In_ const std::vector<vertex_attribute_t>& vertexAttributes);
+
+        // Convert a vertex format attribute into an input layout attribute.
+        static attribute_t createInputLayoutAttributeFor(_In_ const vertex_attribute_t& vertexAttribute);
+
+    private:
+        std::vector<attribute_t> m_attributes;
     };
 }

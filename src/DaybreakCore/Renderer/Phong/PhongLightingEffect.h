@@ -2,6 +2,7 @@
 #include "Renderer/RendererEffect.h"
 #include "Renderer/Phong/PhongLight.h"
 
+#include <glm/glm.hpp>
 #include <vector>
 #include <memory>
 
@@ -30,6 +31,12 @@ namespace Daybreak
 
         // Set the active material.
         void setMaterial(_In_ std::shared_ptr<const PhongMaterial> material);
+
+        // Set model matrix.
+        void setModelMatrix(_In_ const glm::mat4& model);
+
+        // Set normal matrix.
+        void setNormalMatrix(_In_ const glm::mat3& normal);
 
     // Lighting.
     public:
@@ -129,5 +136,11 @@ namespace Daybreak
 
         // Active camera.
         std::shared_ptr<const Camera> m_camera;
+
+        // Active model matrix.
+        glm::mat4 m_modelMatrix;
+
+        // Active normal matrix.
+        glm::mat3 m_normalMatrix;
     };
 }

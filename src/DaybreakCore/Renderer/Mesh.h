@@ -7,15 +7,15 @@ namespace Daybreak
     class VertexBuffer;
     class PhongMaterial;
 
-    // Graphics API indepnedent renderable mesh object.
+    // Drawable mesh defined by a vertex and index buffer with an optional material.
     class Mesh
     {
     public:
         // Constructor.
         Mesh(
-            std::shared_ptr<VertexBuffer> vertexBuffer,
-            std::shared_ptr<IndexBuffer> indexBuffer,
-            std::shared_ptr<PhongMaterial> material);
+            _In_ std::shared_ptr<VertexBuffer> vertexBuffer,
+            _In_ std::shared_ptr<IndexBuffer> indexBuffer,
+            _In_opt_ std::shared_ptr<PhongMaterial> material);
 
         // Destructor.
         virtual ~Mesh();

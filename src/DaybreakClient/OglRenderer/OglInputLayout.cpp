@@ -10,54 +10,54 @@ using namespace Daybreak::OpenGlRenderer;
 //---------------------------------------------------------------------------------------------------------------------
 namespace
 {
-    GLenum ToGlElementType(InputLayout::ElementType type)
+    GLenum ToGlElementType(InputLayout::StorageType type)
     {
         switch (type)
         {
-        case InputLayout::ElementType::Byte:
+        case InputLayout::StorageType::Byte:
             return GL_BYTE;
-        case InputLayout::ElementType::UnsignedByte:
+        case InputLayout::StorageType::UnsignedByte:
             return GL_UNSIGNED_BYTE;
-        case InputLayout::ElementType::Short:
+        case InputLayout::StorageType::Short:
             return GL_SHORT;
-        case InputLayout::ElementType::UnsignedShort:
+        case InputLayout::StorageType::UnsignedShort:
             return GL_UNSIGNED_SHORT;
-        case InputLayout::ElementType::Int:
+        case InputLayout::StorageType::Int:
             return GL_INT;
-        case InputLayout::ElementType::UnsignedInt:
+        case InputLayout::StorageType::UnsignedInt:
             return GL_UNSIGNED_INT;
-        case InputLayout::ElementType::HalfFloat:
+        case InputLayout::StorageType::HalfFloat:
             return GL_HALF_FLOAT;
-        case InputLayout::ElementType::Float:
+        case InputLayout::StorageType::Float:
             return GL_FLOAT;
-        case InputLayout::ElementType::Double:
+        case InputLayout::StorageType::Double:
             return GL_DOUBLE;
         default:
             throw std::runtime_error("unknwon enum");
         }
     }
 
-    GLsizei GetElementSize(InputLayout::ElementType type)
+    GLsizei GetElementSize(InputLayout::StorageType type)
     {
         switch (type)
         {
-        case InputLayout::ElementType::Byte:
+        case InputLayout::StorageType::Byte:
             return 1;;
-        case InputLayout::ElementType::UnsignedByte:
+        case InputLayout::StorageType::UnsignedByte:
             return 1;
-        case InputLayout::ElementType::Short:
+        case InputLayout::StorageType::Short:
             return 2;
-        case InputLayout::ElementType::UnsignedShort:
+        case InputLayout::StorageType::UnsignedShort:
             return 2;
-        case InputLayout::ElementType::Int:
+        case InputLayout::StorageType::Int:
             return 4;
-        case InputLayout::ElementType::UnsignedInt:
+        case InputLayout::StorageType::UnsignedInt:
             return 4;
-        case InputLayout::ElementType::HalfFloat:
+        case InputLayout::StorageType::HalfFloat:
             return 2;
-        case InputLayout::ElementType::Float:
+        case InputLayout::StorageType::Float:
             return 4;
-        case InputLayout::ElementType::Double:
+        case InputLayout::StorageType::Double:
             return 8;
         default:
             throw std::runtime_error("unknwon enum");
@@ -67,7 +67,7 @@ namespace
 
 //---------------------------------------------------------------------------------------------------------------------
 OglInputLayout::OglInputLayout(GLuint vao, const std::vector<attribute_t>& attributes)
-    : m_attributes(attributes),
+    : InputLayout(attributes),
       m_vao(vao)
 {
     // TODO: Only calculate this once.
@@ -104,18 +104,6 @@ void OglInputLayout::destroy()
 
         m_vao = 0;
     }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-size_t OglInputLayout::attributeCount() const noexcept
-{
-    return m_attributes.size();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-InputLayout::attribute_t OglInputLayout::getAttributeByIndex(unsigned int index) const noexcept
-{
-    return m_attributes[index];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -179,7 +167,7 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
         }
 
         // Add size to total.
-        totalSize += attributes[i].count * GetElementSize(attributes[i].type);
+        totalSize += attributes[i].elementCount * GetElementSize(attributes[i].type);
     }
 
     // Disable all vertex attribute slots prior to enabling some them.
@@ -196,7 +184,7 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
     {
         glVertexAttribPointer(
             attributes[i].slot,
-            attributes[i].count, 
+            attributes[i].elementCount, 
             ToGlElementType(attributes[i].type),
             attributes[i].shouldNormalize ? GL_TRUE : GL_FALSE,
             totalSize,
@@ -206,7 +194,7 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
         glEnableVertexAttribArray(attributes[i].slot);
         glCheckForErrors();
 
-        attributeOffset += attributes[i].count * GetElementSize(attributes[i].type);
+        attributeOffset += attributes[i].elementCount * GetElementSize(attributes[i].type);
     }
 
     return std::make_unique<OglInputLayout>(vao, attributes);

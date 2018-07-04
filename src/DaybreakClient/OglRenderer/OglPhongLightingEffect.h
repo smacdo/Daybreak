@@ -7,16 +7,19 @@
 #include <memory>
 #include <vector>
 
+namespace Daybreak
+{
+    class IShader;
+}
+
 namespace Daybreak::OpenGlRenderer
 {
-    class OglShader;
-
     // Standard phong lighting effect.
     class OglPhongLightingEffect : public Daybreak::PhongLightingEffect
     {
     public:
         // Constructor.
-        OglPhongLightingEffect(_In_ const std::shared_ptr<OglShader> phongShader);
+        OglPhongLightingEffect(_In_ const std::shared_ptr<IShader> phongShader);
 
         // Destructor.
         virtual ~OglPhongLightingEffect();
@@ -40,7 +43,7 @@ namespace Daybreak::OpenGlRenderer
 
     private:
         // Phong shader program.
-        std::shared_ptr<OglShader> m_shader;
+        std::shared_ptr<IShader> m_shader;
 
         // List of all shader variables for directional lights.
         std::vector<shader_directional_light_t> m_directionalLightVars;
@@ -51,6 +54,8 @@ namespace Daybreak::OpenGlRenderer
         // List of all shader variables for spot lights.
         std::vector<shader_spot_light_t> m_spotLightVars;
 
+        ShaderVariable m_modelMatrixShaderVar;
+        ShaderVariable m_normalMatrixShaderVar;
         ShaderVariable m_viewMatrixShaderVar;
         ShaderVariable m_viewPosShaderVar;
         ShaderVariable m_projectionShaderVar;

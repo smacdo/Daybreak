@@ -3,6 +3,11 @@
 #include <glad\glad.h>
 #include <memory>
 
+namespace Daybreak
+{
+    class MeshData;
+}
+
 namespace Daybreak::OpenGlRenderer
 {
     // OpenGL vertex buffer encapsulation.
@@ -25,10 +30,7 @@ namespace Daybreak::OpenGlRenderer
         void setVBO(GLuint vbo);
 
         // Create a new VBO object.
-        static std::unique_ptr<OglVertexBuffer> generate(   // TODO: Improve interface with IMesh + IInputLayout
-            void * vertexBufferData,
-            size_t elementSizeInBytes,
-            size_t elementCount);
+        static std::unique_ptr<OglVertexBuffer> generate(const MeshData& mesh);
 
     private:
         void destroy();

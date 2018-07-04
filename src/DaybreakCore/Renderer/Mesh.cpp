@@ -10,16 +10,16 @@ using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
 Mesh::Mesh(
-    std::shared_ptr<VertexBuffer> vertexBuffer,
-    std::shared_ptr<IndexBuffer> indexBuffer,
-    std::shared_ptr<PhongMaterial> material)
+    _In_ std::shared_ptr<VertexBuffer> vertexBuffer,
+    _In_ std::shared_ptr<IndexBuffer> indexBuffer,
+    _In_opt_ std::shared_ptr<PhongMaterial> material)
     : m_vertexBuffer(vertexBuffer),
       m_indexBuffer(indexBuffer),
       m_material(material)
 {
     CHECK_NOT_NULL(vertexBuffer);
     CHECK_NOT_NULL(indexBuffer);
-    CHECK_NOT_NULL(material);
+    // TODO: Maybe enforce material cannot be null and should use a default material for missing.
 }
 
 //---------------------------------------------------------------------------------------------------------------------

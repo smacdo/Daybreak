@@ -19,7 +19,7 @@ namespace PhongLightingEffectConstants
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-OglPhongLightingEffect::OglPhongLightingEffect(_In_ std::shared_ptr<OglShader> shader)
+OglPhongLightingEffect::OglPhongLightingEffect(_In_ std::shared_ptr<IShader> shader)
     : PhongLightingEffect(
         PhongLightingEffectConstants::MaxDirectionalLightCount,
         PhongLightingEffectConstants::MaxPointLightCount,
@@ -39,6 +39,8 @@ OglPhongLightingEffect::~OglPhongLightingEffect() = default;
 //---------------------------------------------------------------------------------------------------------------------
 void OglPhongLightingEffect::InitShaderVariables()
 {
+    m_modelMatrixShaderVar = m_shader->getVariable("model");
+    m_normalMatrixShaderVar = m_shader->getVariable("normalMatrix");
     m_viewMatrixShaderVar = m_shader->getVariable("view");
     m_viewPosShaderVar = m_shader->getVariable("viewPos");
     m_projectionShaderVar = m_shader->getVariable("projection");
@@ -110,6 +112,10 @@ void OglPhongLightingEffect::onStartRenderObject(
     _In_ unsigned int count) const
 {
     PhongLightingEffect::onStartRenderObject(context, offset, count);
+
+    // Apply per-model parameters.
+    context.setShaderMatrix4(m_modelMatrixShaderVar, m_modelMatrix);
+    context.setShaderMatrix3(m_normalMatrixShaderVar, m_normalMatrix);
 
     // Apply material parameters.
     if (m_materialDirty)

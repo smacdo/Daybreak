@@ -10,18 +10,18 @@ namespace Daybreak
     class Camera;
     class Scene;
     class Mesh;
+    class InputLayout;
+    class IShader;
     class ITexture2d;
     class IRenderContext;
+    class PhongLightingEffect;
 }
 
 namespace Daybreak::OpenGlRenderer
 {
-    class OglInputLayout;
     class OglVertexBuffer;
     class OglIndexBuffer;
     class OglTexture2d;
-    class OglShader;
-    class OglPhongLightingEffect;
 }
 
 // Responsible for rendering a graphical scene.
@@ -51,7 +51,6 @@ public:
     // Get the camera.
     std::shared_ptr<Daybreak::Camera> mainCamera() { return m_camera; }
 
-private:
     // Creates a default scene to render (since there is no scene support yet).
     void CreateDefaultScene(); // TODO: Remove this once we have scene loading.
 
@@ -64,14 +63,12 @@ private:
 
     std::shared_ptr<Daybreak::IRenderContext> m_renderContext;
 
-    std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_standardInputLayout; // TODO: Remove Ogl -> I.
-    std::shared_ptr<Daybreak::OpenGlRenderer::OglInputLayout> m_lightInputLayout;
-    std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_standardShader;
-    std::shared_ptr<Daybreak::OpenGlRenderer::OglShader> m_lightDebugShader;
+    std::shared_ptr<Daybreak::InputLayout> m_standardInputLayout; // TODO: Not here. Not sure where yet.
+    std::shared_ptr<Daybreak::IShader> m_lightDebugShader;        // TODO: Move to effect class.
     std::shared_ptr<Daybreak::Camera> m_camera;
 
-    std::shared_ptr<Daybreak::Mesh> m_mesh;
-    std::unique_ptr<Daybreak::OpenGlRenderer::OglPhongLightingEffect> m_phong;
+    std::shared_ptr<Daybreak::Mesh> m_mesh;                 // TODO: Move to scene.
+    std::unique_ptr<Daybreak::PhongLightingEffect> m_phong;
 
     // TODO: Move to caller of SceneRenderr.
     std::unique_ptr<Daybreak::Scene> m_scene;
