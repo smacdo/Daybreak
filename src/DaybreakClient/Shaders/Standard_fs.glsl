@@ -58,7 +58,7 @@ void main()
     // Calculate shared properties.
     vec3 normal = normalize(ps_normal);
     vec3 viewDirection = normalize(viewPos - ps_fragPos);
-    vec3 resultColor = vec3(0);
+    vec3 resultColor = material.ambientColor;
 
     // Add all directional light contribution.
     for (int i = 0; i < directionalLightCount; i++)
