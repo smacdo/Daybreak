@@ -1,6 +1,7 @@
 /// @ref core
 /// @file glm/detail/type_vec3.hpp
-
+#pragma warning(push)
+#pragma warning(disable : 4201)     // nonstandard extension used: nameless struct/union
 #pragma once
 
 #include "type_vec.hpp"
@@ -406,3 +407,4 @@ namespace glm
 #ifndef GLM_EXTERNAL_TEMPLATE
 #include "type_vec3.inl"
 #endif//GLM_EXTERNAL_TEMPLATE
+#pragma warning(pop)

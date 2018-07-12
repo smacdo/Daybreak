@@ -4,23 +4,6 @@
 #include <exception>
 #include <cassert>
 
-void DisplayErrorDialog(
-    const std::string& title,
-    const std::string& message);
-
-/** Error when interacting with SDL API. */
-class SdlException : public std::runtime_error
-{
-public:
-    SdlException(const std::string& message);
-    
-    std::string Message() const { return m_message; }
-    static std::string GetLastSdlError();
-
-private:
-    std::string m_message;
-};
-
 /** Core engine errors. */
 class DaybreakEngineException : public std::runtime_error
 {
@@ -40,7 +23,7 @@ private:
 };
 
 /** Core engine errors. */
-class RuntimeCheckException : DaybreakEngineException
+class RuntimeCheckException : public DaybreakEngineException
 {
 public:
     /** Constructor. */
@@ -164,7 +147,7 @@ private:
 };
 
 /** Exceptions with reading content after loading it into memory. */
-class ContentReadException : DaybreakEngineException
+class ContentReadException : public DaybreakEngineException
 {
 public:
     /** Constructor. */

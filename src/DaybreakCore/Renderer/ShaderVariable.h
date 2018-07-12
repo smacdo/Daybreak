@@ -1,4 +1,5 @@
 #pragma once
+#include <limits>
 
 namespace Daybreak
 {
@@ -8,7 +9,7 @@ namespace Daybreak
     public:
         // Constructor (invalid address).
         ShaderVariable()
-            : m_address(-1)
+            : m_address(std::numeric_limits<unsigned int>::max())
         {
         }
 

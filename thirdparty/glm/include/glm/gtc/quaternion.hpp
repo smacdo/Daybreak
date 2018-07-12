@@ -10,7 +10,9 @@
 /// Include <glm/gtc/quaternion.hpp> to use the features of this extension.
 ///
 /// Defines a templated quaternion type and several quaternion operations.
-
+#pragma warning(push)
+#pragma warning(disable : 4201)     // nonstandard extension used: nameless struct/union
+#pragma once
 #pragma once
 
 // Dependency:
@@ -432,3 +434,4 @@ namespace glm
 } //namespace glm
 
 #include "quaternion.inl"
+#pragma warning(pop)

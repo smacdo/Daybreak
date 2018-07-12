@@ -156,7 +156,6 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
 
     // Calculate the size of all the attributes. Also check that slots are defined in order.
     GLsizei totalSize = 0;
-    auto lastSlot = attributes[attributes.size() - 1].slot;
 
     for (size_t i = 0; i < attributes.size(); ++i)
     {

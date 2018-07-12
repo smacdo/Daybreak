@@ -74,31 +74,37 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>CppCoreCheckConstRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>CppCoreCheckConstRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>CppCoreCheckConstRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)dist\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>CppCoreCheckConstRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,12 +114,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -123,7 +131,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -131,6 +139,8 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,7 +152,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -150,6 +160,8 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\SDL2\include;$(SolutionDir)thirdparty\glm\include;$(SolutionDir)thirdparty\glad\include;$(SolutionDir)src\DaybreakCore\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -194,6 +206,9 @@
     <ClInclude Include="Renderer\InputLayout.h" />
     <ClInclude Include="Graphics\Mesh\MeshData.h" />
     <ClInclude Include="Renderer\VertexBuffer.h" />
+    <ClInclude Include="Resources\Obj\ObjModelLoader.h" />
+    <ClInclude Include="Resources\Obj\stdafx.h" />
+    <ClInclude Include="Resources\stdafx.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\FirstPersonCameraController.h" />
     <ClInclude Include="Scene\Scene.h" />
@@ -220,6 +235,7 @@
     <ClCompile Include="Renderer\RenderEffect.cpp" />
     <ClCompile Include="Renderer\InputLayout.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
+    <ClCompile Include="Resources\Obj\ObjModelLoader.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\FirstPersonCameraController.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />

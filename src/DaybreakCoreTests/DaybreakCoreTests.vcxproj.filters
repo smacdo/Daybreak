@@ -32,5 +32,8 @@
     <ClCompile Include="Common\TimeSpanTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Mesh\IndexBufferDataTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -91,7 +91,5 @@ InputLayout::attribute_t InputLayout::createInputLayoutAttributeFor(const vertex
 
     default:
         THROW_ENUM_SWITCH_NOT_HANDLED(VertexAttributeName, vertexAttribute.name);
-    }
-
-    return attribute_t{};
+    };
 }

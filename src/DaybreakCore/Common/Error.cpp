@@ -4,31 +4,6 @@
 #include <string>
 #include <exception>
 
-#include <SDL.h>
-#include <glad\glad.h>
-
-//---------------------------------------------------------------------------------------------------------------------
-void DisplayErrorDialog(
-    const std::string& title,
-    const std::string& message)
-{
-    // TODO: Improve.
-    MessageBoxA(nullptr, message.c_str(), title.c_str(), 0);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-SdlException::SdlException(const std::string& message)
-    : std::runtime_error(message + std::string(": ") + GetLastSdlError()),
-      m_message(message)
-{
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-std::string SdlException::GetLastSdlError()
-{
-    return SDL_GetError();
-}
-
 //---------------------------------------------------------------------------------------------------------------------
 DaybreakEngineException::DaybreakEngineException(const std::string& message, const std::string& details)
     : std::runtime_error(message),

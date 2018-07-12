@@ -31,7 +31,6 @@ namespace
             return GL_UNSIGNED_INT;
         default:
             THROW_ENUM_SWITCH_NOT_HANDLED(IndexElementType, elementType);
-            return 0;
         }
     }
 }

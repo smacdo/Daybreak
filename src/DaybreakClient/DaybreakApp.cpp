@@ -4,6 +4,7 @@
 #include "Scene/Scene.h"
 #include "SceneRenderer.h"
 #include "SystemInfo.h"
+#include "SdlException.h"
 
 #include "OglRenderer/OglError.h"
 #include "Input/SdlInputSource.h"
@@ -140,7 +141,7 @@ void DaybreakApp::InitializeRendering()
     }
 
     // Create an OpenGL context after creating the window.
-    SDL_GLContext context = SDL_GL_CreateContext(m_pWindow);
+    SDL_GL_CreateContext(m_pWindow);
 
     // Check if OpenGL debug context was enabled.
 //    GLint contextFlags = 0;
