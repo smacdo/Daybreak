@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <cstdint>
 
 namespace Daybreak
 {
@@ -14,7 +15,7 @@ namespace Daybreak
     public:
         // Constructor.
         VertexBufferData(
-            _In_ std::unique_ptr<void *> rawData,
+            _In_ std::unique_ptr<uint8_t[]> rawData,
             _In_ std::shared_ptr<VertexFormat> elementType,
             _In_ size_t elemnetCount);
 

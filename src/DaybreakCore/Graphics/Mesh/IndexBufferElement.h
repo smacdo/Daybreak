@@ -44,7 +44,7 @@ namespace Daybreak
 
     struct index_element_ui32 : public index_element_t<uint32_t>
     {
-        index_element_ui32(int v)
+        index_element_ui32(int v = 0)
             : index_element_t(v)
         {
         }

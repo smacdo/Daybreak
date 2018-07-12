@@ -22,7 +22,6 @@ size_t Daybreak::indexElementSizeInBytes(IndexElementType elementType)
         return 4;
     default:
         THROW_ENUM_SWITCH_NOT_HANDLED(IndexElementType, elementType);
-        return 0;
     }
 }
 

@@ -4,56 +4,38 @@
 
 #include <memory>
 #include <vector>
+#include <cstdint>
 
 namespace Daybreak
 {
-    /// Software index buffer.
+    /// Index buffer with data accessile to the CPU (rather than uploaded to the GPU).
     class IndexBufferData : public BufferData
     {
     public:
-        // Constructor.
+        /// U8 or untyped uchar* data constructor.
         IndexBufferData(
-            _In_ std::unique_ptr<void *> rawData,
-            _In_ IndexElementType elementType,
-            _In_ size_t elemnetCount);
+            _In_ size_t elementCount,
+            _In_ std::unique_ptr<uint8_t[]> rawData,
+            _In_ IndexElementType elementType = IndexElementType::UnsignedByte);
 
-        // Destructor.
+        /// U16 constructor.
+        IndexBufferData(
+            _In_ size_t elementCount,
+            _In_ std::unique_ptr<uint16_t[]> rawData);
+
+        /// U32 constructor.
+        IndexBufferData(
+            _In_ size_t elementCount,
+            _In_ std::unique_ptr<uint32_t[]> rawData);
+
+        /// Destructor.
         virtual ~IndexBufferData();
 
-        // Get the type of elments in the buffer.
+        /// Get the type of elments in the buffer.
         IndexElementType elementType() const noexcept { return m_elementType; }
 
     protected:
-        // Internal constructor that does not set a pointer. Derived class must make sure to set it.
-        IndexBufferData(
-            _In_ IndexElementType elementType,
-            _In_ size_t elemnetCount);
-
-    protected:
-        // Index element type definition.
+        /// Index element type definition.
         IndexElementType m_elementType;
-    };
-
-    /// Typed software index buffer.
-    template<typename TIndex>
-    class TIndexBufferData : public IndexBufferData // TODO: Use static_assert to validate size matches
-    {
-    public:
-        // Constructor.
-        TIndexBufferData(_In_ const std::vector<TIndex>&& indices)
-            : IndexBufferData(
-                TIndex::elementType,
-                indices.size()),
-              m_indices(indices)
-        {
-            setUnownedDataPtr(m_indices.data());
-        }
-
-    public:
-        // Get an unowned pointer to the raw bytes of the index buffer.
-        const TIndex * typedDataPtr() const noexcept { return m_indices.size(); }
-
-    private:
-        std::vector<TIndex> m_indices;
     };
 }

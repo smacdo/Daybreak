@@ -8,11 +8,11 @@
 namespace Daybreak
 {
     // [BLURB]
-    class MeshData_ptn_ui32 : public MeshData
+    class MeshData_ptn : public MeshData
     {
     public:
-        MeshData_ptn_ui32(
-            std::unique_ptr<TIndexBufferData<index_element_ui32>> indices,
+        MeshData_ptn(
+            std::unique_ptr<IndexBufferData> indices,
             std::unique_ptr<TVertexBufferData<vertex_ptn_t>> vertices)
             : MeshData(std::move(indices), std::move(vertices))
         {

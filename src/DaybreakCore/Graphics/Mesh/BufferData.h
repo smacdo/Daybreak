@@ -9,7 +9,7 @@ namespace Daybreak
     public:
         // Constructor.
         BufferData(
-            _In_ std::unique_ptr<void *> rawData,
+            _In_ std::unique_ptr<uint8_t[]> rawData,
             _In_ size_t elemnetCount);
 
         // Copy constructor (deleted, cannot copy unowned pointer).
@@ -37,7 +37,7 @@ namespace Daybreak
 
     protected:
         // Pointer to raw untyped vertex buffer data.
-        std::unique_ptr<void *> m_data;
+        std::unique_ptr<uint8_t[]> m_data;
 
         // Special unowned pointer (lifetime must be maintained by derived classes!).
         void * m_dataUnownedPtr = nullptr;

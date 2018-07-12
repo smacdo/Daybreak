@@ -9,7 +9,10 @@ using namespace Daybreak;
 //---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<MeshData> BasicGeometryGenerator::MakeCube()
 {
-    const vertex_ptn_t CubeVertices[] =
+    const size_t CubeVerticesCount = 36;
+    const size_t CubeIndicesCount = 36;
+
+    const vertex_ptn_t CubeVertices[CubeVerticesCount] =
     {
         //  x      y      z       u     v     nx     ny     nz
         { -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,   0.0f,  0.0f, -1.0f },          // Front
@@ -55,7 +58,7 @@ std::unique_ptr<MeshData> BasicGeometryGenerator::MakeCube()
         { -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   0.0f,  1.0f,  0.0f }
     };
 
-    const index_element_ui32 CubeIndices[] =
+    const index_element_ui32 CubeIndices[CubeIndicesCount] =
     {
         0,  1,  2,  3,  4,  5,
         6,  7,  8,  9, 10, 11,
@@ -65,9 +68,15 @@ std::unique_ptr<MeshData> BasicGeometryGenerator::MakeCube()
         30, 31, 32, 33, 34, 35
     };
 
-    return std::make_unique<MeshData_ptn_ui32>(
-        std::make_unique<TIndexBufferData<index_element_ui32>>(
-            std::vector<index_element_ui32> { std::begin(CubeIndices), std::end(CubeIndices) }),
+    // Copy vertex and index data to new mesh.
+    std::unique_ptr<vertex_ptn_t[]> vertices(new vertex_ptn_t[CubeVerticesCount]);
+    std::copy(std::begin(CubeVertices), std::end(CubeVertices), vertices.get());
+
+    std::unique_ptr<unsigned int[]> indices(new unsigned int[CubeIndicesCount]);
+    std::copy(std::begin(CubeIndices), std::end(CubeIndices), indices.get());
+
+    return std::make_unique<MeshData_ptn>(
+        std::make_unique<IndexBufferData>(CubeIndicesCount, std::move(indices)),
         std::make_unique<TVertexBufferData<vertex_ptn_t>>(
             std::vector<vertex_ptn_t> { std::begin(CubeVertices), std::end(CubeVertices) })
     );
