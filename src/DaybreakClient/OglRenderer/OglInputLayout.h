@@ -1,5 +1,6 @@
 #pragma once
-#include "Graphics/InputLayout.h"
+#include "Renderer/InputLayout.h"
+#include "Graphics/InputLayoutDescription.h"
 #include <glad\glad.h>
 #include <memory>
 #include <vector>
@@ -20,7 +21,7 @@ namespace Daybreak::OpenGlRenderer
     {
     public:
         // Constructor.
-        OglInputLayout(GLuint vao, const std::vector<InputAttribute>& attributes);
+        OglInputLayout(GLuint vao, std::shared_ptr<const InputLayoutDescription> layoutDescription);
 
         // Destructor.
         virtual ~OglInputLayout();
@@ -34,7 +35,7 @@ namespace Daybreak::OpenGlRenderer
         // Create a new VAO object.
         //  TODO: Move this to OglRenderDevice::createInputLayout.
         static std::unique_ptr<OglInputLayout> generate(
-            const std::vector<InputAttribute>& attributes,
+            std::shared_ptr<const InputLayoutDescription> layoutDescription,
             const std::shared_ptr<Daybreak::IRenderContext>& renderContext,
             const std::shared_ptr<const Daybreak::VertexBuffer>& vertexBuffer);
 

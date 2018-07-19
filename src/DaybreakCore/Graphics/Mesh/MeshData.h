@@ -6,7 +6,7 @@ namespace Daybreak
 {
     class IndexBufferData;
     class VertexBufferData;
-    class InputLayout;
+    class InputLayoutDescription;
 
     // [NEED BLURB]
     class MeshData
@@ -35,7 +35,7 @@ namespace Daybreak
 
         size_t vertexElementSizeInBytes() const noexcept;
 
-        const InputLayout& vertexElementTypeRef() const noexcept;       // TODO: Rename inputLayoutRef
+        const InputLayoutDescription& vertexElementTypeRef() const noexcept;       // TODO: Rename inputLayoutRef
 
     protected:
         std::unique_ptr<IndexBufferData> m_indexBuffer;

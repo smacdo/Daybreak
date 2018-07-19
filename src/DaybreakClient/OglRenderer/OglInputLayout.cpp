@@ -66,8 +66,8 @@ namespace
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-OglInputLayout::OglInputLayout(GLuint vao, const std::vector<InputAttribute>& attributes)
-    : InputLayout(attributes),
+OglInputLayout::OglInputLayout(GLuint vao, std::shared_ptr<const InputLayoutDescription> layoutDescription)
+    : InputLayout(layoutDescription),
       m_vao(vao)
 {
     // TODO: Only calculate this once.
@@ -77,7 +77,7 @@ OglInputLayout::OglInputLayout(GLuint vao, const std::vector<InputAttribute>& at
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxAttributeCount);
 
     EXPECT(maxAttributeCount > 0, "Maximum attribute count must be larger than zero");
-    EXPECT(attributes.size() < (size_t)maxAttributeCount, "Attribute count must be smaller than OpenGL max");
+    EXPECT(layoutDescriptionRef().attributeCount() < (size_t)maxAttributeCount, "Must be smaller than OpenGL max");
 
     // Only set VAO if constructor was initalized with a non-zero value.
     EXPECT(vao != 0, "OpenGL input layouts should always be initialized to a valid VAO object");
@@ -120,10 +120,11 @@ void OglInputLayout::setVAO(GLuint vao)
 
 //---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<OglInputLayout> OglInputLayout::generate(
-    const std::vector<InputAttribute>& attributes,
+    std::shared_ptr<const InputLayoutDescription> layoutDescription,
     const std::shared_ptr<Daybreak::IRenderContext>& renderContext,     // TODO: Remove.
     const std::shared_ptr<const Daybreak::VertexBuffer>& vertexBuffer)
 {
+    CHECK_NOT_NULL(layoutDescription);
     CHECK_NOT_NULL(renderContext);
     CHECK_NOT_NULL(vertexBuffer);
 
@@ -149,20 +150,11 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
     EXPECT(maxAttributeCount > 0, "Maximum attribute count must be larger than zero");
 
     // Throw an exception if the attribute array is empty.
-    if (attributes.size() < 1)
+    if (layoutDescription->attributeCount() < 1)
     {
         throw std::runtime_error("Input layout must have at least one attribute defined");
     }
-
-    // Calculate the size of all the attributes. Also check that slots are defined in order.
-    GLsizei totalSize = 0;
-
-    for (size_t i = 0; i < attributes.size(); ++i)
-    {
-        // Add size to total.
-        totalSize += attributes[i].count * GetElementSize(attributes[i].type);
-    }
-
+    
     // Disable all vertex attribute slots prior to enabling some them.
     //  TODO: This can be optimized by remembering which slots were enabled or disabled.
     for (size_t i = 0; i < static_cast<size_t>(maxAttributeCount); ++i)
@@ -171,14 +163,17 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
     }
 
     // Define all slot attributes in the OpenGL vertex array object.
+    auto totalSize = static_cast<GLsizei>(layoutDescription->elementSizeInBytes());
     uintptr_t attributeOffset = 0;
 
-    for (size_t i = 0; i < attributes.size(); ++i)
+    for (GLsizei i = 0; i < layoutDescription->attributeCount(); ++i)
     {
+        const auto& attribute = layoutDescription->getAttributeByIndex(i);
+
         glVertexAttribPointer(
             static_cast<GLuint>(i),
-            attributes[i].count, 
-            ToGlElementType(attributes[i].type),
+            attribute.count,
+            ToGlElementType(attribute.type),
             GL_FALSE,
             totalSize,
             reinterpret_cast<void*>(attributeOffset));
@@ -187,8 +182,8 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
         glEnableVertexAttribArray(static_cast<GLuint>(i));
         glCheckForErrors();
 
-        attributeOffset += attributes[i].count * GetElementSize(attributes[i].type);
+        attributeOffset += attribute.count * GetElementSize(attribute.type);
     }
 
-    return std::make_unique<OglInputLayout>(vao, attributes);
+    return std::make_unique<OglInputLayout>(vao, layoutDescription);
 }

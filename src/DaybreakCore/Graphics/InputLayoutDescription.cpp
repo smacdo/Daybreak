@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "InputLayout.h"
+#include "InputLayoutDescription.h"
 
 #include "Common/Error.h"
 
@@ -35,14 +35,14 @@ namespace
 
 // TODO: Add validation that vertex format is correct and can be handled by the engine.
 //---------------------------------------------------------------------------------------------------------------------
-InputLayout::InputLayout()
+InputLayoutDescription::InputLayoutDescription()
 {
     m_attributes.reserve(3);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-InputLayout::InputLayout(_In_ const std::vector<InputAttribute>& attributes)
-    : m_attributes(attributes)
+InputLayoutDescription::InputLayoutDescription(_In_ const std::vector<InputAttribute>& attributes)
+    : m_attributes()
 {
     EXPECT(attributes.size() > 0, "Input layout must have at least one attribute");
     m_attributes.reserve(attributes.size());
@@ -54,10 +54,10 @@ InputLayout::InputLayout(_In_ const std::vector<InputAttribute>& attributes)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-InputLayout::~InputLayout() = default;
+InputLayoutDescription::~InputLayoutDescription() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
-void InputLayout::addAttribute(_In_ const InputAttribute& attribute)
+void InputLayoutDescription::addAttribute(_In_ const InputAttribute& attribute)
 {
     // TODO: Validation!
     CHECK_NOT_ZERO(attribute.count);
@@ -66,7 +66,7 @@ void InputLayout::addAttribute(_In_ const InputAttribute& attribute)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void InputLayout::addAttribute(
+void InputLayoutDescription::addAttribute(
     _In_ InputAttribute::SemanticName name,
     _In_ unsigned int index,
     _In_ InputAttribute::StorageType type,
@@ -76,19 +76,19 @@ void InputLayout::addAttribute(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-size_t InputLayout::attributeCount() const noexcept
+size_t InputLayoutDescription::attributeCount() const noexcept
 {
     return m_attributes.size();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-InputAttribute InputLayout::getAttributeByIndex(unsigned int index) const noexcept
+InputAttribute InputLayoutDescription::getAttributeByIndex(unsigned int index) const noexcept
 {
     return m_attributes[index];
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-size_t InputLayout::elementSizeInBytes() const noexcept
+size_t InputLayoutDescription::elementSizeInBytes() const noexcept
 {
     size_t size = 0;
 

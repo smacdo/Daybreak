@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MeshData.h"
-#include "Graphics/InputLayout.h"
+#include "Graphics/InputLayoutDescription.h"
 #include "Graphics/Mesh/IndexBufferData.h"
 #include "Graphics/Mesh/VertexBufferData.h"
 #include "Graphics/Mesh/VertexFormat.h"
@@ -66,7 +66,7 @@ size_t MeshData::vertexElementSizeInBytes() const noexcept
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-const InputLayout& MeshData::vertexElementTypeRef() const noexcept
+const InputLayoutDescription& MeshData::vertexElementTypeRef() const noexcept
 {
     return m_vertexBuffer->inputLayoutRef();
 }

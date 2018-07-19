@@ -4,7 +4,7 @@
 
 namespace Daybreak
 {
-    class InputLayout;
+    class InputLayoutDescription;
 
     // Standard lit vertex (position, texture 0, normal).
     //  TODO: Move to another file.
@@ -26,6 +26,6 @@ namespace Daybreak
         float elements[3 + 2 + 3];
 
     public:
-        static std::shared_ptr<InputLayout> inputLayout;
+        static std::shared_ptr<InputLayoutDescription> inputLayout;
     };
 }

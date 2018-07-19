@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VertexBufferData.h"
-#include "Graphics/InputLayout.h"
+#include "Graphics/InputLayoutDescription.h"
 #include "Common/Error.h"
 
 using namespace Daybreak;
@@ -8,7 +8,7 @@ using namespace Daybreak;
 //---------------------------------------------------------------------------------------------------------------------
 VertexBufferData::VertexBufferData(
     _In_ std::unique_ptr<uint8_t[]> rawData,
-    _In_ std::shared_ptr<InputLayout> elementType,
+    _In_ std::shared_ptr<InputLayoutDescription> elementType,
     _In_ size_t elementCount)
     : BufferData(elementCount, std::move(rawData)),
       m_inputLayout(elementType)
@@ -19,7 +19,7 @@ VertexBufferData::VertexBufferData(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-VertexBufferData::VertexBufferData(_In_ std::shared_ptr<InputLayout> elementType)
+VertexBufferData::VertexBufferData(_In_ std::shared_ptr<InputLayoutDescription> elementType)
     : BufferData(),
       m_inputLayout(elementType)
 {

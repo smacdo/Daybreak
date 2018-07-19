@@ -1,9 +1,5 @@
 #pragma once
-#include "Graphics/Mesh/VertexFormat.h"
-
 #include <vector>
-
-// TODO: Move to Graphics/
 
 namespace Daybreak
 {
@@ -39,7 +35,6 @@ namespace Daybreak
         InputAttribute(SemanticName name, unsigned int index, StorageType type, unsigned int count)
             : name(name), index(index), type(type), count(count)
         {
-            // TODO: VALIDATION?
         }
 
     public:
@@ -50,17 +45,17 @@ namespace Daybreak
     };
 
     // Defines how input data is laid out for a untyped data buffer.
-    class InputLayout
+    class InputLayoutDescription
     {
     public:
         // Default constructor.
-        InputLayout();
+        InputLayoutDescription();
 
         // Constructor.
-        InputLayout(_In_ const std::vector<InputAttribute>& attributes);
+        InputLayoutDescription(_In_ const std::vector<InputAttribute>& attributes);
 
         // Destructor.
-        virtual ~InputLayout();
+        virtual ~InputLayoutDescription();
 
     public:
         // Add an input attribute.
