@@ -3,46 +3,46 @@
 
 namespace Daybreak
 {
-    /// Base for vertex and index buffer data.
+    /// Contains untyped data to be uploaded to a GPU buffer.
     class BufferData
     {
     public:
-        // Constructor.
-        BufferData(
-            _In_ std::unique_ptr<uint8_t[]> rawData,
-            _In_ size_t elemnetCount);
+        /// Default constructor.
+        BufferData();
 
-        // Copy constructor (deleted, cannot copy unowned pointer).
+        /// Constructor.
+        BufferData(
+            _In_ size_t byteCount,
+            _In_ std::unique_ptr<uint8_t[]> bytes);
+
+        /// Copy constructor (deleted, data buffers cannot be copied).
         BufferData(const BufferData&) = delete;
 
-        // Destructor.
+        /// Destructor.
         virtual ~BufferData();
 
-        // Assignment operator (deleted), cannot copy unowned pointer).
+        /// Assignment operator (deleted, data buffers cannot be copied).
         BufferData& operator =(const BufferData&) = delete;
 
     public:
-        // Get an unowned pointer to the raw bytes of the vertex buffer.
-        const void * data() const noexcept { return m_dataUnownedPtr; }
+        /// Get an unowned pointer to the raw bytes of the data buffer.
+        _Ret_maybenull_ const void * bytes() const noexcept { return m_bytes.get(); }
 
-        // Get the number of elements in the buffer.
-        size_t elementCount() const noexcept { return m_elementCount; }
+        /// Get the size (in bytes) of the byte buffer.
+        size_t byteCount() const noexcept { return m_byteCount; }
+
+        /// Set a pointer to a byte buffer and the size (in bytes) of the buffer.
+        void setUnownedDataPtr(_In_ size_t byteCount, _In_ void * bytes) noexcept;
+
+    private:
+        static void defaultDelete(uint8_t * data) noexcept;
+        static void noDelete(uint8_t * data) noexcept;
 
     protected:
-        // Internal constructor that does not set a pointer. Derived class must make sure to set it.
-        BufferData(_In_ size_t elemnetCount);
+        // Untyped byte buffer pointer.
+        std::unique_ptr<uint8_t[], void(*)(uint8_t*)> m_bytes;
 
-        // Allows derived class to set an unowned pointer that the derived class is responsible for maintaining.
-        void setUnownedDataPtr(_In_ void * unownedDataPtr);
-
-    protected:
-        // Pointer to raw untyped vertex buffer data.
-        std::unique_ptr<uint8_t[]> m_data;
-
-        // Special unowned pointer (lifetime must be maintained by derived classes!).
-        void * m_dataUnownedPtr = nullptr;
-
-        // Number of indices in buffer.
-        size_t m_elementCount = 0;
+        // Number of bytes in buffer.
+        size_t m_byteCount = 0;
     };
 }

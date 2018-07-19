@@ -9,7 +9,7 @@ namespace Daybreak
 {
     class VertexFormat;
 
-    /// Software vertex buffer.
+    /// Vertex buffer data that can be accessed via attribute streams and uploaded to the GPU.
     class VertexBufferData : public BufferData
     {
     public:
@@ -27,9 +27,8 @@ namespace Daybreak
 
     protected:
         // Internal constructor that does not set a pointer. Derived class must make sure to set it.
-        VertexBufferData(
-            _In_ std::shared_ptr<VertexFormat> elementType,
-            _In_ size_t elemnetCount);
+        // TODO: Remove when TVertexBufferData class is removed.
+        VertexBufferData(_In_ std::shared_ptr<VertexFormat> elementType);
 
     protected:
         // Vertex element type definition.
@@ -43,12 +42,10 @@ namespace Daybreak
     public:
         // Constructor.
         TVertexBufferData(_In_ const std::vector<TVertex>&& vertices)
-            : VertexBufferData(
-                TVertex::elementType,
-                vertices.size()),
+            : VertexBufferData(TVertex::elementType),
               m_vertices(vertices)
         {
-            setUnownedDataPtr(m_vertices.data());
+           setUnownedDataPtr(vertices.size(), m_vertices.data());
         }
 
     public:

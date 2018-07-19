@@ -177,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\TimeSpanTests.cpp" />
+    <ClCompile Include="Graphics\Mesh\BufferDataTests.cpp" />
     <ClCompile Include="Graphics\Mesh\IndexBufferDataTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

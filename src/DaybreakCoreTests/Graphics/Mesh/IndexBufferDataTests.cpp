@@ -32,9 +32,9 @@ public:
         std::unique_ptr<uint8_t[]> indices(new uint8_t[3]{ 2, 5, 10 });
         IndexBufferData indexBuffer(3, std::move(indices));
 
-        Assert::AreEqual((uint8_t)2, *((uint8_t*)indexBuffer.data() + 0));
-        Assert::AreEqual((uint8_t)5, *((uint8_t*)indexBuffer.data() + 1));
-        Assert::AreEqual((uint8_t)10, *((uint8_t*)indexBuffer.data() + 2));
+        Assert::AreEqual((uint8_t)2, *((uint8_t*)indexBuffer.bytes() + 0));
+        Assert::AreEqual((uint8_t)5, *((uint8_t*)indexBuffer.bytes() + 1));
+        Assert::AreEqual((uint8_t)10, *((uint8_t*)indexBuffer.bytes() + 2));
     }
 
     TEST_METHOD(Index_Buffer_Unsigned_Byte_Constructor_Assumes_Unsigned_Byte_Index_Element)
@@ -63,12 +63,12 @@ public:
         std::unique_ptr<unsigned char[]> indices1(new unsigned char[5]{ 2, 5, 10, 11, 12 });
         IndexBufferData indexBuffer1(5, std::move(indices1), IndexElementType::UnsignedByte);
 
-        Assert::AreEqual((size_t)5, indexBuffer1.elementCount());
+        Assert::AreEqual((size_t)5, indexBuffer1.byteCount());
 
         std::unique_ptr<unsigned char[]> indices2(new unsigned char[4]{ 2, 5, 10, 11 });
         IndexBufferData indexBuffer2(4, std::move(indices2), IndexElementType::UnsignedByte);
 
-        Assert::AreEqual((size_t)4, indexBuffer2.elementCount());
+        Assert::AreEqual((size_t)4, indexBuffer2.byteCount());
     }
 
     TEST_METHOD(Index_Buffer_U16_Constructor_Sets_U16_Type)

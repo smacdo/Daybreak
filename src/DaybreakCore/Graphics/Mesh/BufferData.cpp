@@ -5,18 +5,18 @@
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
-BufferData::BufferData(
-    _In_ std::unique_ptr<uint8_t[]> rawData,
-    _In_ size_t elementCount)
-    : m_data(std::move(rawData)),
-      m_dataUnownedPtr(m_data.get()),
-      m_elementCount(elementCount)
+BufferData::BufferData()
+    : m_bytes(nullptr, defaultDelete),
+      m_byteCount(0)
 {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-BufferData::BufferData(_In_ size_t elementCount)
-    : m_elementCount(elementCount)
+BufferData::BufferData(
+    _In_ size_t byteCount,
+    _In_ std::unique_ptr<uint8_t[]> bytes)
+    : m_bytes(bytes.release(), defaultDelete),
+      m_byteCount(byteCount)
 {
 }
 
@@ -24,8 +24,20 @@ BufferData::BufferData(_In_ size_t elementCount)
 BufferData::~BufferData() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
-void BufferData::setUnownedDataPtr(_In_ void * unownedDataPtr)
+void BufferData::setUnownedDataPtr(_In_ size_t byteCount, _In_ void * bytes) noexcept
 {
-    EXPECT(m_data == nullptr, "Cannot set unowned pointer if unique_ptr is being used");
-    m_dataUnownedPtr = unownedDataPtr;
+    m_bytes = std::unique_ptr<uint8_t[], void(*)(uint8_t*)>(reinterpret_cast<uint8_t*>(bytes), noDelete);
+    m_byteCount = byteCount;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void BufferData::defaultDelete(uint8_t * data) noexcept
+{
+    delete[] data;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void BufferData::noDelete(uint8_t *) noexcept
+{
+    // Empty.
 }

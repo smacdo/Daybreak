@@ -25,13 +25,13 @@ MeshData::~MeshData() = default;
 //---------------------------------------------------------------------------------------------------------------------
 const void * MeshData::rawIndexBufferData() const noexcept
 {
-    return m_indexBuffer->data();
+    return m_indexBuffer->bytes();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 size_t MeshData::indexCount() const noexcept
 {
-    return m_indexBuffer->elementCount();
+    return m_indexBuffer->byteCount();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -49,13 +49,13 @@ IndexElementType MeshData::indexElementType() const noexcept
 //---------------------------------------------------------------------------------------------------------------------
 const void * MeshData::rawVertexBufferData() const noexcept
 {
-    return m_vertexBuffer->data();
+    return m_vertexBuffer->bytes();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 size_t MeshData::vertexCount() const noexcept
 {
-    return m_vertexBuffer->elementCount();
+    return m_vertexBuffer->byteCount();
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -9,11 +9,11 @@ IndexBufferData::IndexBufferData(
     _In_ size_t elementCount,
     _In_ std::unique_ptr<uint8_t[]> rawData,
     _In_ IndexElementType elementType)
-    : BufferData(std::move(rawData), elementCount),
+    : BufferData(elementCount, std::move(rawData)),
       m_elementType(elementType)
 {
     CHECK_NOT_ZERO(elementCount);
-    CHECK_NOT_NULL(m_data);
+    CHECK_NOT_NULL(m_bytes);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
