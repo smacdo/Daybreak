@@ -207,7 +207,7 @@
     <ClInclude Include="Input\SdlInputSource.h" />
     <ClInclude Include="Renderer\IndexBuffer.h" />
     <ClInclude Include="Renderer\Mesh.h" />
-    <ClInclude Include="Renderer\InputLayout.h" />
+    <ClInclude Include="Graphics\InputLayout.h" />
     <ClInclude Include="Graphics\Mesh\MeshData.h" />
     <ClInclude Include="Renderer\VertexBuffer.h" />
     <ClInclude Include="Resources\Obj\ObjModelLoader.h" />
@@ -237,7 +237,7 @@
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Phong\PhongLightingEffect.cpp" />
     <ClCompile Include="Renderer\RenderEffect.cpp" />
-    <ClCompile Include="Renderer\InputLayout.cpp" />
+    <ClCompile Include="Graphics\InputLayout.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
     <ClCompile Include="Resources\Obj\ObjModelLoader.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />

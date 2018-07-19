@@ -200,15 +200,15 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create the standard VAO which defines Daybreak's standard vertex attribute layout.
     //  TODO: Use render context -> device -> createInputLayout
-    std::vector<vertex_attribute_t> standardVertexAttributes =
+    std::vector<InputAttribute> standardVertexAttributes =
     {
-        { VertexAttributeName::Position, VertexAttributeStorage::Float3, 0 },
-        { VertexAttributeName::Texture, VertexAttributeStorage::Float2, 0 },
-        { VertexAttributeName::Normal, VertexAttributeStorage::Float3, 0 }
+        { InputAttribute::SemanticName::Position, 0, InputAttribute::StorageType::Float, 3 },
+        { InputAttribute::SemanticName::Texture, 0, InputAttribute::StorageType::Float, 2 },
+        { InputAttribute::SemanticName::Normal, 0, InputAttribute::StorageType::Float, 3 }
     };
 
     m_standardInputLayout = OglInputLayout::generate(
-        InputLayout::createInputLayoutAttributesFor(standardVertexAttributes),
+        standardVertexAttributes,
         m_renderContext,
         m_mesh->vertexBuffer());
 

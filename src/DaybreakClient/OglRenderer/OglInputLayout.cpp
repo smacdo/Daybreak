@@ -10,54 +10,54 @@ using namespace Daybreak::OpenGlRenderer;
 //---------------------------------------------------------------------------------------------------------------------
 namespace
 {
-    GLenum ToGlElementType(InputLayout::StorageType type)
+    GLenum ToGlElementType(InputAttribute::StorageType type)
     {
         switch (type)
         {
-        case InputLayout::StorageType::Byte:
+        case InputAttribute::StorageType::Byte:
             return GL_BYTE;
-        case InputLayout::StorageType::UnsignedByte:
+        case InputAttribute::StorageType::UnsignedByte:
             return GL_UNSIGNED_BYTE;
-        case InputLayout::StorageType::Short:
+        case InputAttribute::StorageType::Short:
             return GL_SHORT;
-        case InputLayout::StorageType::UnsignedShort:
+        case InputAttribute::StorageType::UnsignedShort:
             return GL_UNSIGNED_SHORT;
-        case InputLayout::StorageType::Int:
+        case InputAttribute::StorageType::Int:
             return GL_INT;
-        case InputLayout::StorageType::UnsignedInt:
+        case InputAttribute::StorageType::UnsignedInt:
             return GL_UNSIGNED_INT;
-        case InputLayout::StorageType::HalfFloat:
+        case InputAttribute::StorageType::HalfFloat:
             return GL_HALF_FLOAT;
-        case InputLayout::StorageType::Float:
+        case InputAttribute::StorageType::Float:
             return GL_FLOAT;
-        case InputLayout::StorageType::Double:
+        case InputAttribute::StorageType::Double:
             return GL_DOUBLE;
         default:
             throw std::runtime_error("unknwon enum");
         }
     }
 
-    GLsizei GetElementSize(InputLayout::StorageType type)
+    GLsizei GetElementSize(InputAttribute::StorageType type)
     {
         switch (type)
         {
-        case InputLayout::StorageType::Byte:
+        case InputAttribute::StorageType::Byte:
             return 1;;
-        case InputLayout::StorageType::UnsignedByte:
+        case InputAttribute::StorageType::UnsignedByte:
             return 1;
-        case InputLayout::StorageType::Short:
+        case InputAttribute::StorageType::Short:
             return 2;
-        case InputLayout::StorageType::UnsignedShort:
+        case InputAttribute::StorageType::UnsignedShort:
             return 2;
-        case InputLayout::StorageType::Int:
+        case InputAttribute::StorageType::Int:
             return 4;
-        case InputLayout::StorageType::UnsignedInt:
+        case InputAttribute::StorageType::UnsignedInt:
             return 4;
-        case InputLayout::StorageType::HalfFloat:
+        case InputAttribute::StorageType::HalfFloat:
             return 2;
-        case InputLayout::StorageType::Float:
+        case InputAttribute::StorageType::Float:
             return 4;
-        case InputLayout::StorageType::Double:
+        case InputAttribute::StorageType::Double:
             return 8;
         default:
             throw std::runtime_error("unknwon enum");
@@ -66,7 +66,7 @@ namespace
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-OglInputLayout::OglInputLayout(GLuint vao, const std::vector<attribute_t>& attributes)
+OglInputLayout::OglInputLayout(GLuint vao, const std::vector<InputAttribute>& attributes)
     : InputLayout(attributes),
       m_vao(vao)
 {
@@ -120,7 +120,7 @@ void OglInputLayout::setVAO(GLuint vao)
 
 //---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<OglInputLayout> OglInputLayout::generate(
-    const std::vector<attribute_t>& attributes,
+    const std::vector<InputAttribute>& attributes,
     const std::shared_ptr<Daybreak::IRenderContext>& renderContext,     // TODO: Remove.
     const std::shared_ptr<const Daybreak::VertexBuffer>& vertexBuffer)
 {
@@ -159,14 +159,8 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
 
     for (size_t i = 0; i < attributes.size(); ++i)
     {
-        // Ensure that the slots are defined in order.
-        if (i > 0 && attributes[i].slot <= attributes[i - 1].slot)
-        {
-            throw std::runtime_error("Attribute slot must be larger than previous slot");
-        }
-
         // Add size to total.
-        totalSize += attributes[i].elementCount * GetElementSize(attributes[i].type);
+        totalSize += attributes[i].count * GetElementSize(attributes[i].type);
     }
 
     // Disable all vertex attribute slots prior to enabling some them.
@@ -182,18 +176,18 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
     for (size_t i = 0; i < attributes.size(); ++i)
     {
         glVertexAttribPointer(
-            attributes[i].slot,
-            attributes[i].elementCount, 
+            static_cast<GLuint>(i),
+            attributes[i].count, 
             ToGlElementType(attributes[i].type),
-            attributes[i].shouldNormalize ? GL_TRUE : GL_FALSE,
+            GL_FALSE,
             totalSize,
             reinterpret_cast<void*>(attributeOffset));
         glCheckForErrors();
 
-        glEnableVertexAttribArray(attributes[i].slot);
+        glEnableVertexAttribArray(static_cast<GLuint>(i));
         glCheckForErrors();
 
-        attributeOffset += attributes[i].elementCount * GetElementSize(attributes[i].type);
+        attributeOffset += attributes[i].count * GetElementSize(attributes[i].type);
     }
 
     return std::make_unique<OglInputLayout>(vao, attributes);

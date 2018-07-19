@@ -7,7 +7,7 @@
 
 namespace Daybreak
 {
-    class VertexFormat;
+    class InputLayout;
 
     /// Vertex buffer data that can be accessed via attribute streams and uploaded to the GPU.
     class VertexBufferData : public BufferData
@@ -16,23 +16,23 @@ namespace Daybreak
         // Constructor.
         VertexBufferData(
             _In_ std::unique_ptr<uint8_t[]> rawData,
-            _In_ std::shared_ptr<VertexFormat> elementType,
+            _In_ std::shared_ptr<InputLayout> inputLayout,
             _In_ size_t elemnetCount);
 
         // Destructor.
         virtual ~VertexBufferData();
 
-        // Get the type of elments in the buffer.
-        const VertexFormat& elementTypeRef() const noexcept { return *m_elementType.get(); }
+        // Get reference to input layout description.
+        const InputLayout& inputLayoutRef() const noexcept { return *m_inputLayout.get(); }
 
     protected:
         // Internal constructor that does not set a pointer. Derived class must make sure to set it.
         // TODO: Remove when TVertexBufferData class is removed.
-        VertexBufferData(_In_ std::shared_ptr<VertexFormat> elementType);
+        VertexBufferData(_In_ std::shared_ptr<InputLayout> elementType);
 
     protected:
         // Vertex element type definition.
-        std::shared_ptr<VertexFormat> m_elementType;
+        std::shared_ptr<InputLayout> m_inputLayout;
     };
     
     /// Typed software vertex buffer.
@@ -42,7 +42,7 @@ namespace Daybreak
     public:
         // Constructor.
         TVertexBufferData(_In_ const std::vector<TVertex>&& vertices)
-            : VertexBufferData(TVertex::elementType),
+            : VertexBufferData(TVertex::inputLayout),
               m_vertices(vertices)
         {
            setUnownedDataPtr(vertices.size(), m_vertices.data());
