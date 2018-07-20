@@ -38,5 +38,8 @@
     <ClCompile Include="Graphics\Mesh\BufferDataTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\InputLayoutDescriptionTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

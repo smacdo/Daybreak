@@ -36,33 +36,6 @@ namespace
             throw std::runtime_error("unknwon enum");
         }
     }
-
-    GLsizei GetElementSize(InputAttribute::StorageType type)
-    {
-        switch (type)
-        {
-        case InputAttribute::StorageType::Byte:
-            return 1;;
-        case InputAttribute::StorageType::UnsignedByte:
-            return 1;
-        case InputAttribute::StorageType::Short:
-            return 2;
-        case InputAttribute::StorageType::UnsignedShort:
-            return 2;
-        case InputAttribute::StorageType::Int:
-            return 4;
-        case InputAttribute::StorageType::UnsignedInt:
-            return 4;
-        case InputAttribute::StorageType::HalfFloat:
-            return 2;
-        case InputAttribute::StorageType::Float:
-            return 4;
-        case InputAttribute::StorageType::Double:
-            return 8;
-        default:
-            throw std::runtime_error("unknwon enum");
-        }
-    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -163,26 +136,21 @@ std::unique_ptr<OglInputLayout> OglInputLayout::generate(
     }
 
     // Define all slot attributes in the OpenGL vertex array object.
-    auto totalSize = static_cast<GLsizei>(layoutDescription->elementSizeInBytes());
-    uintptr_t attributeOffset = 0;
-
-    for (GLsizei i = 0; i < layoutDescription->attributeCount(); ++i)
+    for (size_t i = 0; i < layoutDescription->attributeCount(); ++i)
     {
         const auto& attribute = layoutDescription->getAttributeByIndex(i);
 
         glVertexAttribPointer(
             static_cast<GLuint>(i),
-            attribute.count,
-            ToGlElementType(attribute.type),
+            attribute.count(),
+            ToGlElementType(attribute.type()),
             GL_FALSE,
-            totalSize,
-            reinterpret_cast<void*>(attributeOffset));
+            static_cast<GLsizei>(layoutDescription->elementSizeInBytes()),
+            reinterpret_cast<void*>(layoutDescription->attributeOffsetByIndex(i)));
         glCheckForErrors();
 
         glEnableVertexAttribArray(static_cast<GLuint>(i));
         glCheckForErrors();
-
-        attributeOffset += attribute.count * GetElementSize(attribute.type);
     }
 
     return std::make_unique<OglInputLayout>(vao, layoutDescription);
