@@ -2,7 +2,8 @@
 #include "BasicGeometryGenerator.h"
 #include "Graphics/Mesh/IndexBufferData.h"
 #include "Graphics/Mesh/VertexBufferData.h"
-#include "Graphics/Mesh/TypedMeshData.h"
+#include "Graphics/Mesh/VertexFormat.h"
+#include "Graphics/Mesh/MeshData.h"
 
 using namespace Daybreak;
 
@@ -75,9 +76,8 @@ std::unique_ptr<MeshData> BasicGeometryGenerator::MakeCube()
     std::unique_ptr<unsigned int[]> indices(new unsigned int[CubeIndicesCount]);
     std::copy(std::begin(CubeIndices), std::end(CubeIndices), indices.get());
 
-    return std::make_unique<MeshData_ptn>(
+    return std::make_unique<MeshData>(
         std::make_unique<IndexBufferData>(CubeIndicesCount, std::move(indices)),
-        std::make_unique<TVertexBufferData<vertex_ptn_t>>(
-            std::vector<vertex_ptn_t> { std::begin(CubeVertices), std::end(CubeVertices) })
+        std::make_unique<VertexBufferData>(CubeVerticesCount, std::move(vertices), vertex_ptn_t::inputLayout)
     );
 }

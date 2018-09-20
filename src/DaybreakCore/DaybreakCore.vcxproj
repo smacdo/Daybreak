@@ -188,7 +188,7 @@
     <ClInclude Include="Graphics\Mesh\BufferData.h" />
     <ClInclude Include="Graphics\Mesh\IndexBufferData.h" />
     <ClInclude Include="Graphics\Mesh\IndexBufferElement.h" />
-    <ClInclude Include="Graphics\Mesh\TypedMeshData.h" />
+    <ClInclude Include="Graphics\Mesh\VertexAttributeIterator.h" />
     <ClInclude Include="Graphics\Mesh\VertexBufferData.h" />
     <ClInclude Include="Graphics\Mesh\VertexFormat.h" />
     <ClInclude Include="Renderer\GpuBuffer.h" />

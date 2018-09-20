@@ -89,6 +89,12 @@ DaybreakShaderLinkException::DaybreakShaderLinkException(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+DaybreakDataException::DaybreakDataException(const std::string& message)
+    : DaybreakEngineException(message, "")
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 ContentReadException::ContentReadException(
     const std::string& contentFilePath,
     const std::string& contentTypeName,

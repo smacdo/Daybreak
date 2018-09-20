@@ -180,6 +180,8 @@
     <ClCompile Include="Graphics\InputLayoutDescriptionTests.cpp" />
     <ClCompile Include="Graphics\Mesh\BufferDataTests.cpp" />
     <ClCompile Include="Graphics\Mesh\IndexBufferDataTests.cpp" />
+    <ClCompile Include="Graphics\Mesh\VertexAttributeIteratorTests.cpp" />
+    <ClCompile Include="Graphics\Mesh\VertexBufferTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

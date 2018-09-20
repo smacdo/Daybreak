@@ -33,6 +33,12 @@ namespace Daybreak
 
         // Get an attribute by index.
         InputAttribute getAttributeByIndex(size_t index) const noexcept;
+        
+        // Get index to an attribute by semantic name and index. Throws exception if not found.
+        size_t getAttributeIndexByName(InputAttribute::SemanticName name, unsigned int index = 0) const;
+
+        // Get an attribute by semantic name and index. Throws exception if not found.
+        InputAttribute getAttributeByName(InputAttribute::SemanticName name, unsigned int index = 0) const;
 
         // Get the size (in bytes) of a single input element.
         size_t elementSizeInBytes() const noexcept;

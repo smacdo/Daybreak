@@ -4,6 +4,8 @@
 #include <exception>
 #include <cassert>
 
+// TODO: Restruct exceptions to have a secondary constructor that can take throw site information.
+
 /** Core engine errors. */
 class DaybreakEngineException : public std::runtime_error
 {
@@ -144,6 +146,14 @@ public:
 private:
     std::string m_shaderName;
     std::string m_linkInfo;
+};
+
+/** Data is not in the correct format or had unexpected data. */
+class DaybreakDataException : public DaybreakEngineException
+{
+public:
+    /** Constructor. */
+    DaybreakDataException(const std::string& message);
 };
 
 /** Exceptions with reading content after loading it into memory. */

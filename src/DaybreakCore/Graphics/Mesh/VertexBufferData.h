@@ -1,5 +1,7 @@
 #pragma once
 #include "Graphics/Mesh/BufferData.h"
+#include "Graphics/Mesh/VertexAttributeIterator.h"
+#include "Graphics/InputLayoutDescription.h"
 
 #include <memory>
 #include <vector>
@@ -7,52 +9,63 @@
 
 namespace Daybreak
 {
-    class InputLayoutDescription;
-
     /// Vertex buffer data that can be accessed via attribute streams and uploaded to the GPU.
-    class VertexBufferData : public BufferData
+    class VertexBufferData final : public BufferData
     {
     public:
         // Constructor.
         VertexBufferData(
-            _In_ std::unique_ptr<uint8_t[]> rawData,
-            _In_ std::shared_ptr<InputLayoutDescription> inputLayout,
-            _In_ size_t elemnetCount);
+            _In_ size_t byteCount,
+            _In_ std::unique_ptr<uint8_t[]> bytes,
+            _In_ std::shared_ptr<const InputLayoutDescription> inputLayout);
+
+        // Typed vertex constructor.
+        template<typename TVertex>
+        VertexBufferData(
+            _In_ size_t vertexCount,
+            _In_ std::unique_ptr<TVertex[]> vertices,
+            _In_ std::shared_ptr<const InputLayoutDescription> inputLayout)
+            : VertexBufferData(
+                vertexCount * sizeof(TVertex),
+                std::unique_ptr<uint8_t[]>(reinterpret_cast<uint8_t*>(vertices.release())),
+                inputLayout)
+        {
+        }
 
         // Destructor.
         virtual ~VertexBufferData();
 
+        // Get shared pointer to input layout.
+        std::shared_ptr<const InputLayoutDescription> inputLayout() const noexcept { return m_inputLayout; }
+
         // Get reference to input layout description.
         const InputLayoutDescription& inputLayoutRef() const noexcept { return *m_inputLayout.get(); }
 
-    protected:
-        // Internal constructor that does not set a pointer. Derived class must make sure to set it.
-        // TODO: Remove when TVertexBufferData class is removed.
-        VertexBufferData(_In_ std::shared_ptr<InputLayoutDescription> elementType);
+        // Get the number of vertices stored in the vertex buffer.
+        size_t vertexCount() const noexcept { return m_vertexCount; }
 
-    protected:
-        // Vertex element type definition.
-        std::shared_ptr<InputLayoutDescription> m_inputLayout;
-    };
-    
-    /// Typed software vertex buffer.
-    template<typename TVertex>
-    class TVertexBufferData : public VertexBufferData // TODO: Use static_assert to validate size matches
-    {
-    public:
-        // Constructor.
-        TVertexBufferData(_In_ const std::vector<TVertex>&& vertices)
-            : VertexBufferData(TVertex::inputLayout),
-              m_vertices(vertices)
+        // Get an iterator pointing to the start of an attribute stream.
+        template<typename T>
+        VertexAttributeIterator<T> attributeBegin(InputAttribute::SemanticName name, unsigned int index = 0)
         {
-           setUnownedDataPtr(vertices.size(), m_vertices.data());
+            auto attributeIndex = m_inputLayout->getAttributeIndexByName(name, index);
+            auto attributeOffset = m_inputLayout->attributeOffsetByIndex(attributeIndex);
+            auto attribute = m_inputLayout->getAttributeByIndex(attributeIndex);
+
+            if (sizeof(T) != attribute.sizeInBytes())
+            {
+                // TODO: Better exception.
+                throw std::runtime_error("Attribute iterator value type does not match input layout");
+            }
+
+            return VertexAttributeIterator<T>(
+                m_bytes.get(),
+                attributeOffset,
+                m_inputLayout->elementSizeInBytes());
         }
 
-    public:
-        // Get an unowned pointer to the raw bytes of the vertex buffer.
-        const TVertex * typedDataPtr() const noexcept { return m_vertices.size(); }
-
-    private:
-        std::vector<TVertex> m_vertices;
+    protected:
+        std::shared_ptr<const InputLayoutDescription> m_inputLayout;
+        size_t m_vertexCount = 0;
     };
 }

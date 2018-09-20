@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
+#include "Common/Error.h"
 #include "Graphics/InputLayoutDescription.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -74,5 +75,76 @@ public:
         Assert::AreEqual(0, (int)d.attributeOffsetByIndex(0));
         Assert::AreEqual(6, (int)d.attributeOffsetByIndex(1));
         Assert::AreEqual(9, (int)d.attributeOffsetByIndex(2));
+    }
+
+    TEST_METHOD(Input_Layout_Finds_Attribute_Index_By_Semantic_Name)
+    {
+        InputLayoutDescription d(std::vector<InputAttribute>
+        {
+            { InputAttribute::SemanticName::Position, 0, InputAttribute::StorageType::Short, 3 },
+            { InputAttribute::SemanticName::Texture, 0, InputAttribute::StorageType::UnsignedByte, 3 },
+            { InputAttribute::SemanticName::Normal, 0, InputAttribute::StorageType::Float, 3 }
+        });
+
+        Assert::AreEqual(0, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Position, 0));
+        Assert::AreEqual(1, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Texture, 0));
+        Assert::AreEqual(2, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Normal, 0));
+    }
+
+    TEST_METHOD(Input_Layout_Finds_Attribute_Index_By_Semantic_Name_And_Index)
+    {
+        InputLayoutDescription d(std::vector<InputAttribute>
+        {
+            { InputAttribute::SemanticName::Position, 1, InputAttribute::StorageType::Short, 3 },
+            { InputAttribute::SemanticName::Texture, 0, InputAttribute::StorageType::UnsignedByte, 3 },
+            { InputAttribute::SemanticName::Position, 0, InputAttribute::StorageType::Float, 3 },
+            { InputAttribute::SemanticName::Texture, 1, InputAttribute::StorageType::UnsignedByte, 3 },
+        });
+
+        Assert::AreEqual(2, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Position, 0));
+        Assert::AreEqual(0, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Position, 1));
+        Assert::AreEqual(1, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Texture, 0));
+        Assert::AreEqual(3, (int)d.getAttributeIndexByName(InputAttribute::SemanticName::Texture, 1));
+    }
+
+    TEST_METHOD(Input_Layout_Find_Attribute_Index_Throws_Exception_If_Name_Not_Found)
+    {
+        InputLayoutDescription d(std::vector<InputAttribute>
+        {
+            { InputAttribute::SemanticName::Position, 0, InputAttribute::StorageType::Short, 3 },
+            { InputAttribute::SemanticName::Texture, 0, InputAttribute::StorageType::UnsignedByte, 3 }
+        });
+
+        Assert::ExpectException<DaybreakDataException>([&d]() {
+            d.getAttributeIndexByName(InputAttribute::SemanticName::Normal, 0);
+        });
+    }
+
+    TEST_METHOD(Input_Layout_Find_Attribute_Index_Throws_Exception_If_Index_Not_Found)
+    {
+        InputLayoutDescription d(std::vector<InputAttribute>
+        {
+            { InputAttribute::SemanticName::Position, 0, InputAttribute::StorageType::Short, 3 },
+            { InputAttribute::SemanticName::Texture, 0, InputAttribute::StorageType::UnsignedByte, 3 }
+        });
+
+        Assert::ExpectException<DaybreakDataException>([&d]() {
+            d.getAttributeIndexByName(InputAttribute::SemanticName::Position, 1);
+        });
+    }
+
+    TEST_METHOD(Input_Layout_Finds_Attribute_By_Semantic_Name_And_Index)
+    {
+        std::vector<InputAttribute> attributes = {
+            { InputAttribute::SemanticName::Position, 1, InputAttribute::StorageType::Short, 3 },
+            { InputAttribute::SemanticName::Texture, 0, InputAttribute::StorageType::UnsignedByte, 3 },
+            { InputAttribute::SemanticName::Position, 0, InputAttribute::StorageType::Float, 3 }
+        };
+
+        InputLayoutDescription d(attributes);
+
+        Assert::IsTrue(attributes[2] == d.getAttributeByName(InputAttribute::SemanticName::Position, 0));
+        Assert::IsTrue(attributes[0] == d.getAttributeByName(InputAttribute::SemanticName::Position, 1));
+        Assert::IsTrue(attributes[1] == d.getAttributeByName(InputAttribute::SemanticName::Texture, 0));
     }
 };

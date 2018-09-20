@@ -130,9 +130,6 @@
     <ClInclude Include="Graphics\Mesh\BufferData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Mesh\TypedMeshData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Obj\ObjModelLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -149,6 +146,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\InputAttribute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Mesh\VertexAttributeIterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

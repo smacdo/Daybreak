@@ -60,6 +60,30 @@ InputAttribute InputLayoutDescription::getAttributeByIndex(size_t index) const n
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+size_t InputLayoutDescription::getAttributeIndexByName(
+    InputAttribute::SemanticName name,
+    unsigned int index) const
+{
+    for (size_t i = 0; i < m_attributes.size(); ++i)
+    {
+        const auto& attribute = m_attributes[i];
+
+        if (attribute.semanticName() == name && attribute.semanticIndex() == index)
+        {
+            return i;
+        }
+    }
+
+    throw DaybreakDataException("Input layout attribute was not found when searching by semantic name and index");
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+InputAttribute InputLayoutDescription::getAttributeByName(InputAttribute::SemanticName name, unsigned int index) const
+{
+    return m_attributes[getAttributeIndexByName(name, index)];
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 size_t InputLayoutDescription::elementSizeInBytes() const noexcept
 {
     size_t size = 0;

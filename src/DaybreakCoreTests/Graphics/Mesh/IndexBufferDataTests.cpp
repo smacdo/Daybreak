@@ -48,12 +48,12 @@ public:
     TEST_METHOD(Constructing_Index_Buffer_Copies_Element_Type)
     {
         std::unique_ptr<unsigned char[]> indices1(new unsigned char[5]{ 2, 5, 10, 11, 12 });
-        IndexBufferData indexBuffer1(5, std::move(indices1), IndexElementType::UnsignedShort);
+        IndexBufferData indexBuffer1(5 * 2, std::move(indices1), IndexElementType::UnsignedShort);
 
         Assert::AreEqual(IndexElementType::UnsignedShort, indexBuffer1.elementType());
 
         std::unique_ptr<unsigned char[]> indices2(new unsigned char[4]{ 2, 5, 10, 11 });
-        IndexBufferData indexBuffer2(4, std::move(indices2), IndexElementType::UnsignedInt);
+        IndexBufferData indexBuffer2(4 * 4, std::move(indices2), IndexElementType::UnsignedInt);
 
         Assert::AreEqual(IndexElementType::UnsignedInt, indexBuffer2.elementType());
     }
@@ -79,11 +79,27 @@ public:
         Assert::AreEqual(IndexElementType::UnsignedShort, indexBuffer.elementType());
     }
 
+    TEST_METHOD(Index_Buffer_U16_Constructor_Copies_Number_Of_Indices)
+    {
+        std::unique_ptr<uint16_t[]> indices(new uint16_t[4]{ 1000, 2000, 3000, 4000 });
+        IndexBufferData indexBuffer(4, std::move(indices));
+
+        Assert::AreEqual(4, (int)indexBuffer.indexCount());
+    }
+
     TEST_METHOD(Index_Buffer_U32_Constructor_Sets_U32_Type)
     {
         std::unique_ptr<uint32_t[]> indices(new uint32_t[3]{ 100000, 200000, 300000 });
         IndexBufferData indexBuffer(3, std::move(indices));
 
         Assert::AreEqual(IndexElementType::UnsignedInt, indexBuffer.elementType());
+    }
+
+    TEST_METHOD(Index_Buffer_U32_Constructor_Copies_Number_Of_Indices)
+    {
+        std::unique_ptr<uint32_t[]> indices(new uint32_t[5]{ 100000, 200000, 300000, 400000, 500000 });
+        IndexBufferData indexBuffer(5, std::move(indices));
+
+        Assert::AreEqual(5, (int)indexBuffer.indexCount());
     }
 };
