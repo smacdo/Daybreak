@@ -128,7 +128,6 @@ namespace Daybreak::TextUtils
     using U16WStringLineReader = TStringLineReader<char16_t>;
     using U32WStringLineReader = TStringLineReader<char32_t>;
 
-    // TODO: implement skipEmptyTokens + tests
     /**
      * Convert text into a sequence of tokens spearated by a specific character.
      */
@@ -153,29 +152,35 @@ namespace Daybreak::TextUtils
         /** Returns the next token from the text. */
         std::basic_string_view<CharT, Traits> readNextToken() noexcept
         {
-            // Is the splitter at the end of the text?
-            if (!hasNextToken())
+            const auto textSize = m_text.size();
+
+            while (m_position < textSize)
             {
-                return std::basic_string_view<CharT, Traits>();
+                // Find the position of the next unread separator character.
+                auto nextSeparatorPosition = m_text.find_first_of(m_separators, m_position);
+
+                // If there are no more separator characters then move the position to the end of the input which will
+                // cover all remaining unread characters.
+                if (nextSeparatorPosition == std::basic_string_view<CharT, Traits>::npos)
+                {
+                    nextSeparatorPosition = m_text.length();
+                }
+
+                // Break out of the loop if this token is non-empty (has at least one whitespace character) or if the
+                // splitter is configured to not skip empty tokens.
+                auto start = m_position;
+                auto end = nextSeparatorPosition;
+
+                m_position = nextSeparatorPosition + 1;
+
+                if (start != end || !m_skipEmptyTokens)
+                {
+                    return m_text.substr(start, end - start);
+                }
             }
 
-            // Find the position of the next unread separator character.
-            auto nextSeparatorPosition = m_text.find_first_of(m_separators, m_position);
-
-            // If there are no more separator characters then move the position to the end of the input which will
-            // cover all remaining unread characters.
-            if (nextSeparatorPosition == std::basic_string_view<CharT, Traits>::npos)
-            {
-                nextSeparatorPosition = m_text.length();
-            }
-            
-            // Return the next token as the unread text formed by [start, end).
-            auto start = m_position;
-            auto end = nextSeparatorPosition;
-
-            m_position = nextSeparatorPosition + 1;
-
-            return m_text.substr(start, end - start);
+            // If this point is reached then the splitter could not find any more non-empty tokens to return.
+            return std::basic_string_view<CharT, Traits>();
         }
 
         /** Check if there is another token to be read from the text. */
@@ -188,6 +193,18 @@ namespace Daybreak::TextUtils
         void reset() noexcept
         {
             m_position = 0;
+        }
+
+        /** Read the remaining unread text and return it. */
+        std::basic_string_view<CharT, Traits> readRemaining() noexcept
+        {
+            auto start = m_position;
+
+            // Move the current position to the end prior to returning.
+            m_position = m_text.size();
+
+            // Return the remaining unread portion of the string.
+            return m_text.substr(start, m_text.size() - start);
         }
 
         /** Get if the splitter will skip empty tokens (tokens that do not contain any text). */

@@ -146,6 +146,36 @@ public:
         Assert::IsFalse(reader.hasNextToken());
     }
 
+    TEST_METHOD(Split_String_Can_Skip_Empty_Tokens)
+    {
+        StringSplitter reader("one,,. ,two, three", ",.", true);
+        Assert::IsTrue(reader.skipEmptyTokens());
+
+        Assert::AreEqual(std::string_view("one"), reader.readNextToken());
+        Assert::IsTrue(reader.hasNextToken());
+
+        Assert::AreEqual(std::string_view(" "), reader.readNextToken());
+        Assert::IsTrue(reader.hasNextToken());
+
+        Assert::AreEqual(std::string_view("two"), reader.readNextToken());
+        Assert::IsTrue(reader.hasNextToken());
+
+        Assert::AreEqual(std::string_view(" three"), reader.readNextToken());
+        Assert::IsFalse(reader.hasNextToken());
+    }
+
+    TEST_METHOD(Split_String_Can_Skip_Empty_Tokens_At_End)
+    {
+        StringSplitter reader("one,,", ",", true);
+        Assert::IsTrue(reader.skipEmptyTokens());
+
+        Assert::AreEqual(std::string_view("one"), reader.readNextToken());
+        Assert::IsTrue(reader.hasNextToken());
+
+        Assert::IsTrue(std::string_view() == reader.readNextToken());
+        Assert::IsFalse(reader.hasNextToken());
+    }
+
     TEST_METHOD(Split_Empty_String)
     {
         StringSplitter reader("", ",");
@@ -170,6 +200,15 @@ public:
         Assert::AreEqual(std::wstring_view(L" two"), reader.readNextToken());
         Assert::IsTrue(reader.hasNextToken());
         Assert::AreEqual(std::wstring_view(L" three"), reader.readNextToken());
+        Assert::IsFalse(reader.hasNextToken());
+    }
+
+    TEST_METHOD(Read_Remainng_Unsplit_Text)
+    {
+        WStringSplitter reader(L"one, two, three", L",");
+
+        Assert::AreEqual(std::wstring_view(L"one"), reader.readNextToken());
+        Assert::AreEqual(std::wstring_view(L" two, three"), reader.readRemaining());
         Assert::IsFalse(reader.hasNextToken());
     }
 
