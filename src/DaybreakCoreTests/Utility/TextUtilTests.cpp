@@ -164,15 +164,18 @@ public:
         Assert::IsFalse(reader.hasNextToken());
     }
 
+    TEST_METHOD(Split_String_Has_Next_False_If_Skip_Empty_And_Only_Empty_Left)
+    {
+        StringSplitter reader("   ", " ", true);
+        Assert::IsFalse(reader.hasNextToken());
+    }
+
     TEST_METHOD(Split_String_Can_Skip_Empty_Tokens_At_End)
     {
         StringSplitter reader("one,,", ",", true);
         Assert::IsTrue(reader.skipEmptyTokens());
 
         Assert::AreEqual(std::string_view("one"), reader.readNextToken());
-        Assert::IsTrue(reader.hasNextToken());
-
-        Assert::IsTrue(std::string_view() == reader.readNextToken());
         Assert::IsFalse(reader.hasNextToken());
     }
 

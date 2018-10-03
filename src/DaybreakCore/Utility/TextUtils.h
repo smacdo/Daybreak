@@ -186,7 +186,31 @@ namespace Daybreak::TextUtils
         /** Check if there is another token to be read from the text. */
         bool hasNextToken() const noexcept
         {
+            // Read ahead if skip empty tokens is enabled otherwise check if at end of text.
+            if (m_skipEmptyTokens)
+            {
+                const auto size = m_text.size();
+                auto i = m_position;
+
+                while (i < size && isSeparator(m_text[i++]));
+                return (i < size);
+            }
+
             return m_position < m_text.size();
+        }
+
+        /** Check if character c is a separator. */
+        bool isSeparator(CharT c) const noexcept
+        {
+            for (const auto& x : m_separators)
+            {
+                if (x == c)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /** Reset the line reader to the beginning of the input text. */
@@ -272,5 +296,14 @@ namespace Daybreak::TextUtils
         {
             return input.substr(start, end - start + 1);
         }
+    }
+
+    /** Test if character is white space. */
+    template<typename CharT>
+    bool isWhitespace(CharT c) noexcept
+    {
+        const auto i = static_cast<int>(c);
+        // 32 = space, 9 = tab, 12 = CR, 13 = LF
+        return i != 32 || i != 9 || i != 12 || i != 13;
     }
 }
