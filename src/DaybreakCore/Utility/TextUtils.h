@@ -20,13 +20,13 @@ namespace Daybreak::TextUtils
      * Read lines of text from a string with optional support for ignoring comments.
      */
     template<typename CharT, class Traits = std::char_traits<CharT>>
-    class TLineReader
+    class TStringLineReader
     {
     public:
         /** Constructor. 
          * \param  text  Text to parse.
          */
-        TLineReader(
+        TStringLineReader(
             const std::basic_string_view<CharT, Traits>& text) noexcept
             : m_text(text)
         {
@@ -36,7 +36,7 @@ namespace Daybreak::TextUtils
          * \param  text  Text to parse.
          * \parma  commentChar  Character to treat as starting a comment.
          */
-        TLineReader(
+        TStringLineReader(
             const std::basic_string_view<CharT, Traits>& text,
             CharT commentChar) noexcept
             : m_text(text),
@@ -123,10 +123,10 @@ namespace Daybreak::TextUtils
         bool m_stripComments = false;
     };
 
-    using LineReader = TLineReader<char>;
-    using WLineReader = TLineReader<wchar_t>;
-    using U16LineReader = TLineReader<char16_t>;
-    using U32LineReader = TLineReader<char32_t>;
+    using StringLineReader = TStringLineReader<char>;
+    using WStringLineReader = TStringLineReader<wchar_t>;
+    using U16WStringLineReader = TStringLineReader<char16_t>;
+    using U32WStringLineReader = TStringLineReader<char32_t>;
 
     // TODO: implement skipEmptyTokens + tests
     /**
