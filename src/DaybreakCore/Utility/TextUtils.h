@@ -1,8 +1,21 @@
 #pragma once
 #include <string>
 
-namespace Daybreak
+namespace Daybreak::TextUtils
 {
+    /** Character constants. */
+    template<typename T> struct Constants { };
+
+    template<> struct Constants<char>
+    {
+        const static char * WhitespaceChars;
+    };
+
+    template<> struct Constants<wchar_t>
+    {
+        const static wchar_t * WhitespaceChars;
+    };
+
     /**
      * Reads lines of text from a text source.
      */
@@ -77,11 +90,140 @@ namespace Daybreak
 
     private:
         std::basic_string_view<CharT, Traits> m_text;
-        size_t m_position = 0;
+        typename std::basic_string_view<CharT, Traits>::size_type m_position = 0;
     };
 
     using LineReader = TLineReader<char>;
     using WLineReader = TLineReader<wchar_t>;
     using U16LineReader = TLineReader<char16_t>;
     using U32LineReader = TLineReader<char32_t>;
+
+    // TODO: implement skipEmptyTokens + tests
+    /**
+     * Convert text into a sequence of tokens spearated by a specific character.
+     */
+    template<typename CharT, class Traits = std::char_traits<CharT>>
+    class TStringSplitter
+    {
+    public:
+        /** Constructor.
+         * \param  text        Text to split.
+         * \param  separators  List of characters to split on.
+         */
+        TStringSplitter(
+            const std::basic_string_view<CharT, Traits>& text,
+            const std::basic_string_view<CharT, Traits>& separators,
+            bool skipEmptyTokens = false) noexcept
+            : m_text(text),
+              m_separators(separators),
+              m_skipEmptyTokens(skipEmptyTokens)
+        {
+        }
+
+        /** Returns the next token from the text. */
+        std::basic_string_view<CharT, Traits> readNextToken() noexcept
+        {
+            // Is the splitter at the end of the text?
+            if (!hasNextToken())
+            {
+                return "";
+            }
+
+            // Find the position of the next unread separator character.
+            auto nextSeparatorPosition = m_text.find_first_of(m_separators, m_position);
+
+            // If there are no more separator characters then move the position to the end of the input which will
+            // cover all remaining unread characters.
+            if (nextSeparatorPosition == std::basic_string_view<CharT, Traits>::npos)
+            {
+                nextSeparatorPosition = m_text.length();
+            }
+            
+            // Return the next token as the unread text formed by [start, end).
+            auto start = m_position;
+            auto end = nextSeparatorPosition;
+
+            m_position = nextSeparatorPosition + 1;
+
+            return m_text.substr(start, end - start);
+        }
+
+        /** Check if there is another token to be read from the text. */
+        bool hasNextToken() const noexcept
+        {
+            return m_position < m_text.size();
+        }
+
+        /** Reset the line reader to the beginning of the input text. */
+        void reset() noexcept
+        {
+            m_position = 0;
+        }
+
+        /** Get if the splitter will skip empty tokens (tokens that do not contain any text). */
+        bool skipEmptyTokens() const noexcept { return m_skipEmptyTokens; }
+
+        /** Set if the splitter will skip empty tokens (tokens that do not contain any text). */
+        void setSkipEmptyTokens(bool shouldSkip) noexcept { m_skipEmptyTokens = shouldSkip; }
+
+    private:
+        std::basic_string_view<CharT, Traits> m_text;
+        std::basic_string_view<CharT, Traits> m_separators;
+        typename std::basic_string_view<CharT, Traits>::size_type m_position = 0;
+        bool m_skipEmptyTokens = false;
+    };
+
+    using StringSplitter = TStringSplitter<char>;
+    using WStringSplitter = TStringSplitter<wchar_t>;
+    using U16StringSplitter = TStringSplitter<char16_t>;
+    using U32StringSplitter = TStringSplitter<char32_t>;
+
+    /** Trim whitespace characters from the beginning of input. */
+    template<typename CharT, class Traits = std::char_traits<CharT>>
+    std::basic_string_view<CharT, Traits> leftTrim(const std::basic_string_view<CharT, Traits>& input)
+    {
+        auto i = input.find_first_not_of(Constants<CharT>::WhitespaceChars);
+
+        if (i == std::basic_string_view<CharT, Traits>::npos)
+        {
+            return std::basic_string_view<CharT, Traits>();
+        }
+        else
+        {
+            return input.substr(i, input.length() - i);
+        }
+    }
+
+    /** Trim whitespace characters from the end of input. */
+    template<typename CharT, class Traits = std::char_traits<CharT>>
+    std::basic_string_view<CharT, Traits> rightTrim(const std::basic_string_view<CharT, Traits>& input)
+    {
+        auto i = input.find_last_not_of(Constants<CharT>::WhitespaceChars);
+
+        if (i == std::basic_string_view<CharT, Traits>::npos)
+        {
+            return std::basic_string_view<CharT, Traits>();
+        }
+        else
+        {
+            return input.substr(0, i + 1);
+        }
+    }
+
+    /** Trim whitespace characters from the start and end of input. */
+    template<typename CharT, class Traits = std::char_traits<CharT>>
+    std::basic_string_view<CharT, Traits> trim(const std::basic_string_view<CharT, Traits>& input)
+    {
+        auto start = input.find_first_not_of(Constants<CharT>::WhitespaceChars);
+        auto end = input.find_last_not_of(Constants<CharT>::WhitespaceChars);
+
+        if (start == std::basic_string_view<CharT, Traits>::npos || end == std::basic_string_view<CharT, Traits>::npos)
+        {
+            return std::basic_string_view<CharT, Traits>();
+        }
+        else
+        {
+            return input.substr(start, end - start + 1);
+        }
+    }
 }
