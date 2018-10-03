@@ -17,7 +17,7 @@ namespace Daybreak::TextUtils
     };
 
     /**
-     * Reads lines of text from a text source.
+     * Read lines of text from a string with optional support for ignoring comments.
      */
     template<typename CharT, class Traits = std::char_traits<CharT>>
     class TLineReader
@@ -26,8 +26,22 @@ namespace Daybreak::TextUtils
         /** Constructor. 
          * \param  text  Text to parse.
          */
-        TLineReader(const std::basic_string_view<CharT, Traits>& text) noexcept
+        TLineReader(
+            const std::basic_string_view<CharT, Traits>& text) noexcept
             : m_text(text)
+        {
+        }
+
+        /** Constructor.
+         * \param  text  Text to parse.
+         * \parma  commentChar  Character to treat as starting a comment.
+         */
+        TLineReader(
+            const std::basic_string_view<CharT, Traits>& text,
+            CharT commentChar) noexcept
+            : m_text(text),
+              m_commentChar(commentChar),
+              m_stripComments(true)
         {
         }
 
@@ -38,12 +52,20 @@ namespace Daybreak::TextUtils
             const auto size = m_text.size();
 
             auto end = start;
+            auto firstCommentChar = std::basic_string_view<CharT, Traits>::npos;
 
             // Read from the current position until the next newline is found. Once the loop has exited m_position will
             // either be pointing at the first character after the next newline, OR it will be at the end of the text.
             while (m_position < size)
             {
                 const auto c = m_text[m_position++];
+
+                // Record the position of this character if it is the start of a comment. Comments will be removed from
+                // the string when reading a line (if enabled).
+                if (m_stripComments && c == m_commentChar)
+                {
+                    firstCommentChar = m_position - 1;
+                }
 
                 // Check next character is a newline or not. Windows style newlines (\r\n) require special handling!
                 // When a carriage return is found, peek at the next character to see if it is the expected newline
@@ -72,6 +94,12 @@ namespace Daybreak::TextUtils
                 }
             }
 
+            // If a comment was found in this line then adjust the end of the line to be the start of the comment.
+            if (firstCommentChar != std::basic_string_view<CharT, Traits>::npos)
+            {
+                end = firstCommentChar;
+            }
+
             // Return to the caller the extracted line.
             return m_text.substr(start, end - start);
         }
@@ -91,6 +119,8 @@ namespace Daybreak::TextUtils
     private:
         std::basic_string_view<CharT, Traits> m_text;
         typename std::basic_string_view<CharT, Traits>::size_type m_position = 0;
+        CharT m_commentChar = 0;
+        bool m_stripComments = false;
     };
 
     using LineReader = TLineReader<char>;

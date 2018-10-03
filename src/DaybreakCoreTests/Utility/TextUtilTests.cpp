@@ -45,6 +45,18 @@ public:
         Assert::IsFalse(reader.hasNextLine());
     }
 
+    TEST_METHOD(Read_Lines_From_Wide_String_With_LF_And_CRLF)
+    {
+        WLineReader reader(L"hello\nworld!\r\nblah");
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::AreEqual(std::wstring_view(L"hello"), reader.readNextLine());
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::AreEqual(std::wstring_view(L"world!"), reader.readNextLine());
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::AreEqual(std::wstring_view(L"blah"), reader.readNextLine());
+        Assert::IsFalse(reader.hasNextLine());
+    }
+
     TEST_METHOD(Read_Lines_With_Empty_Input)
     {
         LineReader reader("");
@@ -69,6 +81,26 @@ public:
         Assert::AreEqual(std::string_view(""), reader.readNextLine());
         Assert::IsTrue(reader.hasNextLine());
         Assert::AreEqual(std::string_view("World!"), reader.readNextLine());
+        Assert::IsFalse(reader.hasNextLine());
+    }
+
+    TEST_METHOD(Read_Lines_With_Comment)
+    {
+        LineReader reader("apple # this is a comment", '#');
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::AreEqual(std::string_view("apple "), reader.readNextLine());;
+        Assert::IsFalse(reader.hasNextLine());
+    }
+
+    TEST_METHOD(Read_Multiple_Lines_With_Comment)
+    {
+        LineReader reader("apple # this is a comment\nfoo\n#blah\n", '#');
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::AreEqual(std::string_view("apple "), reader.readNextLine());;
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::AreEqual(std::string_view("foo"), reader.readNextLine());;
+        Assert::IsTrue(reader.hasNextLine());
+        Assert::IsTrue(std::string_view("") == reader.readNextLine());;
         Assert::IsFalse(reader.hasNextLine());
     }
 
