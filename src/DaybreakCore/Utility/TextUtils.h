@@ -126,7 +126,7 @@ namespace Daybreak::TextUtils
             // Is the splitter at the end of the text?
             if (!hasNextToken())
             {
-                return "";
+                return std::basic_string_view<CharT, Traits>();
             }
 
             // Find the position of the next unread separator character.

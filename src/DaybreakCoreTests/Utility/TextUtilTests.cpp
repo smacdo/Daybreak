@@ -118,7 +118,7 @@ public:
     {
         StringSplitter reader("", ",");
         Assert::IsFalse(reader.hasNextToken());
-        Assert::AreEqual(std::string_view(""), reader.readNextToken());
+        Assert::IsTrue(std::string_view() == reader.readNextToken());
     }
 
     TEST_METHOD(Split_String_With_No_Separators)
@@ -126,6 +126,18 @@ public:
         StringSplitter reader("Hello World!", ",");
         Assert::IsTrue(reader.hasNextToken());
         Assert::AreEqual(std::string_view("Hello World!"), reader.readNextToken());
+        Assert::IsFalse(reader.hasNextToken());
+    }
+
+    TEST_METHOD(Split_Wide_String_With_Comma_Separator)
+    {
+        WStringSplitter reader(L"one, two, three", L",");
+        Assert::IsTrue(reader.hasNextToken());
+        Assert::AreEqual(std::wstring_view(L"one"), reader.readNextToken());
+        Assert::IsTrue(reader.hasNextToken());
+        Assert::AreEqual(std::wstring_view(L" two"), reader.readNextToken());
+        Assert::IsTrue(reader.hasNextToken());
+        Assert::AreEqual(std::wstring_view(L" three"), reader.readNextToken());
         Assert::IsFalse(reader.hasNextToken());
     }
 
