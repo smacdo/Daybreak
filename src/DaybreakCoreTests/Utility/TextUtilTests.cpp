@@ -179,11 +179,14 @@ public:
         Assert::IsFalse(reader.hasNextToken());
     }
 
-    TEST_METHOD(Split_Empty_String)
+    TEST_METHOD(Split_Empty_String_Throws_Exception)
     {
         StringSplitter reader("", ",");
         Assert::IsFalse(reader.hasNextToken());
-        Assert::IsTrue(std::string_view() == reader.readNextToken());
+
+        Assert::ExpectException<std::runtime_error>(
+            [&reader] { reader.readNextToken(); },
+            L"No more tokens to read for string splitter");
     }
 
     TEST_METHOD(Split_String_With_No_Separators)

@@ -150,8 +150,15 @@ namespace Daybreak::TextUtils
         }
 
         /** Returns the next token from the text. */
-        std::basic_string_view<CharT, Traits> readNextToken() noexcept
+        std::basic_string_view<CharT, Traits> readNextToken()
         {
+            // Throw an exception if there are no more tokens to be read.
+            if (m_position >= m_text.size())
+            {
+                throw std::runtime_error("No more tokens to read for string splitter");
+            }
+
+            // Get the next valid token (either any token or the next non-empty token depending on settings).
             const auto textSize = m_text.size();
 
             while (m_position < textSize)
@@ -192,7 +199,7 @@ namespace Daybreak::TextUtils
                 const auto size = m_text.size();
                 auto i = m_position;
 
-                while (i < size && isSeparator(m_text[i++]));
+                while (i < size && isSeparator(m_text[i])) { i++; }
                 return (i < size);
             }
 
@@ -298,12 +305,27 @@ namespace Daybreak::TextUtils
         }
     }
 
-    /** Test if character is white space. */
+    /** Test if character is white space. (Not unicode compliant!) */
     template<typename CharT>
     bool isWhitespace(CharT c) noexcept
     {
         const auto i = static_cast<int>(c);
         // 32 = space, 9 = tab, 12 = CR, 13 = LF
-        return i != 32 || i != 9 || i != 12 || i != 13;
+        return i == 32 || i == 9 || i == 12 || i == 13;
+    }
+
+    /** Test if string is white space. (Not unicode compliant!). */
+    template<typename CharT, class Traits = std::char_traits<CharT>>
+    bool isWhitespace(const std::basic_string_view<CharT, Traits>& input)
+    {
+        for (const auto& c : input)
+        {
+            if (!isWhitespace(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
