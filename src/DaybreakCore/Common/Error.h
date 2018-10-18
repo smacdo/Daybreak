@@ -153,7 +153,37 @@ class DaybreakDataException : public DaybreakEngineException
 {
 public:
     /** Constructor. */
-    DaybreakDataException(const std::string& message);
+    DaybreakDataException(const std::string& message)
+        : DaybreakEngineException(message, "")
+    {
+    }
+
+    /** Constructor. */
+    DaybreakDataException(const std::string& message, const std::string& fileName, size_t lineNumber = 0)
+        : DaybreakEngineException(format(message, fileName, lineNumber), ""),
+          m_fileName(fileName),
+          m_lineNumber(lineNumber)
+    {
+    }
+
+    /** Get file name. */
+    std::string fileName() const noexcept { return m_fileName; }
+
+    /** Get if file name provided. */
+    bool hasFileName() const noexcept { return m_fileName.size() > 0; }
+
+    /** Get line number. */
+    size_t lineNumber() const noexcept { return m_lineNumber; }
+
+    /** Get if line number provided. */
+    bool hasLineNumber() const noexcept { return m_lineNumber != 0; }
+
+private:
+    static std::string format(const std::string& message, const std::string& fileName, size_t lineNumber);
+
+private:
+    std::string m_fileName;
+    size_t m_lineNumber = 0;
 };
 
 /** Exceptions with reading content after loading it into memory. */

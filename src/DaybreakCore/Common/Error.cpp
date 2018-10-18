@@ -2,6 +2,7 @@
 #include "Error.h"
 
 #include <string>
+#include <sstream>
 #include <exception>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -89,12 +90,6 @@ DaybreakShaderLinkException::DaybreakShaderLinkException(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-DaybreakDataException::DaybreakDataException(const std::string& message)
-    : DaybreakEngineException(message, "")
-{
-}
-
-//---------------------------------------------------------------------------------------------------------------------
 ContentReadException::ContentReadException(
     const std::string& contentFilePath,
     const std::string& contentTypeName,
@@ -105,4 +100,34 @@ ContentReadException::ContentReadException(
       m_filePath(contentFilePath),
       m_typeName(contentTypeName)
 {
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::string DaybreakDataException::format(const std::string& message, const std::string& fileName, size_t lineNumber)
+{
+    if (fileName.size() == 0 && lineNumber == 0)
+    {
+        return message;
+    }
+    else 
+    {
+        std::stringstream ss;
+
+        ss << message << " (";
+
+        if (fileName.size() > 0)
+        {
+            ss << fileName;
+        }
+
+        if (lineNumber > 0)
+        {
+            ss << ":" << lineNumber;
+        }
+
+        ss << ")";
+
+        return ss.str();
+    }
+    
 }

@@ -212,6 +212,7 @@
     <ClInclude Include="Graphics\InputLayoutDescription.h" />
     <ClInclude Include="Graphics\Mesh\MeshData.h" />
     <ClInclude Include="Renderer\VertexBuffer.h" />
+    <ClInclude Include="Resources\Obj\ObjModelException.h" />
     <ClInclude Include="Resources\Obj\ObjModelLoader.h" />
     <ClInclude Include="Resources\Obj\stdafx.h" />
     <ClInclude Include="Resources\stdafx.h" />

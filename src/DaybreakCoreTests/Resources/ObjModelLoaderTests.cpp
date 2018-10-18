@@ -147,6 +147,23 @@ public:
         Assert::AreEqual({ {3, 2, 1}, {3, 1, 2}, {0, 0, 0} }, model->groups[0].faces[1]);
     }
 
+    TEST_METHOD(F_Missing_One_Or_Two_Face_Elements_Throws_Exception)
+    {
+        ObjModelParser parser;
+
+        const char * ObjData =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n"
+            "f 1/2 2/1 3/3\n f 3/3 2/1 1/2";
+
+        auto model = parser.parse(ObjData);
+
+        Assert::AreEqual(2, (int)model->groups[0].faces.size());
+        Assert::AreEqual({ {1, 2, 3}, {2, 1, 3}, {0, 0, 0} }, model->groups[0].faces[0]);
+        Assert::AreEqual({ {3, 2, 1}, {3, 1, 2}, {0, 0, 0} }, model->groups[0].faces[1]);
+    }
+
     TEST_METHOD(F_PTN_Adds_Face)
     {
         ObjModelParser parser;
