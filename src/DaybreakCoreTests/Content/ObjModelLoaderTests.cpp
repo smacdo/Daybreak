@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "Resources/Obj/ObjModelLoader.h"
+#include "Content/ObjModel/ObjModelLoader.h"
 #include "TestHelpers.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

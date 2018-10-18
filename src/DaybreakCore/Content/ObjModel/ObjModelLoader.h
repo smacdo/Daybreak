@@ -11,9 +11,6 @@ namespace Daybreak
 {
     class MeshData;
 
-    /// Utility function that loads a mesh from an obj file.
-    std::unique_ptr<MeshData> LoadObjModelFromText(const std::string& modeldata);
-
     /// Obj model data.
     struct obj_face_t
     {

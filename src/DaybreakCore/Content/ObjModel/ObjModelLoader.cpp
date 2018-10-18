@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ObjModelLoader.h"
 #include "Utility/TextUtils.h"
-#include "Resources/Obj/ObjModelException.h"
+#include "Content/ObjModel/ObjModelException.h"
 #include "Common/Error.h"
 
 #include <sstream>
@@ -57,7 +57,7 @@ std::unique_ptr<obj_model_t> ObjModelParser::parse(const std::string_view& objDa
             m_model->normals.push_back({
                 readFloat(splitter, "vn", "x"),
                 readFloat(splitter, "vn", "y"),
-                readFloat(splitter, "vn", "z")});
+                readFloat(splitter, "vn", "z")}); 
         }
         else if (command == "f")
         {

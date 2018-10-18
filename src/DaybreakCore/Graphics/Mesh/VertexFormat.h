@@ -23,6 +23,26 @@ namespace Daybreak
             elements[5] = nx; elements[6] = ny; elements[7] = nz;
         }
 
+        void setPosition(float x, float y, float z)
+        {
+            elements[0] = x;
+            elements[1] = y;
+            elements[2] = z;
+        }
+
+        void setUV(float u, float v)
+        {
+            elements[3] = u;
+            elements[4] = v;
+        }
+
+        void setNormal(float x, float y, float z)
+        {
+            elements[5] = x;
+            elements[6] = y;
+            elements[7] = z;
+        }
+
         float elements[3 + 2 + 3];
 
     public:

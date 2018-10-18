@@ -182,6 +182,10 @@
     <ClInclude Include="Common\Error.h" />
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Common\stdafx.h" />
+    <ClInclude Include="Content\IResourceLoader.h" />
+    <ClInclude Include="Content\ObjModel\ObjResourceLoader.h" />
+    <ClInclude Include="Content\ResourcesManager.h" />
+    <ClInclude Include="Content\StandardFileSystem.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
     <ClInclude Include="Graphics\InputAttribute.h" />
@@ -191,6 +195,7 @@
     <ClInclude Include="Graphics\Mesh\VertexAttributeIterator.h" />
     <ClInclude Include="Graphics\Mesh\VertexBufferData.h" />
     <ClInclude Include="Graphics\Mesh\VertexFormat.h" />
+    <ClInclude Include="Graphics\ModelData.h" />
     <ClInclude Include="Renderer\GpuBuffer.h" />
     <ClInclude Include="Renderer\GpuResource.h" />
     <ClInclude Include="Renderer\InputLayout.h" />
@@ -212,10 +217,11 @@
     <ClInclude Include="Graphics\InputLayoutDescription.h" />
     <ClInclude Include="Graphics\Mesh\MeshData.h" />
     <ClInclude Include="Renderer\VertexBuffer.h" />
-    <ClInclude Include="Resources\Obj\ObjModelException.h" />
-    <ClInclude Include="Resources\Obj\ObjModelLoader.h" />
-    <ClInclude Include="Resources\Obj\stdafx.h" />
-    <ClInclude Include="Resources\stdafx.h" />
+    <ClInclude Include="Content\IFileSystem.h" />
+    <ClInclude Include="Content\ObjModel\ObjModelException.h" />
+    <ClInclude Include="Content\ObjModel\ObjModelLoader.h" />
+    <ClInclude Include="Content\ObjModel\stdafx.h" />
+    <ClInclude Include="Content\stdafx.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\FirstPersonCameraController.h" />
     <ClInclude Include="Scene\Scene.h" />
@@ -229,6 +235,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\Error.cpp" />
+    <ClCompile Include="Content\ObjModel\ObjResourceLoader.cpp" />
+    <ClCompile Include="Content\ResourcesManager.cpp" />
+    <ClCompile Include="Content\StandardFileSystem.cpp" />
     <ClCompile Include="Graphics\BasicGeometryGenerator.cpp" />
     <ClCompile Include="Graphics\Image.cpp" />
     <ClCompile Include="Graphics\InputAttribute.cpp" />
@@ -237,6 +246,7 @@
     <ClCompile Include="Graphics\Mesh\IndexBufferElement.cpp" />
     <ClCompile Include="Graphics\Mesh\VertexFormat.cpp" />
     <ClCompile Include="Graphics\Mesh\VertexBufferData.cpp" />
+    <ClCompile Include="Graphics\ModelData.cpp" />
     <ClCompile Include="Input\InputKeys.cpp" />
     <ClCompile Include="Input\SdlInputSource.cpp" />
     <ClCompile Include="Graphics\Mesh\MeshData.cpp" />
@@ -246,7 +256,7 @@
     <ClCompile Include="Renderer\RenderEffect.cpp" />
     <ClCompile Include="Graphics\InputLayoutDescription.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
-    <ClCompile Include="Resources\Obj\ObjModelLoader.cpp" />
+    <ClCompile Include="Content\ObjModel\ObjModelLoader.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\FirstPersonCameraController.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />

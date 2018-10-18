@@ -9,6 +9,7 @@
 #include "OglRenderer/OglTexture.h"
 #include "OglRenderer/OglPhongLightingEffect.h"
 #include "Renderer/Mesh.h"
+#include "Graphics/ModelData.h"
 #include "Renderer/Phong/PhongMaterial.h"
 #include "Renderer/Phong/PhongLight.h"
 #include "Renderer/RenderContext.h"
@@ -17,6 +18,8 @@
 #include "Graphics/Image.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
+#include "Content/ResourcesManager.h"
+#include "Content/StandardFileSystem.h"
 
 #include <glad\glad.h>
 #include <string>
@@ -181,10 +184,11 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
-    auto cubeMesh = BasicGeometryGenerator::MakeCube();
+    auto resources = std::make_unique<ResourcesManager>(std::make_shared<StandardFileSystem>("Content"));
+    auto cubeModel = resources->loadModel("cube.obj");
 
-    auto vertexBuffer = OglVertexBuffer::generate(*cubeMesh.get());
-    auto indexBuffer = OglIndexBuffer::generate(*cubeMesh.get());
+    auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh());
+    auto indexBuffer = OglIndexBuffer::generate(cubeModel->mesh());
 
     auto material = std::make_shared<PhongMaterial>();
 
