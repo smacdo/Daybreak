@@ -4,12 +4,12 @@
 namespace Daybreak
 {
     /** File system abstraction layer implemented using standard C++ API. */
-    class StandardFileSystem : public IFileSystem
+    class DefaultFileSystem : public IFileSystem
     {
     public:
-        StandardFileSystem(const std::string& rootDirectory);
-        ~StandardFileSystem();
-        virtual std::string loadFileAsText(const std::string& path) override;
+        DefaultFileSystem(const std::string& rootDirectory);
+        ~DefaultFileSystem();
+        virtual std::future<std::string> loadFileAsText(const std::string& path) override;
 
     private:
         std::string getFullPath(const std::string& path);

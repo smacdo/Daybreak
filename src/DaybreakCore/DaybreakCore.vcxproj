@@ -185,7 +185,7 @@
     <ClInclude Include="Content\IResourceLoader.h" />
     <ClInclude Include="Content\ObjModel\ObjResourceLoader.h" />
     <ClInclude Include="Content\ResourcesManager.h" />
-    <ClInclude Include="Content\StandardFileSystem.h" />
+    <ClInclude Include="Content\DefaultFileSystem.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
     <ClInclude Include="Graphics\InputAttribute.h" />
@@ -237,7 +237,7 @@
     <ClCompile Include="Common\Error.cpp" />
     <ClCompile Include="Content\ObjModel\ObjResourceLoader.cpp" />
     <ClCompile Include="Content\ResourcesManager.cpp" />
-    <ClCompile Include="Content\StandardFileSystem.cpp" />
+    <ClCompile Include="Content\DefaultFileSystem.cpp" />
     <ClCompile Include="Graphics\BasicGeometryGenerator.cpp" />
     <ClCompile Include="Graphics\Image.cpp" />
     <ClCompile Include="Graphics\InputAttribute.cpp" />

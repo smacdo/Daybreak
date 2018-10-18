@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <future>
 
 namespace Daybreak
 {
@@ -15,10 +16,10 @@ namespace Daybreak
         ResourcesManager(std::shared_ptr<IFileSystem> fileSystem);
 
         /** Load a 3d model. */
-        std::unique_ptr<ModelData> loadModel(const std::string& path);
+        std::future<std::unique_ptr<ModelData>> loadModel(const std::string& path);
 
         /** Load a text file. */
-        std::string loadTextFile(const std::string& path);
+        std::future<std::string> loadTextFile(const std::string& path);
 
     private:
         std::shared_ptr<IFileSystem> m_fileSystem;

@@ -157,9 +157,6 @@
     <ClInclude Include="Content\ResourcesManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Content\StandardFileSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Content\IResourceLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -176,6 +173,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Content\ObjModel\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\DefaultFileSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -255,9 +255,6 @@
     <ClCompile Include="Content\ResourcesManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Content\StandardFileSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\ModelData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -265,6 +262,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Content\ObjModel\ObjResourceLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\DefaultFileSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

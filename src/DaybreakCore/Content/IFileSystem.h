@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <future>
 
 namespace Daybreak
 {
@@ -8,6 +9,6 @@ namespace Daybreak
     { 
     public:
         virtual ~IFileSystem() = default;
-        virtual std::string loadFileAsText(const std::string& path) = 0;
+        virtual std::future<std::string> loadFileAsText(const std::string& path) = 0;
     };
 }

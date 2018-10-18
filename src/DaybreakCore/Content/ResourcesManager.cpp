@@ -16,14 +16,14 @@ ResourcesManager::ResourcesManager(std::shared_ptr<IFileSystem> fileSystem)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<ModelData> ResourcesManager::loadModel(const std::string& path)
+std::future<std::unique_ptr<ModelData>> ResourcesManager::loadModel(const std::string& path)
 {
     ObjResourceLoader l;
     return l.load(path, *this);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::string ResourcesManager::loadTextFile(const std::string& path)
+std::future<std::string> ResourcesManager::loadTextFile(const std::string& path)
 {
     return m_fileSystem->loadFileAsText(path);
 }

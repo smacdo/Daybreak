@@ -1,32 +1,38 @@
 #include "stdafx.h"
-#include "StandardFileSystem.h"
+#include "DefaultFileSystem.h"
 
 #include <fstream>
 
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
-StandardFileSystem::StandardFileSystem(const std::string& rootDirectory)
+DefaultFileSystem::DefaultFileSystem(const std::string& rootDirectory)
     : m_rootDirectory(rootDirectory)
 {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-StandardFileSystem::~StandardFileSystem() = default;
+DefaultFileSystem::~DefaultFileSystem() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
-std::string StandardFileSystem::loadFileAsText(const std::string& path)
+std::future<std::string> DefaultFileSystem::loadFileAsText(const std::string& path)
 {
-    std::ifstream stream;
+    auto fullPath = getFullPath(path);
 
-    stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);  // Enable exceptions on stream.
-    stream.open(getFullPath(path));
+    return std::async(
+        std::launch::async | std::launch::deferred,
+        [fullPath]() {
+            std::ifstream stream;
 
-    return std::string(std::istreambuf_iterator<char>(stream), {});
+            stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);  // Enable exceptions on stream.
+            stream.open(fullPath);
+
+            return std::string(std::istreambuf_iterator<char>(stream), {});
+    });
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::string StandardFileSystem::getFullPath(const std::string& path)
+std::string DefaultFileSystem::getFullPath(const std::string& path)
 {
     if (m_rootDirectory.empty())
     {

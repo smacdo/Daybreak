@@ -7,7 +7,7 @@ namespace Daybreak
     class ObjResourceLoader : public IResourceLoader<ModelData>
     {
     public:
-        virtual std::unique_ptr<ModelData> load(
+        virtual std::future<std::unique_ptr<ModelData>> load(
             const std::string& resourcePath,
             ResourcesManager& resources) override;
     };

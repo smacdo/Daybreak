@@ -19,7 +19,7 @@
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
 #include "Content/ResourcesManager.h"
-#include "Content/StandardFileSystem.h"
+#include "Content/DefaultFileSystem.h"
 
 #include <glad\glad.h>
 #include <string>
@@ -184,8 +184,8 @@ void SceneRenderer::CreateDefaultScene()
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
-    auto resources = std::make_unique<ResourcesManager>(std::make_shared<StandardFileSystem>("Content"));
-    auto cubeModel = resources->loadModel("cube.obj");
+    auto resources = std::make_unique<ResourcesManager>(std::make_shared<DefaultFileSystem>("Content"));
+    auto cubeModel = resources->loadModel("cube.obj").get();
 
     auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh());
     auto indexBuffer = OglIndexBuffer::generate(cubeModel->mesh());
