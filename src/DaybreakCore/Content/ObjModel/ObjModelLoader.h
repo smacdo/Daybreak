@@ -5,7 +5,7 @@
 #include <map>
 #include <glm/glm.hpp>
 
-#include "Utility/TextUtils.h"
+#include "Utility/TextUtils.h" // TODO: Remove!
 
 namespace Daybreak
 {
@@ -89,6 +89,9 @@ namespace Daybreak
         std::unique_ptr<obj_model_t> parse(const std::string_view& objData, const std::string& fileName = "");
 
     private:
+        /** Evaluate one line from the obj file. */
+        void parseLine(const std::string_view& line);
+
         /** Reset the state of the parser. */
         void reset() noexcept;
 
@@ -160,31 +163,6 @@ namespace Daybreak
             const char * command,           //< Obj command that resulted in this function being called.
             const char * field) const;      //< Obj command field that resulted in this function being called.
 
-        float readFloat(
-            Daybreak::TextUtils::StringSplitter& arguments,
-            const char * command,
-            const char * field) const;
-
-        float parseFloat(
-            const std::string_view& token,
-            const char * command,
-            const char * field) const;
-
-        int readInt(
-            Daybreak::TextUtils::StringSplitter& arguments,
-            const char * command,
-            const char * field) const;
-
-        int parseInt(
-            const std::string_view& token,
-            const char * command,
-            const char * field) const;
-
-        std::string readString(
-            Daybreak::TextUtils::StringSplitter& arguments,
-            const char * command,
-            const char * field) const;
-
     private:
         std::unique_ptr<obj_model_t> m_model;
         std::string m_fileName = "";
@@ -192,7 +170,6 @@ namespace Daybreak
         std::string m_activeObjectName;
         std::string m_activeGroupName;
         std::string m_activeMaterialName;
-        std::map<std::string, unsigned int> m_groups;
         bool m_firstFace = true;
     };
 }

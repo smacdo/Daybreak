@@ -2,10 +2,8 @@
 #include "ObjModelLoader.h"
 #include "Utility/TextUtils.h"
 #include "Content/ObjModel/ObjModelException.h"
+#include "Content/ObjModel/TextParsingUtils.h"
 #include "Common/Error.h"
-
-#include <sstream>
-#include <charconv>
 
 using namespace Daybreak;
 using namespace Daybreak::TextUtils;
@@ -26,66 +24,7 @@ std::unique_ptr<obj_model_t> ObjModelParser::parse(const std::string_view& objDa
 
     while (lineReader.hasNextLine())
     {
-        auto line = lineReader.readNextLine();
-
-        // Skip lines that are entirely empty space.
-        if (isWhitespace(line))
-        {
-            continue;
-        }
-
-        // Split the line into tokens separated by whitespace. Look at the first token to determine what obj command
-        // should be performed.
-        StringSplitter splitter(line, " \t", true);
-        auto command = splitter.readNextToken();
-
-        if (command == "v")
-        {
-            m_model->positions.push_back({
-                readFloat(splitter, "v", "x"),
-                readFloat(splitter, "v", "y"),
-                readFloat(splitter, "v", "z")});
-        }
-        else if (command == "vt")
-        {
-            m_model->uv.push_back({
-                readFloat(splitter, "vt", "u"),
-                readFloat(splitter, "vt", "v")});
-        }
-        else if (command == "vn")
-        {
-            m_model->normals.push_back({
-                readFloat(splitter, "vn", "x"),
-                readFloat(splitter, "vn", "y"),
-                readFloat(splitter, "vn", "z")}); 
-        }
-        else if (command == "f")
-        {
-            currentGroup().faces.push_back(readFace(splitter));
-        }
-        else if (command == "g")
-        {
-            useGroupName(readString(splitter, "g", "name"));
-        }
-        else if (command == "o")
-        {
-            useObjectName(readString(splitter, "o", "name"));
-        }
-        else if (command == "usemtl")
-        {
-            useMaterial(readString(splitter, "usemtl", "name"));
-        }
-        else if (command == "mtllib")
-        {
-            m_model->materialLibraries.push_back(readString(splitter, "mtllib", "filename"));
-        }
-        else
-        {
-            std::stringstream ss;
-            ss << "Unknown obj command '" << command.data() << "' while reading line " << m_lineNumber;
-
-            throw std::runtime_error(ss.str());
-        }
+        parseLine(lineReader.readNextLine());
 
         // Increment internal line counter (used for error reporting).
         m_lineNumber++;
@@ -95,11 +34,82 @@ std::unique_ptr<obj_model_t> ObjModelParser::parse(const std::string_view& objDa
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+void ObjModelParser::parseLine(const std::string_view& line)
+{
+    // Skip lines that are entirely empty space.
+    if (isWhitespace(line))
+    {
+        return;
+    }
+
+    // Split the line into tokens separated by whitespace. Look at the first token to determine what obj command
+    // should be performed.
+    StringSplitter splitter(line, " \t", true);
+    auto command = splitter.readNextToken();
+
+    try
+    {
+        if (command == "v")
+        {
+            m_model->positions.push_back({
+                readExpectedFloat(splitter),
+                readExpectedFloat(splitter),
+                readExpectedFloat(splitter) });
+        }
+        else if (command == "vt")
+        {
+            m_model->uv.push_back({
+                readExpectedFloat(splitter),
+                readExpectedFloat(splitter) });
+        }
+        else if (command == "vn")
+        {
+            m_model->normals.push_back({
+                readExpectedFloat(splitter),
+                readExpectedFloat(splitter),
+                readExpectedFloat(splitter) });
+        }
+        else if (command == "f")
+        {
+            currentGroup().faces.push_back(readFace(splitter));
+        }
+        else if (command == "g")
+        {
+            useGroupName(readExpectedString(splitter));
+        }
+        else if (command == "o")
+        {
+            useObjectName(readExpectedString(splitter));
+        }
+        else if (command == "usemtl")
+        {
+            useMaterial(readExpectedString(splitter));
+        }
+        else if (command == "mtllib")
+        {
+            m_model->materialLibraries.push_back(readExpectedString(splitter));
+        }
+        else
+        {
+            throw ObjModelException("Unknown obj command", m_fileName, m_lineNumber, "", "");
+        }
+    }
+    catch (const std::runtime_error& e)
+    {
+        throw ObjModelException(e.what(), m_fileName, m_lineNumber, command.data(), "");
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 void ObjModelParser::reset() noexcept
 {
     m_model.reset(new obj_model_t);
-    m_lineNumber = 0;
+    m_lineNumber = 1;
     m_fileName = "";
+    m_activeObjectName = "";
+    m_activeGroupName = "";
+    m_activeMaterialName = "";
+    m_firstFace = true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -323,7 +333,7 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
         // Read position index.
         if (splitter.hasNextToken())
         {
-            element.p = parseInt(splitter.readNextToken(), command, "positionIndex");
+            element.p = parseInt(splitter.readNextToken());
         }
         else
         {
@@ -337,7 +347,7 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
 
             if (token.size() > 0)
             {
-                element.t = parseInt(token, command, "uvIndex");
+                element.t = parseInt(token);
             }
         }
 
@@ -348,7 +358,7 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
 
             if (token.size() > 0)
             {
-                element.n = parseInt(token, command, "normalIndex");
+                element.n = parseInt(token);
             }
         }
 
@@ -357,94 +367,5 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
     else
     {
         throw ObjModelException("Missing face element", m_fileName, m_lineNumber, command, field);
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-float ObjModelParser::readFloat(
-    Daybreak::TextUtils::StringSplitter& arguments,
-    const char * command,
-    const char * field) const
-{
-    if (arguments.hasNextToken())
-    {
-        return parseFloat(arguments.readNextToken(), command, field);
-    }
-    else
-    {
-        throw ObjModelException("Missing float value", m_fileName, m_lineNumber, command, field);
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-float ObjModelParser::parseFloat(
-    const std::string_view& token,
-    const char * command,
-    const char * field) const
-{
-    float value = 0.0f;
-    auto result = std::from_chars(
-        token.data(),
-        token.data() + token.size(),
-        value);
-
-    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
-    {
-        throw ObjModelException("Invalid float value", m_fileName, m_lineNumber, command, field);
-    }
-
-    return value;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-int ObjModelParser::readInt(
-    Daybreak::TextUtils::StringSplitter& arguments,
-    const char * command,
-    const char * field) const
-{
-    if (arguments.hasNextToken())
-    {
-        return parseInt(arguments.readNextToken(), command, field);
-    }
-    else
-    {
-        throw ObjModelException("Missing int value", m_fileName, m_lineNumber, command, field);
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-int ObjModelParser::parseInt(
-    const std::string_view& token,
-    const char * command,
-    const char * field) const
-{
-    int value = 0;
-    auto result = std::from_chars(
-        token.data(),
-        token.data() + token.size(),
-        value);
-
-    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
-    {
-        throw ObjModelException("Invalid int value", m_fileName, m_lineNumber, command, field);
-    }
-
-    return value;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-std::string ObjModelParser::readString(
-    Daybreak::TextUtils::StringSplitter& arguments,
-    const char * command,
-    const char * field) const
-{
-    if (arguments.hasNextToken())
-    {
-        auto view = arguments.readNextToken();
-        return std::string(view.data(), view.size());
-    }
-    else
-    {
-        throw ObjModelException("Missing string value", m_fileName, m_lineNumber, command, field);
     }
 }

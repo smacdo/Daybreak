@@ -28,7 +28,14 @@ namespace Daybreak
             const std::string& command,
             const std::string& field)
         {
-            return errorMessage + " while reading field '" + field + "' for obj command '" + command + "'";
+            if (field == "")
+            {
+                return errorMessage + " while performing command '" + command + "'";
+            }
+            else
+            {
+                return errorMessage + " while reading field '" + field + "' for obj command '" + command + "'";
+            }
         }
 
     private:
