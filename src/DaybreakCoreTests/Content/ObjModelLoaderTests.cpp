@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "Content/ObjModel/ObjModelLoader.h"
+#include "Content/ObjModel/ObjModelException.h"
 #include "TestHelpers.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -217,6 +218,51 @@ public:
         Assert::AreEqual({ {3, 2, 1}, {0, 0, 0}, {1, 3, 2} }, model->groups[1].faces[0]);
     }
 
+    TEST_METHOD(F_Throws_Exception_If_Any_Of_Three_Elements_Missing)
+    {
+        ObjModelParser p;
+        const std::string& o =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n";
+
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1 2"); });
+    }
+
+    TEST_METHOD(F_Throws_Exception_If_Index_Out_Of_Range)
+    {
+        ObjModelParser p;
+        const std::string& o =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n";
+
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 4 2 3"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1 4 3"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1 2 4"); });
+
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 4/1/2 2/1/3 3/1/2"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/2/3 1/4/3 3/2/1"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/3/2 2/3/1 1/3/4"); });
+    }
+
+    TEST_METHOD(F_Throws_Exception_Face_Data_Layout_Different)
+    {
+        ObjModelParser p;
+        const std::string& o =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n";
+
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/2/3 1/2 1/2"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/2/3 1 2"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/2/3 1//2 2//3"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1 1//2 2//3"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1 2 3\nf 1 2 1/3"); });
+    }
+
     TEST_METHOD(G_Creates_A_New_Group)
     {
         ObjModelParser parser;
@@ -226,6 +272,24 @@ public:
             "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
             "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n"
             "f 1//3 2//1 3//2\ng first\n f 3//1 2//3 1//2\ng second";
+
+        auto model = parser.parse(ObjData);
+
+        Assert::AreEqual(3, (int)model->groups.size());
+        Assert::AreEqual(ObjModelParser::DefaultGroupName, model->groups[0].name);
+        Assert::AreEqual(std::string("first"), model->groups[1].name);
+        Assert::AreEqual(std::string("second"), model->groups[2].name);
+    }
+
+    TEST_METHOD(O_Creates_A_New_Group)
+    {
+        ObjModelParser parser;
+
+        const char * ObjData =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n"
+            "f 1//3 2//1 3//2\no first\n f 3//1 2//3 1//2\no second";
 
         auto model = parser.parse(ObjData);
 
@@ -246,5 +310,64 @@ public:
         Assert::AreEqual("foobar.mtl", model->materialLibraries[0].c_str());
         Assert::AreEqual("foo.mtl", model->materialLibraries[1].c_str());
         Assert::AreEqual("blah.mtl", model->materialLibraries[2].c_str());
+    }
+
+    TEST_METHOD(USEMTL_Sets_Material_On_Current_Group)
+    {
+        ObjModelParser parser;
+
+        const char * ObjData =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n"
+            "usemtl foo\nf 1//3 2//1 3//2\n"
+            "g first\nusemtl bar\nf 3//1 2//3 1//2\n"
+            "g second\nusemtl foobar\nf 1//2 3//1 2//3\n";
+
+        auto model = parser.parse(ObjData);
+
+        Assert::AreEqual(3, (int)model->groups.size());
+        Assert::AreEqual(std::string("foo"), model->groups[0].material);
+        Assert::AreEqual(std::string("bar"), model->groups[1].material);
+        Assert::AreEqual(std::string("foobar"), model->groups[2].material);
+    }
+
+    TEST_METHOD(USEMTL_Starts_New_Group_With_Same_Name_If_Existing_Faces_Have_Different_Material)
+    {
+        ObjModelParser parser;
+
+        const char * ObjData =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n"
+            "g first\nusemtl mat1\nf 3//1 2//3 1//2\n"
+            "usemtl mat2\nf 1//2 3//1 2//3\n";
+
+        auto model = parser.parse(ObjData);
+
+        Assert::AreEqual(2, (int)model->groups.size());
+
+        Assert::AreEqual(std::string("first"), model->groups[0].name);
+        Assert::AreEqual(std::string("mat1"), model->groups[0].material);
+        Assert::AreEqual(std::string("first"), model->groups[1].name);
+        Assert::AreEqual(std::string("mat2"), model->groups[1].material);
+    }
+
+    TEST_METHOD(USEMTL_Replaces_Material_If_No_Existing_Faces_In_Current_Group)
+    {
+        ObjModelParser parser;
+
+        const char * ObjData =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n"
+            "g first\n"
+            "usemtl mat1\n"
+            "usemtl mat2\n";
+
+        auto model = parser.parse(ObjData);
+
+        Assert::AreEqual(1, (int)model->groups.size());
+        Assert::AreEqual(std::string("mat2"), model->groups[0].material);
     }
 };

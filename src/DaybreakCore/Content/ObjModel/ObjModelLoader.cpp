@@ -65,7 +65,15 @@ std::unique_ptr<obj_model_t> ObjModelParser::parse(const std::string_view& objDa
         }
         else if (command == "g")
         {
-            startGroup(readString(splitter, "g", "name"));
+            useGroupName(readString(splitter, "g", "name"));
+        }
+        else if (command == "o")
+        {
+            useObjectName(readString(splitter, "o", "name"));
+        }
+        else if (command == "usemtl")
+        {
+            useMaterial(readString(splitter, "usemtl", "name"));
         }
         else if (command == "mtllib")
         {
@@ -101,26 +109,26 @@ obj_group_t& ObjModelParser::currentGroup() noexcept
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void ObjModelParser::startGroup(const std::string& groupName)
+void ObjModelParser::useGroupName(const std::string& groupName)
 {
-    // Only create a new group if the current group has faces defined. Otherwise set the name of the current group.
+    CHECK_NOT_EMPTY(groupName);
     m_activeGroupName = groupName;
 
-    if (currentGroup().faces.size() == 0)
-    {
-        currentGroup().name = groupName;
-    }
-    else
-    {
-        createNewGroup(createMergedObjectGroupName(m_activeGroupName, m_activeObjectName));
-    }
+    startObjectGroupName();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void ObjModelParser::useObjectName(const std::string& objectName)
 {
-    // TODO: Throw an exception if the object name is empty.
+    CHECK_NOT_EMPTY(objectName);
+    m_activeObjectName = objectName;
 
+    startObjectGroupName();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void ObjModelParser::startObjectGroupName()
+{
     // Historically an object was a super collection of one or more groups but this does not seem to be how it is used
     // in most obj files that I've seen. Typically an exporter will use either 'g' or 'o' but not both to create
     // group names.
@@ -128,22 +136,15 @@ void ObjModelParser::useObjectName(const std::string& objectName)
     // As a workaround this loader tries to support the historical use of 'o' by prefixing the object name to any group
     // created by 'g'. Since some files only use 'o' and not 'g' the loader will apply the object name to an obj group
     // if it does not already have a name.
-    //
-    // Only create a new group if the current group has faces defined. Otherwise set the name of the current group.
-    m_activeObjectName = objectName;
+    auto mergedName = createMergedObjectGroupName(m_activeObjectName, m_activeGroupName);
 
     if (currentGroup().faces.size() == 0)
     {
-        if (currentGroup().name.size() > 0)
-        {
-            // TODO: Warn that group name already set.
-        }
-
-        currentGroup().name = objectName;
+        currentGroup().name = mergedName;
     }
     else
     {
-        createNewGroup(createMergedObjectGroupName(m_activeGroupName, m_activeObjectName));
+        createNewGroup(mergedName);
     }
 }
 
@@ -202,7 +203,7 @@ std::string ObjModelParser::createMergedObjectGroupName(
     }
     else
     {
-        ss << objectName;
+        ss << groupName;
     }
 
     return ss.str();
@@ -211,12 +212,16 @@ std::string ObjModelParser::createMergedObjectGroupName(
 //---------------------------------------------------------------------------------------------------------------------
 obj_face_t ObjModelParser::readFace(Daybreak::TextUtils::StringSplitter& arguments)
 {
+    // TODO: Handle face commands with more than three arguments by using the following:
+    //  face (0, i, i + 1) [for i in 1..(n - 2)]
+    // ref: http://stackoverflow.com/a/23724231
+
     // Read first three face elements.
     //  TODO: Handle face commands with more than three elments. Do not split it up here, instead add ability to have
     //        obj_faces with more than three elements and update the obj -> model code to handle conversion.
-    auto a = resolveIndices(readFaceElement(arguments, "f", "0"));
-    auto b = resolveIndices(readFaceElement(arguments, "f", "1"));
-    auto c = resolveIndices(readFaceElement(arguments, "f", "2"));
+    auto a = resolveIndices(readFaceElement(arguments, "f", "0"), "f", "0");
+    auto b = resolveIndices(readFaceElement(arguments, "f", "1"), "f", "1");
+    auto c = resolveIndices(readFaceElement(arguments, "f", "2"), "f", "2");
 
     if (m_firstFace)
     {
@@ -231,43 +236,71 @@ obj_face_t ObjModelParser::readFace(Daybreak::TextUtils::StringSplitter& argumen
         m_model->hasUV != b.hasUV() || m_model->hasNormals != b.hasNormals() ||
         m_model->hasUV != c.hasUV() || m_model->hasNormals != c.hasNormals())
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Face elmeents have inconsistent data types (uv and or normal)");
+        throw ObjModelException(
+            "Face elements have inconsistent data layout",
+            m_fileName,
+            m_lineNumber,
+            "f",
+            "");
     }
 
     return { { a.p, b.p, c.p }, { a.t, b.t, c.t }, { a.n, b.n, c.n } };
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-obj_face_vertex_t ObjModelParser::resolveIndices(const obj_face_vertex_t& element) const
+obj_face_vertex_t ObjModelParser::resolveIndices(
+    const obj_face_vertex_t& element,
+    const char * command,
+    const char * field) const
 {
-    // TODO: Check type consistency.
     obj_face_vertex_t result;
 
-    result.p = relativeToAbsoluteIndex(element.p, m_model->positions.size());
-    result.t = relativeToAbsoluteIndex(element.t, m_model->uv.size());
-    result.n = relativeToAbsoluteIndex(element.n, m_model->normals.size());
+    result.p = relativeToAbsoluteIndex(element.p, m_model->positions.size(), command, field);
+    result.t = relativeToAbsoluteIndex(element.t, m_model->uv.size(), command, field);
+    result.n = relativeToAbsoluteIndex(element.n, m_model->normals.size(), command, field);
 
     return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-int ObjModelParser::relativeToAbsoluteIndex(int index, size_t count)
+int ObjModelParser::relativeToAbsoluteIndex(
+    int relativeIndex,
+    size_t arrayLength,
+    const char * command,
+    const char * field) const
 {
-    if (index < 0)
+    // Obj models with data arrays larger than sizeof(int) will break due to the casting in this method. If this
+    // becomes a problem fix the overflow caused by casting and remove this check.
+    if (arrayLength > std::numeric_limits<int>::max())
     {
-        if (static_cast<size_t>(-index) > count)
-        {
-            // TODO: Better exception.
-            throw std::runtime_error("Negative index must be smaller than current size of data array");
-        }
-
-        index = static_cast<int>(count) - index;
+        throw ObjModelException(
+            "Obj data array size is too large for converter (fix this!)",
+            m_fileName,
+            m_lineNumber,
+            command,
+            field);
     }
-    else if (static_cast<size_t>(index) > count)
+
+    int arrayLengthInt = static_cast<int>(arrayLength);
+    int index = relativeIndex;
+
+    // Convert negative index to an absolute index relative to the end of the data array. For example a -1 index with a
+    // data array of size 10 should be 10, and -2 would be 9.
+    if (relativeIndex < 0)
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Positive index must be smaller than current size of data array");
+        index = arrayLengthInt - std::abs(relativeIndex + 1);
+    }
+
+    // Check the index size is valid. If the index was a relative index it should always be correct unless the above
+    // code is bad. Note that the check is performed with > and not >= because .obj indices are one based.
+    if (relativeIndex > arrayLength)
+    {
+        throw ObjModelException(
+            "Index must be smaller than size of data array",
+            m_fileName,
+            m_lineNumber,
+            command,
+            field);
     }
 
     return index;
@@ -286,7 +319,7 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
         // Split the face token into each part p/t/n and make sure empty tokens are not skipped.
         auto faceToken = arguments.readNextToken();
         StringSplitter splitter(faceToken, "/", false);
-        
+         
         // Read position index.
         if (splitter.hasNextToken())
         {
