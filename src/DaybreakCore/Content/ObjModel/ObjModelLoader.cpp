@@ -25,8 +25,6 @@ std::unique_ptr<obj_model_t> ObjModelParser::parse(const std::string_view& objDa
     while (lineReader.hasNextLine())
     {
         parseLine(lineReader.readNextLine());
-
-        // Increment internal line counter (used for error reporting).
         m_lineNumber++;
     }
 

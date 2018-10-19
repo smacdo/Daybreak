@@ -4,9 +4,9 @@
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
-MaterialData::MaterialData(const std::string& name)
+MaterialData::MaterialData(const std::string& name, MaterialType type)
     : m_name(name),
-      m_type(MaterialType::Traditional)
+      m_type(type)
 {
 }
 

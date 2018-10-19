@@ -1,0 +1,4 @@
+newmtl cube_material
+map_Ka cube_diffuse.png
+map_Kd cube_specular.png
+Ns 32.0

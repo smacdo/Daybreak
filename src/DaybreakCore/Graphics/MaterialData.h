@@ -31,7 +31,7 @@ namespace Daybreak
     {
     public:
         /** Constructor. */
-        MaterialData(const std::string& name = "");
+        MaterialData(const std::string& name, MaterialType type);
 
         /** Get material name. */
         std::string name() const noexcept { return m_name; }
