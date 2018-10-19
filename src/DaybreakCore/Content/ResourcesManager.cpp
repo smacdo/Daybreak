@@ -6,6 +6,9 @@
 #include "Content/ObjModel/ObjResourceLoader.h"
 #include "Graphics/ModelData.h"
 
+#include "Content/Images/ImageResourceLoader.h"
+#include "Graphics/Image.h"
+
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -19,6 +22,13 @@ ResourcesManager::ResourcesManager(std::shared_ptr<IFileSystem> fileSystem)
 std::future<std::unique_ptr<ModelData>> ResourcesManager::loadModel(const std::string& path)
 {
     ObjResourceLoader l;
+    return l.load(path, *this);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::future<std::unique_ptr<Image>> ResourcesManager::loadImage(const std::string& path)
+{
+    ImageResourceLoader l;
     return l.load(path, *this);
 }
 

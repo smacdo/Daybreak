@@ -75,12 +75,25 @@ Image::Image(
     const std::string& name,
     size_t imageWidth,
     size_t imageHeight,
-    ImagePixelFormat pixelFormat,
-    std::unique_ptr<unsigned char[], StbSupport::ImageDeleteFunctor> pixels)
+    ImagePixelFormat pixelFormat)
     : m_name(name),
       m_width(imageWidth),
       m_height(imageHeight),
-      m_format(pixelFormat),
+      m_format(pixelFormat)
+{
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+Image::~Image() = default;
+
+//---------------------------------------------------------------------------------------------------------------------
+BytePerChannelImage::BytePerChannelImage(
+    const std::string& name,
+    size_t imageWidth,
+    size_t imageHeight,
+    ImagePixelFormat pixelFormat,
+    std::unique_ptr<unsigned char[], StbSupport::ImageDeleteFunctor> pixels)
+    : Image(name, imageWidth, imageHeight, pixelFormat),
       m_pixels(std::move(pixels))
 {
     // Check that any image with pixel data has non-zero attributes.
@@ -91,7 +104,7 @@ Image::Image(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<Image> Image::LoadFromFile(const std::string& imageFilePath)
+std::unique_ptr<BytePerChannelImage> BytePerChannelImage::LoadFromFile(const std::string& imageFilePath)
 {
     // TODO: Do not do file loading here, instead take an IBuffer or IFileStream and let loading be handled by another
     //       system.
@@ -132,8 +145,12 @@ std::unique_ptr<Image> Image::LoadFromFile(const std::string& imageFilePath)
 
     // Create and return new image.
     auto format = FromStbChannelCount(channelCount);
-    return std::unique_ptr<Image>(new Image(imageFilePath, imageWidth, imageHeight, format, std::move(rawPixels)));
+    return std::unique_ptr<BytePerChannelImage>(
+        new BytePerChannelImage(imageFilePath, imageWidth, imageHeight, format, std::move(rawPixels)));
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+BytePerChannelImage::~BytePerChannelImage() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
 HdrImage::HdrImage(
@@ -142,10 +159,7 @@ HdrImage::HdrImage(
     size_t imageHeight,
     ImagePixelFormat pixelFormat,
     std::unique_ptr<float[], StbSupport::ImageDeleteFunctor> pixels)
-    : m_name(name),
-      m_width(imageWidth),
-      m_height(imageHeight),
-      m_format(pixelFormat),
+    : Image(name, imageWidth, imageHeight, pixelFormat),
       m_pixels(std::move(pixels))
 {
     // Check that any image with pixel data has non-zero attributes.
@@ -200,6 +214,9 @@ std::unique_ptr<HdrImage> HdrImage::LoadFromFile(const std::string& imageFilePat
     return std::unique_ptr<HdrImage>(
         new HdrImage(imageFilePath, imageWidth, imageHeight, format, std::move(rawPixels)));
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+HdrImage::~HdrImage() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
 void StbSupport::ImageDeleteFunctor::operator()(unsigned char * pData) const

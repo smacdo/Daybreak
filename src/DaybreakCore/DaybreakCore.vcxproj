@@ -182,13 +182,16 @@
     <ClInclude Include="Common\Error.h" />
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Common\stdafx.h" />
+    <ClInclude Include="Content\Images\ImageResourceLoader.h" />
     <ClInclude Include="Content\IResourceLoader.h" />
+    <ClInclude Include="Content\ObjModel\MtlMaterialException.h" />
     <ClInclude Include="Content\ObjModel\ObjResourceLoader.h" />
     <ClInclude Include="Content\ResourcesManager.h" />
     <ClInclude Include="Content\DefaultFileSystem.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
     <ClInclude Include="Graphics\Image.h" />
     <ClInclude Include="Graphics\InputAttribute.h" />
+    <ClInclude Include="Graphics\MaterialData.h" />
     <ClInclude Include="Graphics\Mesh\BufferData.h" />
     <ClInclude Include="Graphics\Mesh\IndexBufferData.h" />
     <ClInclude Include="Graphics\Mesh\IndexBufferElement.h" />
@@ -235,12 +238,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\Error.cpp" />
+    <ClCompile Include="Content\Images\ImageResourceLoader.cpp" />
     <ClCompile Include="Content\ObjModel\ObjResourceLoader.cpp" />
     <ClCompile Include="Content\ResourcesManager.cpp" />
     <ClCompile Include="Content\DefaultFileSystem.cpp" />
     <ClCompile Include="Graphics\BasicGeometryGenerator.cpp" />
     <ClCompile Include="Graphics\Image.cpp" />
     <ClCompile Include="Graphics\InputAttribute.cpp" />
+    <ClCompile Include="Graphics\MaterialData.cpp" />
     <ClCompile Include="Graphics\Mesh\BufferData.cpp" />
     <ClCompile Include="Graphics\Mesh\IndexBufferData.cpp" />
     <ClCompile Include="Graphics\Mesh\IndexBufferElement.cpp" />

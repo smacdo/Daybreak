@@ -136,7 +136,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
         m_phong->setNormalMatrix(normal);
 
         // Draw cube.
-        m_phong->startRenderObject(*m_renderContext.get(), 0, 36);
+        m_phong->startRenderObject(
+            *m_renderContext.get(),
+            0,
+            static_cast<unsigned int>(m_mesh->indexBuffer()->elementCount()));
     }
 
     // Finish pass.
@@ -159,12 +162,14 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTi
     m_renderContext->setShaderMatrix4(m_lightDebugShader->getVariable("model"), model);
     m_renderContext->setShaderVector3f(m_lightDebugShader->getVariable("tint"), m_scene->pointLight(0).diffuseColor());
      
-    m_renderContext->drawTriangles(0, 36);
+    m_renderContext->drawTriangles(0, static_cast<unsigned int>(m_mesh->indexBuffer()->elementCount()));
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::CreateDefaultScene()
 {
+    auto resources = std::make_unique<ResourcesManager>(std::make_shared<DefaultFileSystem>("Content"));
+
     m_scene = std::make_unique<Scene>();
     m_renderContext = std::make_unique<OglRenderContext>();
 
@@ -176,15 +181,14 @@ void SceneRenderer::CreateDefaultScene()
 
     // Load textures.
     //  TODO: Use render context -> device -> createTexture
-    auto diffuseImage = Image::LoadFromFile("Content\\cube_diffuse.png");
+    auto diffuseImage = resources->loadImage("cube_diffuse.png").get();
     auto diffuseTexture = OglTexture2d::generate(*diffuseImage.get(), TextureParameters(), TextureFormat::RGB);
 
-    auto specularImage = Image::LoadFromFile("Content\\cube_specular.png");
+    auto specularImage = resources->loadImage("cube_specular.png").get();
     auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
-    auto resources = std::make_unique<ResourcesManager>(std::make_shared<DefaultFileSystem>("Content"));
     auto cubeModel = resources->loadModel("cube.obj").get();
 
     auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh());
