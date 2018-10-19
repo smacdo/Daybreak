@@ -32,7 +32,7 @@ const void * MeshData::rawIndexBufferData() const noexcept
 //---------------------------------------------------------------------------------------------------------------------
 size_t MeshData::indexCount() const noexcept
 {
-    return m_indexBuffer->byteCount();
+    return m_indexBuffer->indexCount();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
