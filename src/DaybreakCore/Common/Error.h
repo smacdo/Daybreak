@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 #include <cassert>
 
 // TODO: Restruct exceptions to have a secondary constructor that can take throw site information.

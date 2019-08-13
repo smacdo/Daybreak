@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Scene.h"
 
+#include <stdexcept>
+
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------

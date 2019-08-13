@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 /** Error when interacting with SDL API. */
 class SdlException : public std::runtime_error

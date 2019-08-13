@@ -2,6 +2,7 @@
 #include "TextParsingUtils.h"
 
 #include <charconv>
+#include <stdexcept>
 
 using namespace Daybreak;
 
