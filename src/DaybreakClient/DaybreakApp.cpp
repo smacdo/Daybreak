@@ -80,13 +80,13 @@ void DaybreakApp::Run()
         }
 
         // TODO: Update simulation.
-        m_cameraController->update(TimeSpan::FromSeconds(deltaSeconds));
+        m_cameraController->update(TimeSpan::fromSeconds(deltaSeconds));
 
         // Process platform windowinng events.
         ProcessPendingEvents();
 
         // Draw current frame.
-        RenderFrame(TimeSpan::FromSeconds(deltaSeconds));
+        RenderFrame(TimeSpan::fromSeconds(deltaSeconds));
     }
 }
 
