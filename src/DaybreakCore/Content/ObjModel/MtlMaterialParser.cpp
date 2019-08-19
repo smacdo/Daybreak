@@ -3,7 +3,7 @@
 #include "Utility/TextUtils.h"
 #include "Content/ObjModel/MtlMaterialException.h"
 #include "Content/ObjModel/TextParsingUtils.h"
-#include "Graphics/MaterialData.h"
+#include "Content/MaterialData.h"
 #include "Common/Error.h"
 
 #include <sstream>
@@ -52,9 +52,59 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
         auto name = readExpectedString(splitter);
         m_materials.push_back(std::make_unique<MaterialData>(name, MaterialType::Traditional));
     }
+    else if (command == "Ka")
+    {
+        auto r = readExpectedFloat(splitter);
+        auto g = readExpectedFloat(splitter);
+        auto b = readExpectedFloat(splitter);
+
+        currentMaterial().setParameter(MaterialParameter::AmbientColor, glm::vec3(r, g, b));
+    }
+    else if (command == "Kd")
+    {
+        auto r = readExpectedFloat(splitter);
+        auto g = readExpectedFloat(splitter);
+        auto b = readExpectedFloat(splitter);
+
+        currentMaterial().setParameter(MaterialParameter::DiffuseColor, glm::vec3(r, g, b));
+    }
+    else if (command == "Ks")
+    {
+        auto r = readExpectedFloat(splitter);
+        auto g = readExpectedFloat(splitter);
+        auto b = readExpectedFloat(splitter);
+
+        currentMaterial().setParameter(MaterialParameter::SpecularColor, glm::vec3(r, g, b));
+    }
+    else if (command == "Ns")
+    {
+        currentMaterial().setParameter(MaterialParameter::Shininess, readExpectedFloat(splitter));
+    }
+    else if (command == "d")
+    {
+        auto o = readExpectedFloat(splitter);
+
+        if (o < 0.0f || o > 1.0f)
+        {
+            throw MtlMaterialException("Opacity must be in [0, 1] range", m_fileName, m_lineNumber, "d", "");
+        }
+
+        currentMaterial().setParameter(MaterialParameter::Opacity, o);
+    }
+    else if (command == "Tr")
+    {
+        auto o = readExpectedFloat(splitter);
+
+        if (o < 0.0f || o > 1.0f)
+        {
+            throw MtlMaterialException("Opacity must be in [0, 1] range", m_fileName, m_lineNumber, "Tr", "");
+        }
+
+        currentMaterial().setParameter(MaterialParameter::Opacity, 1.0f - o);
+    }
     else
     {
-        throw MtlMaterialException("Unknown mtl command", m_fileName, m_lineNumber, "", "");
+        throw MtlMaterialException("Error while parsing material file", m_fileName, m_lineNumber, "", "");
     }
 }
 
@@ -67,8 +117,12 @@ void MtlMaterialParser::reset() noexcept
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-MaterialData& MtlMaterialParser::currentGroup() noexcept
+MaterialData& MtlMaterialParser::currentMaterial()
 {
-    EXPECT(m_materials.size() > 0, "MTL parser should always have a material defined");
+    if (m_materials.size() == 0)
+    {
+        throw MtlMaterialException("No material group defined", m_fileName, m_lineNumber, "", "");
+    }
+
     return *m_materials[m_materials.size() - 1].get();
 }

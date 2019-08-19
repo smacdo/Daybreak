@@ -1,32 +1,11 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "Content/ObjModel/ObjModelLoader.h"
+#include "Content/ObjModel/ObjModelParser.h"
 #include "Content/ObjModel/ObjModelException.h"
-#include "TestHelpers.h"
+#include "../TestHelpers.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace Daybreak;
-
-namespace Microsoft::VisualStudio::CppUnitTestFramework
-{
-    std::wstring ToString(const obj_face_t& v)
-    {
-        std::wstringstream ss;
-        ss << L"{"
-            << " {" << v.position[0] << L", " << v.position[1] << L", " << v.position[2] << L"}, "
-            << " {" << v.uv[0]       << L", " << v.uv[1]       << L", " << v.uv[2]       << L"}, "
-            << " {" << v.normal[0]   << L", " << v.normal[1]   << L", " << v.normal[2]   << L"} "
-            << "}";
-        return ss.str();
-    }
-
-    std::wstring ToString(const obj_face_vertex_t& v)
-    {
-        std::wstringstream ss;
-        ss << L"{" << v.p << L", " << v.t << L", " << v.n << L"}";
-        return ss.str();
-    }
-}
 
 TEST_CLASS(ObjModelLoaderTests)
 {

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ObjModelLoader.h"
+#include "ObjModelParser.h"
 #include "Utility/TextUtils.h"
 #include "Content/ObjModel/ObjModelException.h"
 #include "Content/ObjModel/TextParsingUtils.h"

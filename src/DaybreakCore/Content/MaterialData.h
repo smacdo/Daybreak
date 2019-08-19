@@ -23,6 +23,7 @@ namespace Daybreak
         SpecularColor,
         SpecularMap,
         Shininess,
+        Opacity,                   // 0 is fully transparent, 1 is opaque.
         EmissiveMap
     };
 

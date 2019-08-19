@@ -24,7 +24,7 @@ namespace Daybreak
         void reset() noexcept;
 
         /** Get the active material. */
-        MaterialData& currentGroup() noexcept;
+        MaterialData& currentMaterial();
 
     private:
         std::string m_fileName;

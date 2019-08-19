@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ObjResourceLoader.h"
 #include "Content/ResourcesManager.h"
-#include "Content/ObjModel/ObjModelLoader.h"
+#include "Content/ObjModel/ObjModelParser.h"
 #include "Graphics/ModelData.h"
 #include "Graphics/Mesh/IndexBufferData.h"
 #include "Graphics/Mesh/VertexBufferData.h"
