@@ -19,6 +19,7 @@ std::future<std::unique_ptr<ModelData>> ObjResourceLoader::load(
         std::launch::async | std::launch::deferred,
         [resourcePath, &resources]() {
             // TODO: Improve this code because it was written quickly to get minimal obj support working.
+            //       In particular it does not use async I/O.
             ObjModelParser parser;
 
             auto fileText = resources.loadTextFile(resourcePath);

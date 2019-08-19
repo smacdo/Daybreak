@@ -289,19 +289,18 @@ int ObjModelParser::relativeToAbsoluteIndex(
             field);
     }
 
-    int arrayLengthInt = static_cast<int>(arrayLength);
-    int index = relativeIndex;
-
     // Convert negative index to an absolute index relative to the end of the data array. For example a -1 index with a
     // data array of size 10 should be 10, and -2 would be 9.
+    int absoluteIndex = relativeIndex;
+
     if (relativeIndex < 0)
     {
-        index = arrayLengthInt - std::abs(relativeIndex + 1);
+        absoluteIndex = static_cast<int>(arrayLength) - std::abs(relativeIndex) + 1;
     }
 
     // Check the index size is valid. If the index was a relative index it should always be correct unless the above
     // code is bad. Note that the check is performed with > and not >= because .obj indices are one based.
-    if (relativeIndex > arrayLength)
+    if (absoluteIndex > arrayLength)
     {
         throw ObjModelException(
             "Index must be smaller than size of data array",
@@ -311,7 +310,7 @@ int ObjModelParser::relativeToAbsoluteIndex(
             field);
     }
 
-    return index;
+    return absoluteIndex;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
