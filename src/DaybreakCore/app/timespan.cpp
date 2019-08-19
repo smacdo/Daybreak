@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "stdafx.h"
-#include "Time.h"
+#include "time.h"
 
 #include <ostream>
 #include <sstream>
@@ -22,50 +22,50 @@
 
 using namespace Daybreak;
 
-const int64_t TimeSpan::MicrosecondsPerMillisecond = 1000LL;
-const int64_t TimeSpan::MicrosecondsPerSecond = 1000LL * 1000;				// 1e6 or 1000 milliseconds
-const int64_t TimeSpan::MicrosecondsPerMinute = 1000LL * 1000 * 60;			// 6e7 or 60 seconds.
-const int64_t TimeSpan::MicrosecondsPerHour = 1000LL * 1000 * 60 * 60;		// 3.6e9 or 60 minutes.
-const int64_t TimeSpan::MicrosecondsPerDay = 1000LL * 1000 * 60 * 60 * 24;	// 8.64e10 or 24 hours.
+const int64_t timespan_t::MicrosecondsPerMillisecond = 1000LL;
+const int64_t timespan_t::MicrosecondsPerSecond = 1000LL * 1000;				// 1e6 or 1000 milliseconds
+const int64_t timespan_t::MicrosecondsPerMinute = 1000LL * 1000 * 60;			// 6e7 or 60 seconds.
+const int64_t timespan_t::MicrosecondsPerHour = 1000LL * 1000 * 60 * 60;		// 3.6e9 or 60 minutes.
+const int64_t timespan_t::MicrosecondsPerDay = 1000LL * 1000 * 60 * 60 * 24;	// 8.64e10 or 24 hours.
 
-const int32_t TimeSpan::MaxRepresentableDays = 106751991;
-const int32_t TimeSpan::MinRepresentableDays = -106751991;
+const int32_t timespan_t::MaxRepresentableDays = 106751991;
+const int32_t timespan_t::MinRepresentableDays = -106751991;
 
 //---------------------------------------------------------------------------------------------------------------------
 namespace Daybreak
 {
     //-----------------------------------------------------------------------------------------------------------------
-    void swap(TimeSpan& a, TimeSpan& b) noexcept
+    void swap(timespan_t& a, timespan_t& b) noexcept
     {
         using std::swap;
         swap(a.m_microseconds, b.m_microseconds);
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    std::string to_string(const TimeSpan& t)
+    std::string to_string(const timespan_t& t)
     {
         std::stringstream ss;
 
         ss.setf(std::ios::fixed);
         ss << std::setprecision(6);
 
-        if (t.m_microseconds < TimeSpan::MicrosecondsPerMillisecond)
+        if (t.m_microseconds < timespan_t::MicrosecondsPerMillisecond)
         {
             ss << t.totalMicroseconds() << " usec";
         }
-        else if (t.m_microseconds < TimeSpan::MicrosecondsPerSecond)
+        else if (t.m_microseconds < timespan_t::MicrosecondsPerSecond)
         {
             ss << t.totalMilliseconds() << " msec";
         }
-        else if (t.m_microseconds < TimeSpan::MicrosecondsPerMinute)
+        else if (t.m_microseconds < timespan_t::MicrosecondsPerMinute)
         {
             ss << t.totalSeconds() << " sec";
         }
-        else if (t.m_microseconds < TimeSpan::MicrosecondsPerHour)
+        else if (t.m_microseconds < timespan_t::MicrosecondsPerHour)
         {
             ss << t.totalMinutes() << " min";
         }
-        else if (t.m_microseconds < TimeSpan::MicrosecondsPerDay)
+        else if (t.m_microseconds < timespan_t::MicrosecondsPerDay)
         {
             ss << t.totalHours() << " hour(s)";
         }
@@ -78,7 +78,7 @@ namespace Daybreak
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    std::ostream& operator <<(std::ostream& os, const TimeSpan& t)
+    std::ostream& operator <<(std::ostream& os, const timespan_t& t)
     {
         os << to_string(t);
         return os;
@@ -90,7 +90,7 @@ namespace Daybreak
 namespace std
 {
     /** Returns a string with the representation of val. */
-    std::string to_string(const Daybreak::TimeSpan& val)
+    std::string to_string(const Daybreak::timespan_t& val)
     {
         return Daybreak::to_string(val);
     }

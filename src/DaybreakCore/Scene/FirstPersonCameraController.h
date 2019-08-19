@@ -1,11 +1,12 @@
 #pragma once
+#include "app/time.h"
+
 #include <glm/glm.hpp>      // TODO: Remove when we switch to internal math.
 #include <memory>
 
 namespace Daybreak
 {
     class Camera;
-    class TimeSpan;
     class IInputSource;
 
     // A simple first person camera that is controlled from a keyboard and mouse.
@@ -56,7 +57,7 @@ namespace Daybreak
 
     public:
         // Tick camera once per update.
-        void update(const Daybreak::TimeSpan& deltaTime);
+        void update(Daybreak::timespan_t deltaTime);
 
     private:
         std::shared_ptr<Camera> m_camera;

@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Time.h"
+#include "app/time.h"
 #include <string>
 #include <memory>
 #include <vector>
@@ -37,7 +37,7 @@ public:
     ~SceneRenderer();
 
     // Render the scene.
-    void Render(const Daybreak::Scene& scene, const Daybreak::TimeSpan& deltaTime);
+    void Render(const Daybreak::Scene& scene, Daybreak::timespan_t deltaTime);
 
     // Resize the render window size (in pixels).
     void SetViewportSize(unsigned int width, unsigned int height);
@@ -59,7 +59,7 @@ private:
     bool m_wireframe = false;
 
     // Amount of accumulated rendering time.
-    Daybreak::TimeSpan m_renderTime;
+    Daybreak::timespan_t m_renderTime;
 
     std::shared_ptr<Daybreak::IRenderContext> m_renderContext;
 

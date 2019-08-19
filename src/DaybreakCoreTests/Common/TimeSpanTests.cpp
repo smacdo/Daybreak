@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
-#include "Common/Time.h"
+#include "app/time.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace Daybreak;
@@ -11,7 +11,7 @@ TEST_CLASS(TimeSpanTests)
 public:
     TEST_METHOD(Time_Can_Be_Created_In_Seconds)
     {
-        auto t = TimeSpan::fromSeconds(1.2);
+        auto t = timespan_t::fromSeconds(1.2);
 
         Assert::AreEqual(1.2, t.totalSeconds());
         Assert::AreEqual(1200.0, t.totalMilliseconds());
@@ -19,7 +19,7 @@ public:
 
     TEST_METHOD(Time_Can_Be_Created_In_Milliseconds)
     {
-        auto t = TimeSpan::fromMilliseconds(1500.0);
+        auto t = timespan_t::fromMilliseconds(1500.0);
 
         Assert::AreEqual(1.5, t.totalSeconds());
         Assert::AreEqual(1500.0, t.totalMilliseconds());
@@ -39,8 +39,8 @@ public:
 
     TEST_METHOD(Time_Can_Be_Copy_Constructed)
     {
-        auto t = TimeSpan::fromSeconds(1.4);
-        TimeSpan copy(t);
+        auto t = timespan_t::fromSeconds(1.4);
+        timespan_t copy(t);
 
         Assert::AreEqual(1.4, copy.totalSeconds());
         Assert::AreEqual(1.4, t.totalSeconds());
@@ -48,8 +48,8 @@ public:
 
     TEST_METHOD(Time_Can_Be_Assigned)
     {
-        auto t = TimeSpan::fromSeconds(1.5);
-        auto copy = TimeSpan::fromSeconds(0);
+        auto t = timespan_t::fromSeconds(1.5);
+        auto copy = timespan_t::fromSeconds(0);
 
         Assert::AreEqual(0.0, copy.totalSeconds());
 
@@ -61,15 +61,15 @@ public:
 
     TEST_METHOD(Time_Duration_Is_Always_Positive)
     {
-        Assert::AreEqual(0.0, TimeSpan::fromSeconds(0).duration().totalSeconds());
-        Assert::AreEqual(1.0, TimeSpan::fromSeconds(1).duration().totalSeconds());
-        Assert::AreEqual(2.0, TimeSpan::fromSeconds(-2).duration().totalSeconds());
+        Assert::AreEqual(0.0, timespan_t::fromSeconds(0).duration().totalSeconds());
+        Assert::AreEqual(1.0, timespan_t::fromSeconds(1).duration().totalSeconds());
+        Assert::AreEqual(2.0, timespan_t::fromSeconds(-2).duration().totalSeconds());
     }
 
     TEST_METHOD(Time_Swap_Swaps_Time)
     {
-        auto a = TimeSpan::fromSeconds(5.0);
-        auto b = TimeSpan::fromSeconds(6.0);
+        auto a = timespan_t::fromSeconds(5.0);
+        auto b = timespan_t::fromSeconds(6.0);
 
         swap(a, b);
 
@@ -79,49 +79,49 @@ public:
 
     TEST_METHOD(Time_Can_Be_Reported_In_Seconds)
     {
-        Assert::AreEqual(1.2, TimeSpan::fromSeconds(1.2).duration().totalSeconds());
-        Assert::AreEqual(1.2, TimeSpan::fromMilliseconds(1200).duration().totalSeconds());
+        Assert::AreEqual(1.2, timespan_t::fromSeconds(1.2).duration().totalSeconds());
+        Assert::AreEqual(1.2, timespan_t::fromMilliseconds(1200).duration().totalSeconds());
     }
 
     TEST_METHOD(Time_Can_Be_Reported_In_Milliseconds)
     {
-        Assert::AreEqual(1200.0, TimeSpan::fromSeconds(1.2).duration().totalMilliseconds());
-        Assert::AreEqual(1200.0, TimeSpan::fromMilliseconds(1200).duration().totalMilliseconds());
+        Assert::AreEqual(1200.0, timespan_t::fromSeconds(1.2).duration().totalMilliseconds());
+        Assert::AreEqual(1200.0, timespan_t::fromMilliseconds(1200).duration().totalMilliseconds());
     }
 
     TEST_METHOD(Time_Can_Be_Negated)
     {
-        Assert::AreEqual(-1.2, -TimeSpan::fromSeconds(1.2).totalSeconds());
-        Assert::AreEqual(1.2, -TimeSpan::fromSeconds(-1.2).totalSeconds());
+        Assert::AreEqual(-1.2, -timespan_t::fromSeconds(1.2).totalSeconds());
+        Assert::AreEqual(1.2, -timespan_t::fromSeconds(-1.2).totalSeconds());
     }
 
     TEST_METHOD(Time_Unary_Positive_Does_Nothing)
     {
-        Assert::AreEqual(1.2, +TimeSpan::fromSeconds(1.2).totalSeconds());
-        Assert::AreEqual(-1.2, +TimeSpan::fromSeconds(-1.2).totalSeconds());
+        Assert::AreEqual(1.2, +timespan_t::fromSeconds(1.2).totalSeconds());
+        Assert::AreEqual(-1.2, +timespan_t::fromSeconds(-1.2).totalSeconds());
     }
 
     TEST_METHOD(Time_Can_Be_Added)
     {
-        auto t = TimeSpan::fromSeconds(2.0) + TimeSpan::fromSeconds(0.8);
+        auto t = timespan_t::fromSeconds(2.0) + timespan_t::fromSeconds(0.8);
         Assert::AreEqual(2.8, t.totalSeconds());
 
-        t += TimeSpan::fromSeconds(0.2);
+        t += timespan_t::fromSeconds(0.2);
         Assert::AreEqual(3.0, t.totalSeconds());
     }
 
     TEST_METHOD(Time_Can_Be_Subtracted)
     {
-        auto t = TimeSpan::fromSeconds(2.0) - TimeSpan::fromSeconds(0.8);
+        auto t = timespan_t::fromSeconds(2.0) - timespan_t::fromSeconds(0.8);
         Assert::AreEqual(1.2, t.totalSeconds());
 
-        t -= TimeSpan::fromSeconds(0.2);
+        t -= timespan_t::fromSeconds(0.2);
         Assert::AreEqual(1.0, t.totalSeconds());
     }
 
     TEST_METHOD(Time_Can_Be_Multiplied)
     {
-        auto t = TimeSpan::fromSeconds(2.0) * 2.0;
+        auto t = timespan_t::fromSeconds(2.0) * 2.0;
         Assert::AreEqual(4.0, t.totalSeconds());
 
         t *= 3.0;
@@ -130,7 +130,7 @@ public:
 
     TEST_METHOD(Time_Can_Be_Divided)
     {
-        auto t = TimeSpan::fromSeconds(42.0) / 2.0;
+        auto t = timespan_t::fromSeconds(42.0) / 2.0;
         Assert::AreEqual(21.0, t.totalSeconds());
 
         t /= 3.0;
@@ -139,9 +139,9 @@ public:
 
     TEST_METHOD(Time_Can_Be_Checked_For_Equality)
     {
-        auto a = TimeSpan::fromSeconds(10.0);
-        auto b = TimeSpan::fromSeconds(20.0) / 2.0;
-        auto c = TimeSpan::fromSeconds(10.1);
+        auto a = timespan_t::fromSeconds(10.0);
+        auto b = timespan_t::fromSeconds(20.0) / 2.0;
+        auto c = timespan_t::fromSeconds(10.1);
 
         Assert::IsTrue(a == a);
         Assert::IsTrue(a == b);
@@ -151,9 +151,9 @@ public:
 
     TEST_METHOD(Time_Can_Be_Checked_For_Inequality)
     {
-        auto a = TimeSpan::fromSeconds(10.0);
-        auto b = TimeSpan::fromSeconds(20.0) / 2.0;
-        auto c = TimeSpan::fromSeconds(10.1);
+        auto a = timespan_t::fromSeconds(10.0);
+        auto b = timespan_t::fromSeconds(20.0) / 2.0;
+        auto c = timespan_t::fromSeconds(10.1);
 
         Assert::IsTrue(a != c);
         Assert::IsTrue(c != a);
@@ -165,9 +165,9 @@ public:
 
     TEST_METHOD(Time_Can_Be_Compared)
     {
-        auto a = TimeSpan::fromSeconds(10.0);
-        auto b = TimeSpan::fromSeconds(25.0);
-        auto c = TimeSpan::fromSeconds(30.0);
+        auto a = timespan_t::fromSeconds(10.0);
+        auto b = timespan_t::fromSeconds(25.0);
+        auto c = timespan_t::fromSeconds(30.0);
 
         Assert::IsTrue(a < b);
         Assert::IsFalse(b < a);

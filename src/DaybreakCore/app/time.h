@@ -6,7 +6,7 @@
 
 namespace Daybreak
 {
-    /** 
+    /**
      * Represents a high precision time interval that is measured as a positive or negative span of time. Internally
      * the time is tracked as microseconds (one ten millionth of a second) with a signed 64 integer. This allows a
      * maximum of 106 million days  (106,751,991 days to be precise) which should be enough for most use cases.
@@ -16,67 +16,67 @@ namespace Daybreak
      * When converting to units of time other than microseconds, for example totalSeconds() or totalMinutes() the time
      * is converted to a floating point value with a potential loss of precision.
      */
-    class TimeSpan
+    class timespan_t
     {
     public:
         /** Initialize time span to zero seconds. */
-        constexpr TimeSpan() noexcept
+        constexpr timespan_t() noexcept
             : m_microseconds(0LL)
         {
         }
 
     protected:
-        /** 
+        /**
          * Initialize timespan to given number of microseconds. Use static constructor methods such as FromSeconds,
          * FromMinutes to construct time spans with values other than microseconds.
          */
-        constexpr explicit TimeSpan(int64_t microseconds) noexcept
+        constexpr explicit timespan_t(int64_t microseconds) noexcept
             : m_microseconds(microseconds)
         {
         }
 
     public:
         /** Create timespan from milliseconds. */
-        static constexpr TimeSpan fromMilliseconds(int32_t milliseconds) noexcept
+        static constexpr timespan_t fromMilliseconds(int32_t milliseconds) noexcept
         {
-            return TimeSpan(MicrosecondsPerMillisecond * milliseconds);
+            return timespan_t(MicrosecondsPerMillisecond * milliseconds);
         }
 
         /** Create timespan from milliseconds. */
-        static constexpr TimeSpan fromMilliseconds(double milliseconds) noexcept
+        static constexpr timespan_t fromMilliseconds(double milliseconds) noexcept
         {
             // Convert the given seconds into microseconds and truncate any partial microseconds.
-            return TimeSpan(static_cast<int32_t>(MicrosecondsPerMillisecond * milliseconds));
+            return timespan_t(static_cast<int32_t>(MicrosecondsPerMillisecond * milliseconds));
         }
 
         /** Create timespan from seconds. */
-        static constexpr TimeSpan fromSeconds(int32_t seconds) noexcept
+        static constexpr timespan_t fromSeconds(int32_t seconds) noexcept
         {
-            return TimeSpan(MicrosecondsPerSecond * seconds);
+            return timespan_t(MicrosecondsPerSecond * seconds);
         }
 
         /** Create timespan from seconds. */
-        static constexpr TimeSpan fromSeconds(double seconds) noexcept
+        static constexpr timespan_t fromSeconds(double seconds) noexcept
         {
             // Convert the given seconds into microseconds and truncate any partial microseconds.
-            return TimeSpan(static_cast<int32_t>(MicrosecondsPerSecond * seconds));
+            return timespan_t(static_cast<int32_t>(MicrosecondsPerSecond * seconds));
         }
 
         /** Create timespan from minutes. */
-        static constexpr TimeSpan fromMinutes(int32_t minutes) noexcept
+        static constexpr timespan_t fromMinutes(int32_t minutes) noexcept
         {
-            return TimeSpan(MicrosecondsPerMinute * minutes);
+            return timespan_t(MicrosecondsPerMinute * minutes);
         }
 
         /** Create timespan from hours. */
-        static constexpr TimeSpan fromHours(int32_t hours) noexcept
+        static constexpr timespan_t fromHours(int32_t hours) noexcept
         {
             // Max hours (2.56204779E9) is larger than int32 so no need to check for overflow or underflow.
-            return TimeSpan(MicrosecondsPerHour * hours);
+            return timespan_t(MicrosecondsPerHour * hours);
         }
 
         /** Create timespan from days. */
-        static constexpr TimeSpan fromDays(int32_t days)
+        static constexpr timespan_t fromDays(int32_t days)
         {
             if (days > MaxRepresentableDays)
             {
@@ -87,18 +87,18 @@ namespace Daybreak
                 throw std::runtime_error("Converting from given number of days would result in underflow");
             }
 
-            return TimeSpan(MicrosecondsPerDay * days);
+            return timespan_t(MicrosecondsPerDay * days);
         }
 
         /** Create timespan from given time. */
-        static constexpr TimeSpan fromTime(
+        static constexpr timespan_t fromTime(
             int32_t days,
             int32_t hours,
             int32_t minutes,
             int32_t seconds,
             int32_t milliseconds = 0)
         {
-            return TimeSpan()
+            return timespan_t()
                 .addDays(days)
                 .addHours(hours)
                 .addMinutes(minutes)
@@ -106,20 +106,20 @@ namespace Daybreak
                 .addMilliseconds(milliseconds);
         }
 
-        /** 
+        /**
          * Create timespan from raw value.
-         * Only use values obtained from rawValue() otherwise results are undefined. 
+         * Only use values obtained from rawValue() otherwise results are undefined.
          */
-        static constexpr TimeSpan fromRawValue(int64_t rawValue) noexcept
+        static constexpr timespan_t fromRawValue(int64_t rawValue) noexcept
         {
-            return TimeSpan(rawValue);
+            return timespan_t(rawValue);
         }
 
     public:
         /** Get the duration of a timespan, which is always the absolute value of the time span. */
-        constexpr TimeSpan duration() const noexcept
+        constexpr timespan_t duration() const noexcept
         {
-            return TimeSpan(std::abs(m_microseconds));
+            return timespan_t(std::abs(m_microseconds));
         }
 
         /** Get raw time data from timespan, suitable for serialization. */
@@ -208,95 +208,95 @@ namespace Daybreak
 
     public:
         /** Get a new timespan that is the result of adding this timepsan and the given number of microseconds. */
-        constexpr TimeSpan addMicroseconds(int64_t microseconds) const
+        constexpr timespan_t addMicroseconds(int64_t microseconds) const
         {
-            return *this + TimeSpan(microseconds);
+            return *this + timespan_t(microseconds);
         }
 
         /** Get a new timespan that is the result of adding this timepsan and the given number of milliseconds. */
-        constexpr TimeSpan addMilliseconds(int32_t milliseconds) const
+        constexpr timespan_t addMilliseconds(int32_t milliseconds) const
         {
-            return *this + TimeSpan::fromMilliseconds(milliseconds);
+            return *this + timespan_t::fromMilliseconds(milliseconds);
         }
 
         /** Get a new timespan that is the result of adding this timepsan and the given number of seconds. */
-        constexpr TimeSpan addSeconds(int32_t seconds) const
+        constexpr timespan_t addSeconds(int32_t seconds) const
         {
-            return *this + TimeSpan::fromSeconds(seconds);
+            return *this + timespan_t::fromSeconds(seconds);
         }
 
         /** Get a new timespan that is the result of adding this timepsan and the given number of minutes. */
-        constexpr TimeSpan addMinutes(int32_t minutes) const
+        constexpr timespan_t addMinutes(int32_t minutes) const
         {
-            return *this + TimeSpan::fromMinutes(minutes);
+            return *this + timespan_t::fromMinutes(minutes);
         }
 
         /** Get a new timespan that is the result of adding this timepsan and the given number of hours. */
-        constexpr TimeSpan addHours(int32_t hours) const
+        constexpr timespan_t addHours(int32_t hours) const
         {
-            return *this + TimeSpan::fromHours(hours);
+            return *this + timespan_t::fromHours(hours);
         }
 
         /** Get a new timespan that is the result of adding this timepsan and the given number of days. */
-        constexpr TimeSpan addDays(int32_t days) const
+        constexpr timespan_t addDays(int32_t days) const
         {
-            return *this + TimeSpan::fromDays(days);
+            return *this + timespan_t::fromDays(days);
         }
 
     public:
-        friend std::string to_string(const TimeSpan& t);
-        friend void swap(TimeSpan& a, TimeSpan& b) noexcept;
+        friend std::string to_string(const timespan_t& t);
+        friend void swap(timespan_t& a, timespan_t& b) noexcept;
 
         /** Equality operator overload. */
-        constexpr friend bool operator ==(const TimeSpan& lhs, const TimeSpan& rhs) noexcept
+        constexpr friend bool operator ==(const timespan_t& lhs, const timespan_t& rhs) noexcept
         {
             return lhs.m_microseconds == rhs.m_microseconds;
         }
 
         /** Inequality operator overload. */
-        constexpr friend bool operator !=(const TimeSpan& lhs, const TimeSpan& rhs) noexcept
+        constexpr friend bool operator !=(const timespan_t& lhs, const timespan_t& rhs) noexcept
         {
             return !(lhs == rhs);
         }
 
         /** Less than operator overload. */
-        constexpr friend bool operator <(const TimeSpan& lhs, const TimeSpan& rhs) noexcept
+        constexpr friend bool operator <(const timespan_t& lhs, const timespan_t& rhs) noexcept
         {
             return lhs.m_microseconds < rhs.m_microseconds;
         }
 
         /** Less than or equal to operator overload. */
-        constexpr friend bool operator <=(const TimeSpan& lhs, const TimeSpan& rhs) noexcept
+        constexpr friend bool operator <=(const timespan_t& lhs, const timespan_t& rhs) noexcept
         {
             return lhs.m_microseconds <= rhs.m_microseconds;
         }
 
         /** Greater than operator overload. */
-        constexpr friend bool operator >(const TimeSpan& lhs, const TimeSpan& rhs) noexcept
+        constexpr friend bool operator >(const timespan_t& lhs, const timespan_t& rhs) noexcept
         {
             return lhs.m_microseconds > rhs.m_microseconds;
         }
 
         /** Greater than or equal to operator overload. */
-        constexpr friend bool operator >=(const TimeSpan& lhs, const TimeSpan& rhs) noexcept
+        constexpr friend bool operator >=(const timespan_t& lhs, const timespan_t& rhs) noexcept
         {
             return lhs.m_microseconds >= rhs.m_microseconds;
         }
 
         /** Unary negation operator overload. */
-        constexpr friend TimeSpan operator -(const TimeSpan& lhs)
+        constexpr friend timespan_t operator -(const timespan_t& lhs)
         {
-            return TimeSpan(-lhs.m_microseconds);
+            return timespan_t(-lhs.m_microseconds);
         }
 
         /** Unary positive operator overload. */
-        constexpr friend TimeSpan operator +(const TimeSpan& lhs)
+        constexpr friend timespan_t operator +(const timespan_t& lhs)
         {
-            return TimeSpan(+lhs.m_microseconds);
+            return timespan_t(+lhs.m_microseconds);
         }
 
         /** Self addition operator overload. Overflow and underflow will throw an exception. */
-        constexpr TimeSpan& operator +=(const TimeSpan& rhs)
+        constexpr timespan_t& operator +=(const timespan_t& rhs)
         {
             auto l = m_microseconds;
             auto r = rhs.m_microseconds;
@@ -315,7 +315,7 @@ namespace Daybreak
         }
 
         /** Self subtraction operator overload. */
-        constexpr TimeSpan& operator -=(const TimeSpan& rhs)
+        constexpr timespan_t& operator -=(const timespan_t& rhs)
         {
             auto l = m_microseconds;
             auto r = rhs.m_microseconds;
@@ -334,7 +334,7 @@ namespace Daybreak
         }
 
         /** Self multiplication operator overload. */
-        constexpr TimeSpan& operator *=(double factor)
+        constexpr timespan_t& operator *=(double factor)
         {
             // TODO: Detect overflow and underflow.
             m_microseconds = static_cast<int64_t>(m_microseconds * factor);
@@ -342,7 +342,7 @@ namespace Daybreak
         }
 
         /** Self division operator overload. */
-        constexpr TimeSpan& operator /=(double factor)
+        constexpr timespan_t& operator /=(double factor)
         {
             // TODO: Detect overflow and underflow.
             m_microseconds = static_cast<int64_t>(m_microseconds / factor);
@@ -350,28 +350,28 @@ namespace Daybreak
         }
 
         /** Addition operator overload. */
-        constexpr friend TimeSpan operator +(TimeSpan lhs, const TimeSpan& rhs)
+        constexpr friend timespan_t operator +(timespan_t lhs, const timespan_t& rhs)
         {
             lhs += rhs;
             return lhs;
         }
-        
+
         /** Subtraction operator overload. */
-        constexpr friend TimeSpan operator -(TimeSpan lhs, const TimeSpan& rhs)
+        constexpr friend timespan_t operator -(timespan_t lhs, const timespan_t& rhs)
         {
             lhs -= rhs;
             return lhs;
         }
-        
+
         /** Multiplication operator overload. */
-        constexpr friend TimeSpan operator *(TimeSpan lhs, double factor)
+        constexpr friend timespan_t operator *(timespan_t lhs, double factor)
         {
             lhs *= factor;
             return lhs;
         }
-        
+
         /** Division operator overload. */
-        constexpr friend TimeSpan operator /(TimeSpan lhs, double factor)
+        constexpr friend timespan_t operator /(timespan_t lhs, double factor)
         {
             lhs /= factor;
             return lhs;
@@ -392,29 +392,29 @@ namespace Daybreak
     };
 
     /** User literal for time in seconds. */
-    TimeSpan constexpr operator"" _s(long double seconds) noexcept
+    timespan_t constexpr operator"" _s(long double seconds) noexcept
     {
-        return TimeSpan::fromSeconds(static_cast<double>(seconds));
+        return timespan_t::fromSeconds(static_cast<double>(seconds));
     }
 
     /** User literal for time in milliseconds. */
-    TimeSpan constexpr operator"" _ms(long double milliseconds) noexcept
+    timespan_t constexpr operator"" _ms(long double milliseconds) noexcept
     {
-        return TimeSpan::fromMilliseconds(static_cast<double>(milliseconds));
+        return timespan_t::fromMilliseconds(static_cast<double>(milliseconds));
     }
-    
+
     /** Swap two timespan values. */
-    void swap(TimeSpan& a, TimeSpan& b) noexcept;
+    void swap(timespan_t& a, timespan_t& b) noexcept;
 
     /** Get the value of the timespan expressed as a human readable string. */
-    std::string to_string(const TimeSpan& t);
+    std::string to_string(const timespan_t& t);
 
     /** TimeSpan ostream overload - prints the time to an output string. */
-    std::ostream& operator << (std::ostream& os, const TimeSpan& t);
+    std::ostream& operator << (std::ostream& os, const timespan_t& t);
 }
 
 namespace std
 {
     /** Returns a string with the representation of val. */
-    std::string to_string(const Daybreak::TimeSpan& val);
+    std::string to_string(const Daybreak::timespan_t& val);
 }

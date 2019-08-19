@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FirstPersonCameraController.h"
-#include "Common/Time.h"
+#include "app/time.h"
 #include "Input/IInputSource.h"
 #include "Camera.h"
 
@@ -16,7 +16,7 @@ FirstPersonCameraController::FirstPersonCameraController(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void FirstPersonCameraController::update(const TimeSpan& deltaTime)
+void FirstPersonCameraController::update(timespan_t deltaTime)
 {
     // Bail out early if there is no input source or camera attached.
     if (m_inputSource == nullptr || m_camera == nullptr)

@@ -66,7 +66,7 @@ SceneRenderer::~SceneRenderer()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void SceneRenderer::Render(const Daybreak::Scene& scene, const TimeSpan& deltaTime)
+void SceneRenderer::Render(const Daybreak::Scene& scene, timespan_t deltaTime)
 {
     // Clear display from last render.
     m_renderContext->clearColorAndDepthBuffers();

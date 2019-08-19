@@ -1,5 +1,5 @@
 #pragma once
-#include "Common/Time.h"
+#include "app/time.h"
 #include <cstdint>
 #include <memory>
 
@@ -49,7 +49,7 @@ private:
     void OnRenderWindowResized(unsigned int newWidth, unsigned int newHeight);
 
     /** Called to render a frame. */
-    void RenderFrame(const Daybreak::TimeSpan& deltaTime);
+    void RenderFrame(Daybreak::timespan_t deltaTime);
 
 private:
     unsigned int m_initialWindowWidth = 0;

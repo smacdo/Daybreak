@@ -80,13 +80,13 @@ void DaybreakApp::Run()
         }
 
         // TODO: Update simulation.
-        m_cameraController->update(TimeSpan::fromSeconds(deltaSeconds));
+        m_cameraController->update(timespan_t::fromSeconds(deltaSeconds));
 
         // Process platform windowinng events.
         ProcessPendingEvents();
 
         // Draw current frame.
-        RenderFrame(TimeSpan::fromSeconds(deltaSeconds));
+        RenderFrame(timespan_t::fromSeconds(deltaSeconds));
     }
 }
 
@@ -164,7 +164,7 @@ void DaybreakApp::InitializeRendering()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DaybreakApp::RenderFrame(const TimeSpan& deltaTime)
+void DaybreakApp::RenderFrame(timespan_t deltaTime)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
