@@ -330,7 +330,14 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
         // Read position index.
         if (splitter.hasNextToken())
         {
-            element.p = parseInt(splitter.readNextToken());
+            auto p = parseInt(splitter.readNextToken());
+
+            if (p == 0)
+            {
+                throw ObjModelException("Invalid index of zero", m_fileName, m_lineNumber, command, field);
+            }
+
+            element.p = p;
         }
         else
         {
@@ -344,7 +351,14 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
 
             if (token.size() > 0)
             {
-                element.t = parseInt(token);
+                auto t = parseInt(token);
+
+                if (t == 0)
+                {
+                    throw ObjModelException("Invalid index of zero", m_fileName, m_lineNumber, command, field);
+                }
+
+                element.t = t;
             }
         }
 
@@ -355,7 +369,14 @@ obj_face_vertex_t ObjModelParser::readFaceElement(
 
             if (token.size() > 0)
             {
-                element.n = parseInt(token);
+                auto n = parseInt(token);
+
+                if (n == 0)
+                {
+                    throw ObjModelException("Invalid index of zero", m_fileName, m_lineNumber, command, field);
+                }
+
+                element.n = n;
             }
         }
 

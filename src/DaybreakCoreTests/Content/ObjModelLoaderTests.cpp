@@ -215,6 +215,20 @@ public:
         Assert::AreEqual({ {2, 2, 3}, {3, 2, 1}, {1, 1, 3} }, model->groups[0].faces[0]);
     }
 
+    TEST_METHOD(F_Throws_Exception_If_Any_Index_Is_Zero)
+    {
+        ObjModelParser p;
+        const std::string& o =
+            "v 10 20 30\n vt 0.2 0.4\n vn 0.1 0.2 0.3\n"
+            "v 11 21 31\n vt 0.3 0.5\n vn 0.4 0.5 0.6\n"
+            "v 12 22 32\n vt 0.4 0.5\n vn 0.7 0.8 0.9\n";
+
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 0 0 0"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/0 1/0 1/0"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1/1/0 1/1/0 1/1/0"); });
+        Assert::ExpectException<ObjModelException>([&p, o] { p.parse(o + "f 1//0 1//0 1//0"); });
+    }
+
     TEST_METHOD(F_Adds_Faces_To_Current_Group)
     {
         ObjModelParser parser;
