@@ -60,6 +60,11 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
 
         currentMaterial().setParameter(MaterialParameter::AmbientColor, glm::vec3(r, g, b));
     }
+    else if (command == "map_Ka")
+    {
+        // TODO: Issue warning that ambient texture map not supported.
+        auto filepath = readExpectedString(splitter);
+    }
     else if (command == "Kd")
     {
         auto r = readExpectedFloat(splitter);
@@ -67,6 +72,11 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
         auto b = readExpectedFloat(splitter);
 
         currentMaterial().setParameter(MaterialParameter::DiffuseColor, glm::vec3(r, g, b));
+    }
+    else if (command == "map_Kd")
+    {
+        auto filepath = readExpectedString(splitter);
+        currentMaterial().setParameter(MaterialParameter::DiffuseMap, material_texture_t{ filepath });
     }
     else if (command == "Ks")
     {
@@ -76,9 +86,19 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
 
         currentMaterial().setParameter(MaterialParameter::SpecularColor, glm::vec3(r, g, b));
     }
+    else if (command == "map_Ks")
+    {
+        auto filepath = readExpectedString(splitter);
+        currentMaterial().setParameter(MaterialParameter::SpecularMap, material_texture_t{ filepath });
+    }
     else if (command == "Ns")
     {
         currentMaterial().setParameter(MaterialParameter::Shininess, readExpectedFloat(splitter));
+    }
+    else if (command == "map_Ns")
+    {
+        // TODO: Issue warning that specular power texture map not supported.
+        auto filepath = readExpectedString(splitter);
     }
     else if (command == "d")
     {
@@ -91,6 +111,11 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
 
         currentMaterial().setParameter(MaterialParameter::Opacity, o);
     }
+    else if (command == "map_d")
+    {
+        // TODO: Issue warning that alpha texture map not supported.
+        auto filepath = readExpectedString(splitter);
+    }
     else if (command == "Tr")
     {
         auto o = readExpectedFloat(splitter);
@@ -101,6 +126,21 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
         }
 
         currentMaterial().setParameter(MaterialParameter::Opacity, 1.0f - o);
+    }
+    else if (command == "map_bump" || command == "bump")
+    {
+        // TODO: Issue warning that bumps map not supported.
+        auto filepath = readExpectedString(splitter);
+    }
+    else if (command == "disp")
+    {
+        auto filepath = readExpectedString(splitter);
+        currentMaterial().setParameter(MaterialParameter::DisplacementMap, material_texture_t{ filepath });
+    }
+    else if (command == "map_Kn" || command == "norm")
+    {
+        auto filepath = readExpectedString(splitter);
+        currentMaterial().setParameter(MaterialParameter::NormalMap, material_texture_t{ filepath });
     }
     else
     {

@@ -8,7 +8,15 @@
 namespace Daybreak
 {
     class IImage;
-    typedef std::variant<float, glm::vec2, glm::vec3, glm::vec4, std::shared_ptr<IImage>> material_arg_value_t;
+
+    /** References a texture file on disk, and may or may not be loaded. */
+    struct material_texture_t
+    {
+        std::string filepath;
+        std::shared_ptr<IImage> image;
+    };
+
+    typedef std::variant<float, glm::vec2, glm::vec3, glm::vec4, material_texture_t> material_arg_value_t;
 
     enum class MaterialType
     {
@@ -24,7 +32,9 @@ namespace Daybreak
         SpecularMap,
         Shininess,
         Opacity,                   // 0 is fully transparent, 1 is opaque.
-        EmissiveMap
+        EmissiveMap,
+        NormalMap,
+        DisplacementMap
     };
 
     /** Data about a material loaded from disk. */
@@ -53,7 +63,7 @@ namespace Daybreak
         void setParameter(MaterialParameter parameter, const glm::vec4& value);
 
         /** Set material parameter to value. */
-        void setParameter(MaterialParameter parameter, std::shared_ptr<IImage> value);
+        void setParameter(MaterialParameter parameter, const material_texture_t& value);
 
         /** Check if parameter is defined. */
         bool isParameterDefined(MaterialParameter parameter);
@@ -70,8 +80,8 @@ namespace Daybreak
         /** Get parameter as vec3 or throw exception if cannot cast or not defined. */
         glm::vec4 getVector4Parameter(MaterialParameter parameter) const;
 
-        /** Get parameter as IImage or throw exception if cannot cast or not defined. */
-        std::shared_ptr<IImage> getImageParameter(MaterialParameter parameter) const;
+        /** Get parameter as material_texture_t or throw exception if cannot cast or not defined. */
+        material_texture_t getTextureParameter(MaterialParameter parameter) const;
 
         /** Get material class type. */
         MaterialType type() const noexcept { return m_type; }

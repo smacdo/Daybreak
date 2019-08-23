@@ -88,6 +88,32 @@ public:
         Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "Kd r g b"); });
     }
 
+    TEST_METHOD(map_Kd_Adds_Diffuse_Texture_Map)
+    {
+        MtlMaterialParser parser;
+
+        const std::string MtlData =
+            "newmtl first\n"
+            "map_Kd map1.dds\n"
+            "newmtl second\n"
+            "map_Kd map2.dds\n";
+        auto materials = parser.parse(MtlData);
+
+        Assert::AreEqual(
+            "map1.dds",
+            materials[0]->getTextureParameter(MaterialParameter::DiffuseMap).filepath.c_str());
+        Assert::AreEqual(
+            "map2.dds",
+            materials[1]->getTextureParameter(MaterialParameter::DiffuseMap).filepath.c_str());
+    }
+
+    TEST_METHOD(map_Kd_Throws_Exception_If_Path_Missing)
+    {
+        const std::string M = "newmtl first\n";
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "map_Kd"); });
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "map_Kd   "); });
+    }
+
     TEST_METHOD(Ks_Adds_Specular_Color)
     {
         MtlMaterialParser parser;
@@ -115,6 +141,32 @@ public:
         Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "Ks 0"); });
         Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "Ks 0 0"); });
         Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "Ks r g b"); });
+    }
+
+    TEST_METHOD(map_Ks_Adds_Specular_Texture_Map)
+    {
+        MtlMaterialParser parser;
+
+        const std::string MtlData =
+            "newmtl first\n"
+            "map_Ks map1.dds\n"
+            "newmtl second\n"
+            "map_Ks map2.dds\n";
+        auto materials = parser.parse(MtlData);
+
+        Assert::AreEqual(
+            "map1.dds",
+            materials[0]->getTextureParameter(MaterialParameter::SpecularMap).filepath.c_str());
+        Assert::AreEqual(
+            "map2.dds",
+            materials[1]->getTextureParameter(MaterialParameter::SpecularMap).filepath.c_str());
+    }
+
+    TEST_METHOD(map_Ks_Throws_Exception_If_Path_Missing)
+    {
+        const std::string M = "newmtl first\n";
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "map_Ks"); });
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "map_Ks   "); });
     }
 
     TEST_METHOD(Ns_Adds_Specular_Power)
@@ -200,6 +252,60 @@ public:
 
         Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "Tr  1.00021"); });
         Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "Tr -0.17"); });
+    }
+
+    TEST_METHOD(map_Kn_Or_norm_Adds_Normal_Map)
+    {
+        MtlMaterialParser parser;
+
+        const std::string MtlData =
+            "newmtl first\n"
+            "map_Kn foo.dds\n"
+            "newmtl bar\n"
+            "norm bar.dds\n";
+        auto materials = parser.parse(MtlData);
+
+        Assert::AreEqual(
+            "foo.dds",
+            materials[0]->getTextureParameter(MaterialParameter::NormalMap).filepath.c_str());
+        Assert::AreEqual(
+            "bar.dds",
+            materials[1]->getTextureParameter(MaterialParameter::NormalMap).filepath.c_str());
+    }
+
+    TEST_METHOD(map_Kn_Or_norm_Throws_Exception_If_Path_Missing)
+    {
+        const std::string M = "newmtl first\n";
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "map_Kn"); });
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "map_Kn   "); });
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "normal"); });
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "normal   "); });
+    }
+
+    TEST_METHOD(disp_Adds_Displacement_Map)
+    {
+        MtlMaterialParser parser;
+
+        const std::string MtlData =
+            "newmtl first\n"
+            "disp bar.dds\n"
+            "newmtl bar\n"
+            "disp foo.dds\n";
+        auto materials = parser.parse(MtlData);
+
+        Assert::AreEqual(
+            "bar.dds",
+            materials[0]->getTextureParameter(MaterialParameter::DisplacementMap).filepath.c_str());
+        Assert::AreEqual(
+            "foo.dds",
+            materials[1]->getTextureParameter(MaterialParameter::DisplacementMap).filepath.c_str());
+    }
+
+    TEST_METHOD(disp_Throws_Exception_If_Path_Missing)
+    {
+        const std::string M = "newmtl first\n";
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "disp"); });
+        Assert::ExpectException<std::runtime_error>([M] { MtlMaterialParser p; p.parse(M + "disp   "); });
     }
 
     TEST_METHOD(Parse_Two_Simple_Materials)

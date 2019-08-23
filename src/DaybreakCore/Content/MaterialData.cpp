@@ -37,7 +37,7 @@ void MaterialData::setParameter(MaterialParameter parameter, const glm::vec4& va
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void MaterialData::setParameter(MaterialParameter parameter, std::shared_ptr<IImage> value)
+void MaterialData::setParameter(MaterialParameter parameter, const material_texture_t& value)
 {
     m_parameters[parameter] = value;
 }
@@ -137,7 +137,7 @@ glm::vec4 MaterialData::getVector4Parameter(MaterialParameter parameter) const
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<IImage> MaterialData::getImageParameter(MaterialParameter parameter) const
+material_texture_t MaterialData::getTextureParameter(MaterialParameter parameter) const
 {
     auto itr = m_parameters.find(parameter);
 
@@ -147,7 +147,7 @@ std::shared_ptr<IImage> MaterialData::getImageParameter(MaterialParameter parame
         throw std::runtime_error("Material parameter not defined");
     }
 
-    auto valuePointer = std::get_if<std::shared_ptr<IImage>>(&itr->second);
+    auto valuePointer = std::get_if<material_texture_t>(&itr->second);
 
     if (valuePointer == nullptr)
     {
