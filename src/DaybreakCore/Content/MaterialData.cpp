@@ -43,7 +43,7 @@ void MaterialData::setParameter(MaterialParameter parameter, const material_text
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MaterialData::isParameterDefined(MaterialParameter parameter)
+bool MaterialData::isParameterDefined(MaterialParameter parameter) const
 {
     return m_parameters.find(parameter) != m_parameters.end();
 }
@@ -55,16 +55,14 @@ float MaterialData::getFloatParameter(MaterialParameter parameter) const
 
     if (itr == m_parameters.end())
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Material parameter not defined");
+        throw ParameterNotDefinedException(m_name, "TODO ADD ENUM MACRO NAME");
     }
     
     auto valuePointer = std::get_if<float>(&itr->second);
 
     if (valuePointer == nullptr)
     {
-        // TODO: Better exception.
-        throw new std::runtime_error("Material parameter is not a float");
+        throw ParameterCastException(m_name, "TODO ADD ENUM MACRO NAME", "float");
     }
 
     return *valuePointer;
@@ -77,16 +75,14 @@ glm::vec2 MaterialData::getVector2Parameter(MaterialParameter parameter) const
 
     if (itr == m_parameters.end())
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Material parameter not defined");
+        throw ParameterNotDefinedException(m_name, "TODO ADD ENUM MACRO NAME");
     }
 
     auto valuePointer = std::get_if<glm::vec2>(&itr->second);
 
     if (valuePointer == nullptr)
     {
-        // TODO: Better exception.
-        throw new std::runtime_error("Material parameter is not a vec2");
+        throw ParameterCastException(m_name, "TODO ADD ENUM MACRO NAME", "vec2");
     }
 
     return *valuePointer;
@@ -99,16 +95,14 @@ glm::vec3 MaterialData::getVector3Parameter(MaterialParameter parameter) const
 
     if (itr == m_parameters.end())
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Material parameter not defined");
+        throw ParameterNotDefinedException(m_name, "TODO ADD ENUM MACRO NAME");
     }
 
     auto valuePointer = std::get_if<glm::vec3>(&itr->second);
 
     if (valuePointer == nullptr)
     {
-        // TODO: Better exception.
-        throw new std::runtime_error("Material parameter is not a vec3");
+        throw ParameterCastException(m_name, "TODO ADD ENUM MACRO NAME", "vec3");
     }
 
     return *valuePointer;
@@ -121,16 +115,14 @@ glm::vec4 MaterialData::getVector4Parameter(MaterialParameter parameter) const
 
     if (itr == m_parameters.end())
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Material parameter not defined");
+        throw ParameterNotDefinedException(m_name, "TODO ADD ENUM MACRO NAME");
     }
 
     auto valuePointer = std::get_if<glm::vec4>(&itr->second);
 
     if (valuePointer == nullptr)
     {
-        // TODO: Better exception.
-        throw new std::runtime_error("Material parameter is not a vec4");
+        throw ParameterCastException(m_name, "TODO ADD ENUM MACRO NAME", "vec4");
     }
 
     return *valuePointer;
@@ -143,16 +135,14 @@ material_texture_t MaterialData::getTextureParameter(MaterialParameter parameter
 
     if (itr == m_parameters.end())
     {
-        // TODO: Better exception.
-        throw std::runtime_error("Material parameter not defined");
+        throw ParameterNotDefinedException(m_name, "TODO ADD ENUM MACRO NAME");
     }
 
     auto valuePointer = std::get_if<material_texture_t>(&itr->second);
 
     if (valuePointer == nullptr)
     {
-        // TODO: Better exception.
-        throw new std::runtime_error("Material parameter is not an image");
+        throw ParameterCastException(m_name, "TODO ADD ENUM MACRO NAME", "material_texture_t");
     }
 
     return *valuePointer;

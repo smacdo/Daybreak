@@ -193,6 +193,12 @@
     <ClInclude Include="Content\ObjModel\ObjModelParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="app\support\enumtable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Content\MaterialParameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -295,6 +301,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Content\ObjModel\ObjModelParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\MaterialDataExceptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

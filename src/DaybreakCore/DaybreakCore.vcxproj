@@ -179,12 +179,14 @@
     <Text Include="stb\TODO.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="app\support\enumtable.h" />
     <ClInclude Include="app\time.h" />
     <ClInclude Include="Common\Error.h" />
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Common\stdafx.h" />
     <ClInclude Include="Content\Images\ImageResourceLoader.h" />
     <ClInclude Include="Content\IResourceLoader.h" />
+    <ClInclude Include="Content\MaterialParameter.h" />
     <ClInclude Include="Content\ObjModel\MtlMaterialException.h" />
     <ClInclude Include="Content\ObjModel\MtlMaterialParser.h" />
     <ClInclude Include="Content\ObjModel\ObjResourceLoader.h" />
@@ -241,6 +243,7 @@
   <ItemGroup>
     <ClCompile Include="Common\Error.cpp" />
     <ClCompile Include="Content\Images\ImageResourceLoader.cpp" />
+    <ClCompile Include="Content\MaterialDataExceptions.cpp" />
     <ClCompile Include="Content\ObjModel\MtlMaterialParser.cpp" />
     <ClCompile Include="Content\ObjModel\ObjResourceLoader.cpp" />
     <ClCompile Include="Content\ObjModel\TextParsingUtils.cpp" />

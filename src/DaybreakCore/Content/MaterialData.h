@@ -1,40 +1,18 @@
 #pragma once
-#include <variant>
 #include <glm/glm.hpp>
 #include <memory>
 #include <map>
 #include <string>
 
+#include "Common\Error.h"
+#include "Content\MaterialParameter.h"
+
 namespace Daybreak
 {
-    class IImage;
-
-    /** References a texture file on disk, and may or may not be loaded. */
-    struct material_texture_t
-    {
-        std::string filepath;
-        std::shared_ptr<IImage> image;
-    };
-
-    typedef std::variant<float, glm::vec2, glm::vec3, glm::vec4, material_texture_t> material_arg_value_t;
-
-    enum class MaterialType
+    /** Rendering path to use when rendering objects with this material. */
+    enum class MaterialType : int
     {
         Traditional
-    };
-
-    enum class MaterialParameter
-    {
-        AmbientColor,
-        DiffuseColor,
-        DiffuseMap,
-        SpecularColor,
-        SpecularMap,
-        Shininess,
-        Opacity,                   // 0 is fully transparent, 1 is opaque.
-        EmissiveMap,
-        NormalMap,
-        DisplacementMap
     };
 
     /** Data about a material loaded from disk. */
@@ -66,7 +44,7 @@ namespace Daybreak
         void setParameter(MaterialParameter parameter, const material_texture_t& value);
 
         /** Check if parameter is defined. */
-        bool isParameterDefined(MaterialParameter parameter);
+        bool isParameterDefined(MaterialParameter parameter) const;
 
         /** Get parameter as float or throw exception if cannot cast or not defined. */
         float getFloatParameter(MaterialParameter parameter) const;
@@ -88,6 +66,47 @@ namespace Daybreak
 
         /** Set material class type. */
         void setType(MaterialType type) noexcept { m_type = type; }
+
+    public:
+        /** Material parameter was not defined exception. */
+        class ParameterNotDefinedException : public DaybreakEngineException
+        {
+        public:
+            ParameterNotDefinedException(const std::string& materialName, const std::string& parameterName);
+
+            std::string materialName() const noexcept { return m_materialName; }
+            std::string parameterName() const noexcept { return m_parameterName; }
+
+            static std::string formatMessage(const std::string& materialName, const std::string& parameterName);
+
+        private:
+            std::string m_materialName;
+            std::string m_parameterName;
+        };
+
+        /** Material parameter value could not be cast to requested type. */
+        class ParameterCastException : public DaybreakEngineException
+        {
+        public:
+            ParameterCastException(
+                const std::string& materialName,
+                const std::string& parameterName,
+                const std::string& requestedType);
+
+            std::string materialName() const noexcept { return m_materialName; }
+            std::string parameterName() const noexcept { return m_parameterName; }
+            std::string requestedType() const noexcept { return m_requestedType; }
+
+            static std::string formatMessage(
+                const std::string& materialName,
+                const std::string& parameterName,
+                const std::string& requestedType);
+
+        private:
+            std::string m_materialName;
+            std::string m_parameterName;
+            std::string m_requestedType;
+        };
 
     private:
         MaterialType m_type;
