@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ObjResourceLoader.h"
+#include "app/support/hash.h"
 #include "Content/ResourcesManager.h"
 #include "Content/ObjModel/ObjModelParser.h"
 #include "Graphics/ModelData.h"
@@ -8,7 +9,35 @@
 #include "Graphics/Mesh/MeshData.h"
 #include "Graphics/Mesh/VertexFormat.h"
 
+#include <functional>
+
 using namespace Daybreak;
+
+//---------------------------------------------------------------------------------------------------------------------
+namespace
+{
+    struct obj_face_vertex_hasher_t
+    {
+    public:
+        std::size_t operator()(const obj_face_vertex_t& f) const noexcept
+        {
+            std::hash<decltype(f.p)> hasher;
+            auto h = hasher(f.p);
+
+            if (f.hasUV())
+            {
+                h = combine_hash(h, f.t);
+            }
+
+            if (f.hasNormals())
+            {
+                h = combine_hash(h, f.n);
+            }
+
+            return h;
+        }
+    };
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 std::future<std::unique_ptr<ModelData>> ObjResourceLoader::load(
@@ -25,65 +54,96 @@ std::future<std::unique_ptr<ModelData>> ObjResourceLoader::load(
             auto fileText = resources.loadTextFile(resourcePath);
             auto objData = parser.parse(fileText.get(), resourcePath);
 
-            size_t faceCount = 0;
-
-            for (const auto& group : objData->groups)
-            {
-                faceCount += group.faces.size();
-            }
-
-            auto vertexCount = faceCount * 3;
-            std::unique_ptr<vertex_ptn_t[]> vertices(new vertex_ptn_t[vertexCount]);
-
-            auto indexCount = faceCount * 3;
-            std::unique_ptr<uint32_t[]> indices(new uint32_t[indexCount]);
-
-            size_t index = 0;
-
-            for (const auto& group : objData->groups)
-            {
-                for (const auto& face : group.faces)
-                {
-                    for (int j = 0; j < 3; ++j)
-                    {
-                        indices[index] = static_cast<uint32_t>(index);
-
-                        auto position = objData->positions[static_cast<size_t>(face.position[j] - 1)];
-                        vertices[index].setPosition(position.x, position.y, position.z);
-
-                        if (objData->hasUV)
-                        {
-                            auto uv = objData->uv[static_cast<size_t>(face.uv[j] - 1)];
-                            vertices[index].setUV(uv.x, uv.y);
-                        }
-                        else
-                        {
-                            vertices[index].setUV(0.0f, 0.0f);
-                        }
-
-                        if (objData->hasNormals)
-                        {
-                            auto normal = objData->normals[static_cast<size_t>(face.normal[j] - 1)];
-                            vertices[index].setNormal(normal.x, normal.y, normal.z);
-                        }
-                        else
-                        {
-                            vertices[index].setNormal(0.0f, 0.0f, 0.0f);
-                        }
-
-                        index++;
-                    }
-                }
-            }
-
-            return std::make_unique<ModelData>(
-                std::make_unique<MeshData>(
-                    std::make_unique<IndexBufferData>(
-                        indexCount,
-                        std::move(indices)),
-                    std::make_unique<VertexBufferData>(
-                        vertexCount,
-                        std::move(vertices),
-                        vertex_ptn_t::inputLayout)));
+            return std::move(convert(std::move(objData)));
     });
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::unique_ptr<ModelData> ObjResourceLoader::convert(std::unique_ptr<obj_model_t> objModel)
+{
+    // Get a count of the total number of faces in the model across all groups.
+    size_t faceCount = 0;
+
+    for (const auto& group : objModel->groups)
+    {
+        faceCount += group.faces.size();
+    }
+
+    // Allocate space for vertex buffer (use the standard position/texture/normal layout).
+    // TODO: Trim space after combined vertex count.
+    auto vertexCount = faceCount * 3;
+    std::unique_ptr<vertex_ptn_t[]> vertices(new vertex_ptn_t[vertexCount]);
+
+    // Allocate space for the index buffer.
+    auto indexCount = faceCount * 3;
+    
+    std::unique_ptr<uint32_t[]> indices(new uint32_t[indexCount]);
+
+    // Generate vertices for each face group in the obj model.
+    using index_t = uint32_t;
+    std::unordered_map<obj_face_vertex_t, index_t, obj_face_vertex_hasher_t> vertexCache;
+
+    index_t nextVertexIndex = 0;
+    size_t nextIndex = 0;
+
+    for (const auto& group : objModel->groups)
+    {
+        // Generate vertices for each face in the obj model group.
+        for (const auto& face : group.faces)
+        {
+            for (int j = 0; j < 3; ++j)
+            {
+                // If the face vertex does not exist in the cache generate it.
+                auto objVertex = face.vertex(j);
+                auto itr = vertexCache.find(objVertex);
+
+                if (itr == vertexCache.end())
+                {
+                    // Generate an entry in the vertex buffer for this face vertex.
+                    auto position = objModel->positions[static_cast<size_t>(face.position[j]) - 1];
+                    vertices[nextVertexIndex].setPosition(position.x, position.y, position.z);
+
+                    if (objModel->hasUV)
+                    {
+                        auto uv = objModel->uv[static_cast<size_t>(face.uv[j]) - 1];
+                        vertices[nextVertexIndex].setUV(uv.x, uv.y);
+                    }
+                    else
+                    {
+                        vertices[nextVertexIndex].setUV(0.0f, 0.0f);
+                    }
+
+                    if (objModel->hasNormals)
+                    {
+                        auto normal = objModel->normals[static_cast<size_t>(face.normal[j]) - 1];
+                        vertices[nextVertexIndex].setNormal(normal.x, normal.y, normal.z);
+                    }
+                    else
+                    {
+                        vertices[nextVertexIndex].setNormal(0.0f, 0.0f, 0.0f);
+                    }
+
+                    // Record the index of the face vertex.
+                    vertexCache[objVertex] = nextVertexIndex++;
+                }
+
+                // Look up the cached vertice's index in the vertex buffer.
+                auto vertexIndex = vertexCache[objVertex];
+
+                indices[nextIndex] = vertexIndex;
+                nextIndex++;
+            }
+        }
+    }
+
+    // Return Daybreak model data representing the obj model.
+    return std::make_unique<ModelData>(
+        std::make_unique<MeshData>(
+            std::make_unique<IndexBufferData>(
+                indexCount,
+                std::move(indices)),
+            std::make_unique<VertexBufferData>(
+                vertexCount,
+                std::move(vertices),
+                vertex_ptn_t::inputLayout)));
 }

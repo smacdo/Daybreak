@@ -11,28 +11,6 @@ namespace Daybreak
 {
     class MeshData;
 
-    /** Obj model data. Note indices are one based and not zero based! */
-    struct obj_face_t
-    {
-        int position[3];
-        int uv[3];
-        int normal[3];
-
-        bool operator ==(const obj_face_t& rhs) const
-        {
-            return
-                position[0] == rhs.position[0] &&
-                position[1] == rhs.position[1] &&
-                position[2] == rhs.position[2] &&
-                uv[0] == rhs.uv[0] &&
-                uv[1] == rhs.uv[1] &&
-                uv[2] == rhs.uv[2] &&
-                normal[0] == rhs.normal[0] &&
-                normal[1] == rhs.normal[1] &&
-                normal[2] == rhs.normal[2];
-        }
-    };
-
     /** One vertex in an obj face. Note indices are one based not zero based! */
     struct obj_face_vertex_t
     {
@@ -50,6 +28,34 @@ namespace Daybreak
         bool operator ==(const obj_face_vertex_t& rhs) const
         {
             return p == rhs.p && t == rhs.t && n == rhs.n;
+        }
+    };
+
+    /** Obj model data. Note indices are one based and not zero based! */
+    struct obj_face_t
+    {
+        int position[3];
+        int uv[3];
+        int normal[3];
+
+        // TODO: Remove.
+        obj_face_vertex_t vertex(size_t index) const
+        {
+            return obj_face_vertex_t{ position[index], uv[index], normal[index] };
+        }
+
+        bool operator ==(const obj_face_t& rhs) const
+        {
+            return
+                position[0] == rhs.position[0] &&
+                position[1] == rhs.position[1] &&
+                position[2] == rhs.position[2] &&
+                uv[0] == rhs.uv[0] &&
+                uv[1] == rhs.uv[1] &&
+                uv[2] == rhs.uv[2] &&
+                normal[0] == rhs.normal[0] &&
+                normal[1] == rhs.normal[1] &&
+                normal[2] == rhs.normal[2];
         }
     };
 
