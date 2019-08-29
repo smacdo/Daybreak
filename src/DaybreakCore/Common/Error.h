@@ -211,7 +211,7 @@ private:
 // Runtime check macros.
 //---------------------------------------------------------------------------------------------------------------------
 #define EXPECT(x, msg) assert(x && msg)
-#define CHECK(x) if (!(x)) { throw RuntimeCheckException("Expected " ## #x " to be false", __FILE__, __LINE__); }
+#define CHECK(x) if (!(x)) { throw RuntimeCheckException("Expected " ## #x " to be false", #x, __FILE__, __LINE__); }
 #define CHECK_NOT_NULL(x) if ((x) == nullptr) { \
     throw RuntimeCheckException("Expected " ## #x " to not be null", #x ## " != nullptr", __FILE__, __LINE__); }
 #define CHECK_NOT_ZERO(x) if ((x) == 0) { \

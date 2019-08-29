@@ -12,6 +12,7 @@
 #include "Graphics/Mesh/VertexFormat.h"
 
 #include <functional>
+#include <unordered_map>
 
 using namespace Daybreak;
 
@@ -73,6 +74,7 @@ ObjResourceLoader::material_lut_t ObjResourceLoader::loadMaterials(
     for (const auto& materialLibrary : objModel.materialLibraries)
     {
         // TODO: Only add materials that are actually referenced by the model.
+        // TODO: Warn about duplicate material names.
         auto materials = loadMtl(materialLibrary, resources);
 
         for (size_t i = 0; i < materials.size(); ++i)
@@ -101,7 +103,7 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(
     const material_lut_t& materials)
 {
     // Get a count of the total number of faces in the model across all groups.
-    size_t faceCount = 0;
+    size_t faceCount = 0;  
 
     for (const auto& group : objModel->groups)
     {
@@ -122,6 +124,7 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(
     using index_t = uint32_t;
     
     std::unordered_map<obj_face_vertex_t, index_t, obj_face_vertex_hasher_t> vertexCache;
+    std::vector<ModelData::Group> groups;
 
     index_t nextVertexIndex = 0;
     size_t nextIndex = 0;
@@ -129,7 +132,7 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(
     for (const auto& group : objModel->groups)
     {
         // Record the first index in this group.
-        //auto firstIndex = nextIndex;
+        auto firstIndex = nextIndex;
 
         // Generate vertices for each face in the obj model group.
         for (const auto& face : group.faces)
@@ -180,17 +183,19 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(
 
         // Create a group definition in the model data for this obj group.
         // TODO: Add material sharing.
-        //auto lastIndex = nextIndex - 1;
-        //auto indexCount = lastIndex - firstIndex;
+        // TODO: Warn if material is missing (or error but not exception).
+        auto groupIndexCount = nextIndex - firstIndex;
+        auto materialItr = materials.find(group.material);
 
-        /*groups.emplace_back(ModelData::Group(
+        groups.emplace_back(ModelData::Group(
             group.name,
-            std::move()
-        ))*/
+            (materialItr == materials.end() ? nullptr : materialItr->second),
+            firstIndex,
+            groupIndexCount));
     }
 
-    // Return Daybreak model data representing the obj model.
-    return std::make_unique<ModelData>(
+    // Create the Daybreak model along with index and vertex buffers.
+    auto modelData = std::make_unique<ModelData>(
         std::make_unique<MeshData>(
             std::make_unique<IndexBufferData>(
                 indexCount,
@@ -199,4 +204,10 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(
                 vertexCount,
                 std::move(vertices),
                 vertex_ptn_t::inputLayout)));
+
+    // Add groups to the Daybreak model.
+    modelData->addGroup(std::move(groups));
+
+    // All done!
+    return std::move(modelData);
 }

@@ -12,7 +12,7 @@ namespace Daybreak
     class ObjResourceLoader : public IResourceLoader<ModelData>
     {
     public:
-        using material_lut_t =  std::unordered_map<std::string, std::unique_ptr<MaterialData>>;
+        using material_lut_t =  std::unordered_map<std::string, std::shared_ptr<MaterialData>>;
 
     public:
         virtual std::future<std::unique_ptr<ModelData>> load(
