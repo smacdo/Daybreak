@@ -187,16 +187,13 @@
     <ClInclude Include="app\time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Content\MaterialData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Content\ObjModel\ObjModelParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="app\support\enumtable.h">
+    <ClInclude Include="Content\Materials\MaterialData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Content\MaterialParameter.h">
+    <ClInclude Include="Content\Materials\MaterialParameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -297,13 +294,16 @@
     <ClCompile Include="app\timespan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Content\MaterialData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Content\ObjModel\ObjModelParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Content\MaterialDataExceptions.cpp">
+    <ClCompile Include="Content\Materials\MaterialData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Materials\MaterialDataExceptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Content\Materials\MaterialParameter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

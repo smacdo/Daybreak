@@ -2,7 +2,7 @@
 #include "CppUnitTest.h"
 #include "Content/ObjModel/MtlMaterialParser.h"
 #include "Content/ObjModel/MtlMaterialException.h"
-#include "Content/MaterialData.h"
+#include "Content\Materials\MaterialData.h"
 #include "../TestHelpers.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -43,10 +43,10 @@ public:
 
         Assert::AreEqual(
             glm::vec3(0.25f, 0.5f, 0.75f),
-            materials[0]->getVector3Parameter(MaterialParameter::AmbientColor));
+            materials[0]->getVector3Parameter(MaterialParameterType::AmbientColor));
         Assert::AreEqual(
             glm::vec3(0.1f, 1.0f, 0.0f),
-            materials[1]->getVector3Parameter(MaterialParameter::AmbientColor));
+            materials[1]->getVector3Parameter(MaterialParameterType::AmbientColor));
     }
 
     TEST_METHOD(Ka_Throws_Exception_If_R_G_B_Field_Missing)
@@ -72,10 +72,10 @@ public:
 
         Assert::AreEqual(
             glm::vec3(0.4f, 0.72f, 0.1f),
-            materials[0]->getVector3Parameter(MaterialParameter::DiffuseColor));
+            materials[0]->getVector3Parameter(MaterialParameterType::DiffuseColor));
         Assert::AreEqual(
             glm::vec3(0.3f, 0.22f, 0.9f),
-            materials[1]->getVector3Parameter(MaterialParameter::DiffuseColor));
+            materials[1]->getVector3Parameter(MaterialParameterType::DiffuseColor));
     }
 
     TEST_METHOD(Kd_Throws_Exception_If_R_G_B_Field_Missing)
@@ -101,10 +101,10 @@ public:
 
         Assert::AreEqual(
             "map1.dds",
-            materials[0]->getTextureParameter(MaterialParameter::DiffuseMap).filepath.c_str());
+            materials[0]->getTextureParameter(MaterialParameterType::DiffuseMap).filepath.c_str());
         Assert::AreEqual(
             "map2.dds",
-            materials[1]->getTextureParameter(MaterialParameter::DiffuseMap).filepath.c_str());
+            materials[1]->getTextureParameter(MaterialParameterType::DiffuseMap).filepath.c_str());
     }
 
     TEST_METHOD(map_Kd_Throws_Exception_If_Path_Missing)
@@ -127,10 +127,10 @@ public:
 
         Assert::AreEqual(
             glm::vec3(0.1f, 0.2f, 0.3f),
-            materials[0]->getVector3Parameter(MaterialParameter::SpecularColor));
+            materials[0]->getVector3Parameter(MaterialParameterType::SpecularColor));
         Assert::AreEqual(
             glm::vec3(0.0f, 0.5f, 1.0f),
-            materials[1]->getVector3Parameter(MaterialParameter::SpecularColor));
+            materials[1]->getVector3Parameter(MaterialParameterType::SpecularColor));
     }
 
     TEST_METHOD(Ks_Throws_Exception_If_R_G_B_Field_Missing)
@@ -156,10 +156,10 @@ public:
 
         Assert::AreEqual(
             "map1.dds",
-            materials[0]->getTextureParameter(MaterialParameter::SpecularMap).filepath.c_str());
+            materials[0]->getTextureParameter(MaterialParameterType::SpecularMap).filepath.c_str());
         Assert::AreEqual(
             "map2.dds",
-            materials[1]->getTextureParameter(MaterialParameter::SpecularMap).filepath.c_str());
+            materials[1]->getTextureParameter(MaterialParameterType::SpecularMap).filepath.c_str());
     }
 
     TEST_METHOD(map_Ks_Throws_Exception_If_Path_Missing)
@@ -180,8 +180,8 @@ public:
             "Ns 1.73\n";
         auto materials = parser.parse(MtlData);
 
-        Assert::AreEqual(2.0f, materials[0]->getFloatParameter(MaterialParameter::Shininess));
-        Assert::AreEqual(1.73f, materials[1]->getFloatParameter(MaterialParameter::Shininess));
+        Assert::AreEqual(2.0f, materials[0]->getFloatParameter(MaterialParameterType::Shininess));
+        Assert::AreEqual(1.73f, materials[1]->getFloatParameter(MaterialParameterType::Shininess));
     }
 
     TEST_METHOD(Ns_Throws_Exception_If_Value_Field_Missing)
@@ -203,8 +203,8 @@ public:
             "d 0\n";
         auto materials = parser.parse(MtlData);
 
-        Assert::AreEqual(0.4f, materials[0]->getFloatParameter(MaterialParameter::Opacity));
-        Assert::AreEqual(0.0f, materials[1]->getFloatParameter(MaterialParameter::Opacity));
+        Assert::AreEqual(0.4f, materials[0]->getFloatParameter(MaterialParameterType::Opacity));
+        Assert::AreEqual(0.0f, materials[1]->getFloatParameter(MaterialParameterType::Opacity));
     }
 
     TEST_METHOD(d_Throws_Exception_If_Value_Field_Mising)
@@ -234,8 +234,8 @@ public:
             "Tr 0\n";
         auto materials = parser.parse(MtlData);
 
-        Assert::AreEqual(0.6f, materials[0]->getFloatParameter(MaterialParameter::Opacity));
-        Assert::AreEqual(1.0f, materials[1]->getFloatParameter(MaterialParameter::Opacity));
+        Assert::AreEqual(0.6f, materials[0]->getFloatParameter(MaterialParameterType::Opacity));
+        Assert::AreEqual(1.0f, materials[1]->getFloatParameter(MaterialParameterType::Opacity));
     }
 
     TEST_METHOD(Tr_Throws_Exception_If_Value_Field_Mising)
@@ -267,10 +267,10 @@ public:
 
         Assert::AreEqual(
             "foo.dds",
-            materials[0]->getTextureParameter(MaterialParameter::NormalMap).filepath.c_str());
+            materials[0]->getTextureParameter(MaterialParameterType::NormalMap).filepath.c_str());
         Assert::AreEqual(
             "bar.dds",
-            materials[1]->getTextureParameter(MaterialParameter::NormalMap).filepath.c_str());
+            materials[1]->getTextureParameter(MaterialParameterType::NormalMap).filepath.c_str());
     }
 
     TEST_METHOD(map_Kn_Or_norm_Throws_Exception_If_Path_Missing)
@@ -295,10 +295,10 @@ public:
 
         Assert::AreEqual(
             "bar.dds",
-            materials[0]->getTextureParameter(MaterialParameter::DisplacementMap).filepath.c_str());
+            materials[0]->getTextureParameter(MaterialParameterType::DisplacementMap).filepath.c_str());
         Assert::AreEqual(
             "foo.dds",
-            materials[1]->getTextureParameter(MaterialParameter::DisplacementMap).filepath.c_str());
+            materials[1]->getTextureParameter(MaterialParameterType::DisplacementMap).filepath.c_str());
     }
 
     TEST_METHOD(disp_Throws_Exception_If_Path_Missing)
@@ -332,30 +332,30 @@ public:
 
         Assert::AreEqual(
             glm::vec3(0.25f, 0.5f, 0.75f),
-            materials[0]->getVector3Parameter(MaterialParameter::AmbientColor));
+            materials[0]->getVector3Parameter(MaterialParameterType::AmbientColor));
         Assert::AreEqual(
             glm::vec3(0.1f, 1.0f, 0.0f),
-            materials[1]->getVector3Parameter(MaterialParameter::AmbientColor));
+            materials[1]->getVector3Parameter(MaterialParameterType::AmbientColor));
 
         Assert::AreEqual(
             glm::vec3(1.0, 1.0f, 1.0f),
-            materials[0]->getVector3Parameter(MaterialParameter::DiffuseColor));
+            materials[0]->getVector3Parameter(MaterialParameterType::DiffuseColor));
         Assert::AreEqual(
             glm::vec3(0.0f, 1.0f, 0.0f),
-            materials[1]->getVector3Parameter(MaterialParameter::DiffuseColor));
+            materials[1]->getVector3Parameter(MaterialParameterType::DiffuseColor));
 
         Assert::AreEqual(
             glm::vec3(0.2f, 0.4f, 0.7f),
-            materials[0]->getVector3Parameter(MaterialParameter::SpecularColor));
+            materials[0]->getVector3Parameter(MaterialParameterType::SpecularColor));
         Assert::AreEqual(
             glm::vec3(0.2f, 0.1f, 0.5f),
-            materials[1]->getVector3Parameter(MaterialParameter::SpecularColor));
+            materials[1]->getVector3Parameter(MaterialParameterType::SpecularColor));
 
-        Assert::IsFalse(materials[0]->isParameterDefined(MaterialParameter::Shininess));
-        Assert::AreEqual(7.0f, materials[1]->getFloatParameter(MaterialParameter::Shininess));
+        Assert::IsFalse(materials[0]->isParameterDefined(MaterialParameterType::Shininess));
+        Assert::AreEqual(7.0f, materials[1]->getFloatParameter(MaterialParameterType::Shininess));
 
-        Assert::AreEqual(0.8f, materials[0]->getFloatParameter(MaterialParameter::Opacity));
-        Assert::AreEqual(1.0f, materials[1]->getFloatParameter(MaterialParameter::Opacity));
+        Assert::AreEqual(0.8f, materials[0]->getFloatParameter(MaterialParameterType::Opacity));
+        Assert::AreEqual(1.0f, materials[1]->getFloatParameter(MaterialParameterType::Opacity));
     }
 
 };

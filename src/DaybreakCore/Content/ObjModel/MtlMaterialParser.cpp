@@ -3,7 +3,7 @@
 #include "Utility/TextUtils.h"
 #include "Content/ObjModel/MtlMaterialException.h"
 #include "Content/ObjModel/TextParsingUtils.h"
-#include "Content/MaterialData.h"
+#include "Content\Materials\MaterialData.h"
 #include "Common/Error.h"
 
 #include <sstream>
@@ -58,7 +58,7 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
         auto g = readExpectedFloat(splitter);
         auto b = readExpectedFloat(splitter);
 
-        currentMaterial().setParameter(MaterialParameter::AmbientColor, glm::vec3(r, g, b));
+        currentMaterial().setParameter(MaterialParameterType::AmbientColor, glm::vec3(r, g, b));
     }
     else if (command == "map_Ka")
     {
@@ -71,12 +71,12 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
         auto g = readExpectedFloat(splitter);
         auto b = readExpectedFloat(splitter);
 
-        currentMaterial().setParameter(MaterialParameter::DiffuseColor, glm::vec3(r, g, b));
+        currentMaterial().setParameter(MaterialParameterType::DiffuseColor, glm::vec3(r, g, b));
     }
     else if (command == "map_Kd")
     {
         auto filepath = readExpectedString(splitter);
-        currentMaterial().setParameter(MaterialParameter::DiffuseMap, material_texture_t{ filepath });
+        currentMaterial().setParameter(MaterialParameterType::DiffuseMap, material_texture_t{ filepath });
     }
     else if (command == "Ks")
     {
@@ -84,16 +84,16 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
         auto g = readExpectedFloat(splitter);
         auto b = readExpectedFloat(splitter);
 
-        currentMaterial().setParameter(MaterialParameter::SpecularColor, glm::vec3(r, g, b));
+        currentMaterial().setParameter(MaterialParameterType::SpecularColor, glm::vec3(r, g, b));
     }
     else if (command == "map_Ks")
     {
         auto filepath = readExpectedString(splitter);
-        currentMaterial().setParameter(MaterialParameter::SpecularMap, material_texture_t{ filepath });
+        currentMaterial().setParameter(MaterialParameterType::SpecularMap, material_texture_t{ filepath });
     }
     else if (command == "Ns")
     {
-        currentMaterial().setParameter(MaterialParameter::Shininess, readExpectedFloat(splitter));
+        currentMaterial().setParameter(MaterialParameterType::Shininess, readExpectedFloat(splitter));
     }
     else if (command == "map_Ns")
     {
@@ -109,7 +109,7 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
             throw MtlMaterialException("Opacity must be in [0, 1] range", m_fileName, m_lineNumber, "d", "");
         }
 
-        currentMaterial().setParameter(MaterialParameter::Opacity, o);
+        currentMaterial().setParameter(MaterialParameterType::Opacity, o);
     }
     else if (command == "map_d")
     {
@@ -125,7 +125,7 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
             throw MtlMaterialException("Opacity must be in [0, 1] range", m_fileName, m_lineNumber, "Tr", "");
         }
 
-        currentMaterial().setParameter(MaterialParameter::Opacity, 1.0f - o);
+        currentMaterial().setParameter(MaterialParameterType::Opacity, 1.0f - o);
     }
     else if (command == "map_bump" || command == "bump")
     {
@@ -135,12 +135,12 @@ void MtlMaterialParser::parseLine(const std::string_view& line)
     else if (command == "disp")
     {
         auto filepath = readExpectedString(splitter);
-        currentMaterial().setParameter(MaterialParameter::DisplacementMap, material_texture_t{ filepath });
+        currentMaterial().setParameter(MaterialParameterType::DisplacementMap, material_texture_t{ filepath });
     }
     else if (command == "map_Kn" || command == "norm")
     {
         auto filepath = readExpectedString(splitter);
-        currentMaterial().setParameter(MaterialParameter::NormalMap, material_texture_t{ filepath });
+        currentMaterial().setParameter(MaterialParameterType::NormalMap, material_texture_t{ filepath });
     }
     else
     {

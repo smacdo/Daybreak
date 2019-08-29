@@ -4,21 +4,10 @@
 #include <memory>
 #include <string>
 
-#include "app\support\enumtable.h"
-
 namespace Daybreak
 {
-    class IImage;
-
-    /** References a texture file on disk, and may or may not be loaded. */
-    struct material_texture_t
-    {
-        std::string filepath;
-        std::shared_ptr<IImage> image;
-    };
-
-    /** A material parameter. */
-    enum class MaterialParameter : int
+    /** A material parameter. (Update MaterialData.cpp to_string when adding/removing). */
+    enum class MaterialParameterType : int
     {
         AmbientColor,
         DiffuseColor,
@@ -30,6 +19,18 @@ namespace Daybreak
         EmissiveMap,
         NormalMap,
         DisplacementMap
+    };
+
+    /** Convert MaterialParameter to string. */
+    std::string to_string(MaterialParameterType& param);
+
+    /** References a texture file on disk, and may or may not be loaded. */
+    class IImage;
+
+    struct material_texture_t
+    {
+        std::string filepath;
+        std::shared_ptr<IImage> image;
     };
 
     /** Holds a material parameter value. */

@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Common\Error.h"
-#include "Content\MaterialParameter.h"
+#include "Content\Materials\MaterialParameter.h"
 
 namespace Daybreak
 {
@@ -29,37 +29,37 @@ namespace Daybreak
         void setName(const std::string& name) noexcept { m_name = name; }
 
         /** Set material parameter to value. */
-        void setParameter(MaterialParameter parameter, float value);
+        void setParameter(MaterialParameterType parameter, float value);
 
         /** Set material parameter to value. */
-        void setParameter(MaterialParameter parameter, const glm::vec2& value);
+        void setParameter(MaterialParameterType parameter, const glm::vec2& value);
 
         /** Set material parameter to value. */
-        void setParameter(MaterialParameter parameter, const glm::vec3& value);
+        void setParameter(MaterialParameterType parameter, const glm::vec3& value);
 
         /** Set material parameter to value. */
-        void setParameter(MaterialParameter parameter, const glm::vec4& value);
+        void setParameter(MaterialParameterType parameter, const glm::vec4& value);
 
         /** Set material parameter to value. */
-        void setParameter(MaterialParameter parameter, const material_texture_t& value);
+        void setParameter(MaterialParameterType parameter, const material_texture_t& value);
 
         /** Check if parameter is defined. */
-        bool isParameterDefined(MaterialParameter parameter) const;
+        bool isParameterDefined(MaterialParameterType parameter) const;
 
         /** Get parameter as float or throw exception if cannot cast or not defined. */
-        float getFloatParameter(MaterialParameter parameter) const;
+        float getFloatParameter(MaterialParameterType parameter) const;
 
         /** Get parameter as vec2 or throw exception if cannot cast or not defined. */
-        glm::vec2 getVector2Parameter(MaterialParameter parameter) const;
+        glm::vec2 getVector2Parameter(MaterialParameterType parameter) const;
 
         /** Get parameter as vec3 or throw exception if cannot cast or not defined. */
-        glm::vec3 getVector3Parameter(MaterialParameter parameter) const;
+        glm::vec3 getVector3Parameter(MaterialParameterType parameter) const;
 
         /** Get parameter as vec3 or throw exception if cannot cast or not defined. */
-        glm::vec4 getVector4Parameter(MaterialParameter parameter) const;
+        glm::vec4 getVector4Parameter(MaterialParameterType parameter) const;
 
         /** Get parameter as material_texture_t or throw exception if cannot cast or not defined. */
-        material_texture_t getTextureParameter(MaterialParameter parameter) const;
+        material_texture_t getTextureParameter(MaterialParameterType parameter) const;
 
         /** Get material class type. */
         MaterialType type() const noexcept { return m_type; }
@@ -111,6 +111,6 @@ namespace Daybreak
     private:
         MaterialType m_type;
         std::string m_name;
-        std::map<MaterialParameter, material_arg_value_t> m_parameters;
+        std::map<MaterialParameterType, material_arg_value_t> m_parameters;
     };
 }
