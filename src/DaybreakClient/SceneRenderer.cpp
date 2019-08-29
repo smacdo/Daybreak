@@ -9,7 +9,7 @@
 #include "OglRenderer/OglTexture.h"
 #include "OglRenderer/OglPhongLightingEffect.h"
 #include "Renderer/Mesh.h"
-#include "Graphics/ModelData.h"
+#include "Content\Models\ModelData.h"
 #include "Renderer/Phong/PhongMaterial.h"
 #include "Renderer/Phong/PhongLight.h"
 #include "Renderer/RenderContext.h"

@@ -3,7 +3,7 @@
 #include "app/support/hash.h"
 #include "Content/ResourcesManager.h"
 #include "Content/ObjModel/ObjModelParser.h"
-#include "Graphics/ModelData.h"
+#include "Content\Models\ModelData.h"
 #include "Graphics/Mesh/IndexBufferData.h"
 #include "Graphics/Mesh/VertexBufferData.h"
 #include "Graphics/Mesh/MeshData.h"
@@ -81,6 +81,7 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(std::unique_ptr<obj_model_
 
     // Generate vertices for each face group in the obj model.
     using index_t = uint32_t;
+    
     std::unordered_map<obj_face_vertex_t, index_t, obj_face_vertex_hasher_t> vertexCache;
 
     index_t nextVertexIndex = 0;
@@ -88,6 +89,9 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(std::unique_ptr<obj_model_
 
     for (const auto& group : objModel->groups)
     {
+        // Record the first index in this group.
+        //auto firstIndex = nextIndex;
+
         // Generate vertices for each face in the obj model group.
         for (const auto& face : group.faces)
         {
@@ -134,6 +138,16 @@ std::unique_ptr<ModelData> ObjResourceLoader::convert(std::unique_ptr<obj_model_
                 nextIndex++;
             }
         }
+
+        // Create a group definition in the model data for this obj group.
+        // TODO: Add material sharing.
+        //auto lastIndex = nextIndex - 1;
+        //auto indexCount = lastIndex - firstIndex;
+
+        /*groups.emplace_back(ModelData::Group(
+            group.name,
+            std::move()
+        ))*/
     }
 
     // Return Daybreak model data representing the obj model.

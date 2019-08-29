@@ -11,28 +11,14 @@ namespace Daybreak
     class ModelData
     {
     public:
-        /** Contains instructions on rendering a group of indices in a model. */
         class Group
         {
         public:
-            /** Initialize group. */
             Group(
                 const std::string& name,
                 std::shared_ptr<MaterialData> material,
                 size_t indexOffset,
                 size_t indexCount);
-
-            /** Get group name. */
-            std::string name() const { return m_name; }
-
-            /** Get group material. */
-            std::shared_ptr<MaterialData> material() const { return m_material; }
-
-            /** Get index buffer offset. */
-            size_t indexOffset() const noexcept { return m_indexOffset; }
-
-            /** Get the number of indices that belong to this group. */
-            size_t indexCount() const noexcept { return m_indexCount; }
 
         private:
             std::string m_name;
@@ -52,7 +38,6 @@ namespace Daybreak
         const MeshData& mesh() const noexcept;
 
         /** Add a group to the model. */
-        void addGroup(Group group);
 
     private:
         std::unique_ptr<MeshData> m_mesh;

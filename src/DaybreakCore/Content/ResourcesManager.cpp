@@ -4,7 +4,7 @@
 #include "Common/Error.h"
 
 #include "Content/ObjModel/ObjResourceLoader.h"
-#include "Graphics/ModelData.h"
+#include "Content\Models\ModelData.h"
 
 #include "Content/Images/ImageResourceLoader.h"
 #include "Graphics/Image.h"

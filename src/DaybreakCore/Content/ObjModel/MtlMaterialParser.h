@@ -28,7 +28,7 @@ namespace Daybreak
 
     private:
         std::string m_fileName;
-        size_t m_lineNumber;
+        size_t m_lineNumber = 0;
         std::vector<std::unique_ptr<MaterialData>> m_materials;
     };
 }
