@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "OglTexture.h"
 #include "OglError.h"
-#include "Graphics/Image.h"
+#include "Content\Images\Image.h"
 
 #include <glad\glad.h>
 
@@ -107,6 +107,14 @@ void OglTexture2d::setTextureId(GLuint id)
     }
 
     m_id = id;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::unique_ptr<OglTexture2d> OglTexture2d::generate(
+    const Image& image,
+    TextureParameters settings)
+{
+    return std::move(generate(image, settings, settings.format()));
 }
 
 //---------------------------------------------------------------------------------------------------------------------

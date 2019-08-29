@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ImageResourceLoader.h"
-#include "Content/ResourcesManager.h"
-#include "Graphics/Image.h"
+#include "Content\ResourcesManager.h"
+#include "Content\Images\Image.h"
 
 using namespace Daybreak;
 

@@ -12,7 +12,7 @@ namespace Daybreak
     class IShader;
     class ITexture2d;
 
-    // Render device context abstraction.
+    /*** Hardware independent API for managing render state. */
     class IRenderContext
     {
     public:

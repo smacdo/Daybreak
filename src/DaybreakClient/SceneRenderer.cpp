@@ -8,6 +8,7 @@
 #include "OglRenderer/OglIndexBuffer.h"
 #include "OglRenderer/OglTexture.h"
 #include "OglRenderer/OglPhongLightingEffect.h"
+#include "OglRenderer\OglDeviceContext.h"
 #include "Renderer/Mesh.h"
 #include "Content\Models\ModelData.h"
 #include "Renderer/Phong/PhongMaterial.h"
@@ -15,7 +16,7 @@
 #include "Renderer/RenderContext.h"
 #include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Mesh/MeshData.h"
-#include "Graphics/Image.h"
+#include "Content\Images\Image.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
 #include "Content/ResourcesManager.h"
@@ -168,7 +169,10 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, timespan_t deltaTime)
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::CreateDefaultScene()
 {
-    auto resources = std::make_unique<ResourcesManager>(std::make_shared<DefaultFileSystem>("Content"));
+    auto deviceContext = std::make_shared<OglDeviceContext>();
+    auto fileSystem = std::make_shared<DefaultFileSystem>("Content");
+
+    auto resources = std::make_unique<ResourcesManager>(deviceContext, fileSystem);
 
     m_scene = std::make_unique<Scene>();
     m_renderContext = std::make_unique<OglRenderContext>();

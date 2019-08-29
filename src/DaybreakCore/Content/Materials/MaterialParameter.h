@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include "Renderer\Texture.h"
+
 namespace Daybreak
 {
     /** A material parameter. (Update MaterialData.cpp to_string when adding/removing). */
@@ -25,12 +27,11 @@ namespace Daybreak
     std::string to_string(MaterialParameterType& param);
 
     /** References a texture file on disk, and may or may not be loaded. */
-    class IImage;
-
     struct material_texture_t
     {
         std::string filepath;
-        std::shared_ptr<IImage> image;
+        std::shared_ptr<ITexture2d> texture;
+        TextureParameters textureParams;
     };
 
     /** Holds a material parameter value. */

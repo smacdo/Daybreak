@@ -61,6 +61,9 @@ namespace Daybreak
         /** Get parameter as material_texture_t or throw exception if cannot cast or not defined. */
         material_texture_t getTextureParameter(MaterialParameterType parameter) const;
 
+        /** Delete a parameter from the material. */
+        bool removeParameter(MaterialParameterType parameter);
+
         /** Get material class type. */
         MaterialType type() const noexcept { return m_type; }
 

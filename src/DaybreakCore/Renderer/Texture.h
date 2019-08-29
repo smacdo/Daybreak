@@ -75,6 +75,12 @@ namespace Daybreak
         // Set texture wrapping mode for parameter v.
         void setWrapU(TextureWrapMode mode);
 
+        // Get texture format.
+        TextureFormat format() const { return m_format; }
+
+        // Set texture format.
+        void setFormat(TextureFormat format) { m_format = format; }
+
     private:
         TextureWrapMode m_wrapS = TextureWrapMode::Repeat;
         TextureWrapMode m_wrapT = TextureWrapMode::Repeat;
@@ -82,6 +88,7 @@ namespace Daybreak
         TextureFilterMode m_minFilter = TextureFilterMode::Nearest;
         TextureFilterMode m_magFilter = TextureFilterMode::Nearest;
         TextureFilterMode m_mipFilter = TextureFilterMode::Linear;
+        TextureFormat m_format = TextureFormat::RGB;
     };
 
     // Render independent 2d texture interface.

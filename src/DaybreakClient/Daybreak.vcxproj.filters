@@ -69,6 +69,9 @@
     <ClInclude Include="SdlException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OglRenderer\OglDeviceContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -117,6 +120,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SdlException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OglRenderer\OglDeviceContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

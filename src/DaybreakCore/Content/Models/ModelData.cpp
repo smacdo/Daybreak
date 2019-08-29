@@ -17,10 +17,25 @@ ModelData::Group::Group(
       m_indexOffset(indexOffset),
       m_indexCount(indexCount)
 {
-    CHECK_NOT_EMPTY(name);
-    CHECK_NOT_NULL(material);
+    CHECK_NOT_EMPTY(m_name);
+    CHECK_NOT_NULL(m_material);
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+const MaterialData& ModelData::Group::materialRef() const
+{
+    CHECK_NOT_NULL(m_material);
+    return *(m_material.get());
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+MaterialData& ModelData::Group::materialRef()
+{
+    CHECK_NOT_NULL(m_material);
+    return *(m_material.get());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------------------------------------------------
 ModelData::ModelData(std::unique_ptr<MeshData> mesh)
     : m_mesh(std::move(mesh))
@@ -55,4 +70,36 @@ void ModelData::addGroup(std::vector<Group>&& groups)
     }
     
     m_groups = std::move(groups);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+size_t ModelData::groupCount() const noexcept
+{
+    return m_groups.size();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+const ModelData::Group& ModelData::group(size_t groupIndex) const
+{
+    CHECK(groupIndex < m_groups.size());
+    return m_groups[groupIndex];
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+ModelData::Group& ModelData::group(size_t groupIndex)
+{
+    CHECK(groupIndex < m_groups.size());
+    return m_groups[groupIndex];
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+const std::vector<ModelData::Group>& ModelData::groups() const noexcept
+{
+    return m_groups;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::vector<ModelData::Group>& ModelData::groups() noexcept
+{
+    return m_groups;
 }

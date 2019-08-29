@@ -29,6 +29,15 @@ namespace Daybreak
             /** Get group material. */
             const std::shared_ptr<MaterialData>& material() const { return m_material; }
 
+            /** Check if material assigned. */
+            bool hasMaterial() const noexcept { return m_material != nullptr; }
+
+            /** Get reference to the material. */
+            const MaterialData& materialRef() const;
+
+            /** Get a reference to the material. */
+            MaterialData& materialRef();
+
             /** Get index buffer offset. */
             size_t indexOffset() const noexcept { return m_indexOffset; }
 
@@ -57,6 +66,21 @@ namespace Daybreak
 
         /** Add multiple groups to the model. */
         void addGroup(std::vector<Group>&& groups);
+
+        /** Get the number of groups in this model. */
+        size_t groupCount() const noexcept;
+
+        /** Get a const reference to a group in this model. */
+        const Group& group(size_t groupIndex) const;
+
+        /** Get reference to a group in this model. */
+        Group& group(size_t groupIndex);
+
+        /** Get a const reference to the list of groups in this model. */
+        const std::vector<Group>& groups() const noexcept;
+
+        /** Get a reference to the list of groups in this model. */
+        std::vector<Group>& groups() noexcept;
 
     private:
         std::unique_ptr<MeshData> m_mesh;

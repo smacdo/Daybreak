@@ -1,6 +1,6 @@
 #pragma once
-#include "Content/IResourceLoader.h"
-#include "Graphics/Image.h"
+#include "Content\IResourceLoader.h"
+#include "Content\Images\Image.h"
 
 namespace Daybreak
 {

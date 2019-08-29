@@ -213,6 +213,7 @@
   <ItemGroup>
     <ClInclude Include="Daybreak.h" />
     <ClInclude Include="DaybreakApp.h" />
+    <ClInclude Include="OglRenderer\OglDeviceContext.h" />
     <ClInclude Include="OglRenderer\OglError.h" />
     <ClInclude Include="OglRenderer\OglException.h" />
     <ClInclude Include="OglRenderer\OglIndexBuffer.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="..\..\thirdparty\glad\src\glad.cpp" />
     <ClCompile Include="Daybreak.cpp" />
     <ClCompile Include="DaybreakApp.cpp" />
+    <ClCompile Include="OglRenderer\OglDeviceContext.cpp" />
     <ClCompile Include="OglRenderer\OglError.cpp" />
     <ClCompile Include="OglRenderer\OglException.cpp" />
     <ClCompile Include="OglRenderer\OglIndexBuffer.cpp" />

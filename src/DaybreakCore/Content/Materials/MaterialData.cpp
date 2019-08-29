@@ -147,3 +147,17 @@ material_texture_t MaterialData::getTextureParameter(MaterialParameterType param
 
     return *valuePointer;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+bool MaterialData::removeParameter(MaterialParameterType parameter)
+{
+    auto itr = m_parameters.find(parameter);
+
+    if (itr != m_parameters.end())
+    {
+        m_parameters.erase(itr);
+        return true;
+    }
+
+    return false;
+}

@@ -32,6 +32,11 @@ namespace Daybreak::OpenGlRenderer
         // Create 2d texture from an image.
         static std::unique_ptr<OglTexture2d> generate(
             const Image& image,
+            TextureParameters settings);
+
+        // Create 2d texture from an image.
+        static std::unique_ptr<OglTexture2d> generate(
+            const Image& image,
             TextureParameters settings,
             TextureFormat hardwareFormat);
 

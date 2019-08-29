@@ -194,7 +194,7 @@
     <ClInclude Include="Content\ResourcesManager.h" />
     <ClInclude Include="Content\DefaultFileSystem.h" />
     <ClInclude Include="Graphics\BasicGeometryGenerator.h" />
-    <ClInclude Include="Graphics\Image.h" />
+    <ClInclude Include="Content\Images\Image.h" />
     <ClInclude Include="Graphics\InputAttribute.h" />
     <ClInclude Include="Content\Materials\MaterialData.h" />
     <ClInclude Include="Graphics\Mesh\BufferData.h" />
@@ -206,6 +206,7 @@
     <ClInclude Include="Content\Models\ModelData.h" />
     <ClInclude Include="Renderer\GpuBuffer.h" />
     <ClInclude Include="Renderer\GpuResource.h" />
+    <ClInclude Include="Renderer\DeviceContext.h" />
     <ClInclude Include="Renderer\InputLayout.h" />
     <ClInclude Include="Renderer\Phong\PhongEffectShaderVars.h" />
     <ClInclude Include="Renderer\RendererEffect.h" />
@@ -251,7 +252,7 @@
     <ClCompile Include="Content\ResourcesManager.cpp" />
     <ClCompile Include="Content\DefaultFileSystem.cpp" />
     <ClCompile Include="Graphics\BasicGeometryGenerator.cpp" />
-    <ClCompile Include="Graphics\Image.cpp" />
+    <ClCompile Include="Content\Images\Image.cpp" />
     <ClCompile Include="Graphics\InputAttribute.cpp" />
     <ClCompile Include="Content\Materials\MaterialData.cpp" />
     <ClCompile Include="Graphics\Mesh\BufferData.cpp" />
