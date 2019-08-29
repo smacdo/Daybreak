@@ -6,7 +6,7 @@
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
-std::future<std::unique_ptr<Image>> ImageResourceLoader::load(
+std::unique_ptr<Image> ImageResourceLoader::load(
     const std::string& resourcePath,
     ResourcesManager& resources)
 {
@@ -15,10 +15,6 @@ std::future<std::unique_ptr<Image>> ImageResourceLoader::load(
     //       loader.
     auto finalResourcePath = "content\\" + resourcePath;
 
-    return std::async(
-        std::launch::async | std::launch::deferred,
-        [finalResourcePath]() {
-            std::unique_ptr<Image> image(BytePerChannelImage::LoadFromFile(finalResourcePath));
-            return std::move(image);
-    });
+    std::unique_ptr<Image> image(BytePerChannelImage::LoadFromFile(finalResourcePath));
+    return std::move(image);
 }

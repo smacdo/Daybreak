@@ -16,7 +16,7 @@ namespace Daybreak
          * Returns a fully constructed resource given a resource path and the resource manager for loading depenendent
          * resources.
          */
-        virtual std::future<std::unique_ptr<TResource>> load(
+        virtual std::unique_ptr<TResource> load(
             const std::string& resourcePath,
             ResourcesManager& resources) = 0;
     };

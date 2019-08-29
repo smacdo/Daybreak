@@ -43,24 +43,20 @@ namespace
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::future<std::unique_ptr<ModelData>> ObjResourceLoader::load(
+std::unique_ptr<ModelData> ObjResourceLoader::load(
     const std::string& resourcePath,
     ResourcesManager& resources)
 {
-    return std::async(
-        std::launch::async | std::launch::deferred,
-        [resourcePath, &resources]() {
-            // TODO: Improve this code because it was written quickly to get minimal obj support working.
-            //       In particular it does not use async I/O.
-            ObjModelParser parser;
+    // TODO: Improve this code because it was written quickly to get minimal obj support working.
+    //       In particular it does not use async I/O.
+    ObjModelParser parser;
 
-            auto fileText = resources.loadTextFile(resourcePath);
-            auto objData = parser.parse(fileText.get(), resourcePath);
+    auto fileText = resources.loadTextFile(resourcePath);
+    auto objData = parser.parse(fileText, resourcePath);
 
-            auto materials = loadMaterials(*(objData.get()), resources);
+    auto materials = loadMaterials(*(objData.get()), resources);
 
-            return std::move(convert(std::move(objData), materials));
-    });
+    return std::move(convert(std::move(objData), materials));
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -94,7 +90,7 @@ std::vector<std::unique_ptr<MaterialData>> ObjResourceLoader::loadMtl(
     MtlMaterialParser parser;
 
     auto fileText = resources.loadTextFile(filepath);
-    return parser.parse(fileText.get(), filepath);
+    return parser.parse(fileText, filepath);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

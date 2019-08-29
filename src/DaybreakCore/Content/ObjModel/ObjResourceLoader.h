@@ -15,7 +15,7 @@ namespace Daybreak
         using material_lut_t =  std::unordered_map<std::string, std::shared_ptr<MaterialData>>;
 
     public:
-        virtual std::future<std::unique_ptr<ModelData>> load(
+        virtual std::unique_ptr<ModelData> load(
             const std::string& resourcePath,
             ResourcesManager& resources) override;
 

@@ -23,13 +23,13 @@ namespace Daybreak
             std::shared_ptr<IFileSystem> fileSystem);               ///< Current file system device.
 
         /** Load a 3d model. */
-        std::future<std::unique_ptr<ModelData>> loadModel(const std::string& path);
+        std::unique_ptr<ModelData> loadModel(const std::string& path);
 
         /** Load an image. */
-        std::future<std::unique_ptr<Image>> loadImage(const std::string& path);
+        std::unique_ptr<Image> loadImage(const std::string& path);
 
         /** Load a text file. */
-        std::future<std::string> loadTextFile(const std::string& path);
+        std::string loadTextFile(const std::string& path);
 
     private:
         bool loadMaterialTextureParameterIfMissing(

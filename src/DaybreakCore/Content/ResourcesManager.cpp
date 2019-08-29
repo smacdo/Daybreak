@@ -30,39 +30,35 @@ ResourcesManager::ResourcesManager(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::future<std::unique_ptr<ModelData>> ResourcesManager::loadModel(const std::string& path)
+std::unique_ptr<ModelData> ResourcesManager::loadModel(const std::string& path)
 {
-    return std::async(
-        std::launch::async | std::launch::deferred,
-        [path, this]() {
-            // Read the model from disk and convert it to the Daybreak model format.
-            // TODO: Use appropriate loader for the file format.
-            ObjResourceLoader l;
-            auto model = l.load(path, *this).get();
+    // Read the model from disk and convert it to the Daybreak model format.
+    // TODO: Use appropriate loader for the file format.
+    ObjResourceLoader l;
+    auto model = l.load(path, *this);
 
-            // Load all textures associated with materials in the model.
-            // TODO: Use a stack vector and wait in parallel.
-            for (auto& group : model->groups())
-            {
-                // Skip groups that don't have a material.
-                if (!group.hasMaterial())
-                {
-                    continue;
-                }
+    // Load all textures associated with materials in the model.
+    // TODO: Use a stack vector and wait in parallel.
+    for (auto& group : model->groups())
+    {
+        // Skip groups that don't have a material.
+        if (!group.hasMaterial())
+        {
+            continue;
+        }
 
-                // TODO: Is there a better way to do this?
-                auto& material = group.materialRef();
+        // TODO: Is there a better way to do this?
+        auto& material = group.materialRef();
                 
-                loadMaterialTextureParameterIfMissing(material, MaterialParameterType::DiffuseMap);
-                loadMaterialTextureParameterIfMissing(material, MaterialParameterType::SpecularMap);
-                loadMaterialTextureParameterIfMissing(material, MaterialParameterType::DisplacementMap);
-                loadMaterialTextureParameterIfMissing(material, MaterialParameterType::NormalMap);
-                loadMaterialTextureParameterIfMissing(material, MaterialParameterType::DiffuseMap);
-            }
+        loadMaterialTextureParameterIfMissing(material, MaterialParameterType::DiffuseMap);
+        loadMaterialTextureParameterIfMissing(material, MaterialParameterType::SpecularMap);
+        loadMaterialTextureParameterIfMissing(material, MaterialParameterType::DisplacementMap);
+        loadMaterialTextureParameterIfMissing(material, MaterialParameterType::NormalMap);
+        loadMaterialTextureParameterIfMissing(material, MaterialParameterType::DiffuseMap);
+    }
 
-            // Return the loaded model.
-            return std::move(model);
-        });   
+    // Return the loaded model.
+    return std::move(model); 
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -78,7 +74,7 @@ bool ResourcesManager::loadMaterialTextureParameterIfMissing(
         if (param.texture == nullptr)
         {
             // TODO: Warn if the texture could not be loaded.
-            auto image = std::shared_ptr<Image>(std::move(loadImage(param.filepath).get()));
+            auto image = loadImage(param.filepath);
 
             // TODO: Support loading texture in format specified by material.
             // TODO: Support loading textures in non vendor specific API.
@@ -104,14 +100,14 @@ bool ResourcesManager::loadMaterialTextureParameterIfMissing(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::future<std::unique_ptr<Image>> ResourcesManager::loadImage(const std::string& path)
+std::unique_ptr<Image> ResourcesManager::loadImage(const std::string& path)
 {
     ImageResourceLoader l;
     return l.load(path, *this);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::future<std::string> ResourcesManager::loadTextFile(const std::string& path)
+std::string ResourcesManager::loadTextFile(const std::string& path)
 {
-    return m_fileSystem->loadFileAsText(path);
+    return m_fileSystem->loadFileAsText(path).get();
 }

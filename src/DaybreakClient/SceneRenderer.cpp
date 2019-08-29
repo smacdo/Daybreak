@@ -185,15 +185,15 @@ void SceneRenderer::CreateDefaultScene()
 
     // Load textures.
     //  TODO: Use render context -> device -> createTexture
-    auto diffuseImage = resources->loadImage("cube_diffuse.png").get();
+    auto diffuseImage = resources->loadImage("cube_diffuse.png");
     auto diffuseTexture = OglTexture2d::generate(*diffuseImage.get(), TextureParameters(), TextureFormat::RGB);
 
-    auto specularImage = resources->loadImage("cube_specular.png").get();
+    auto specularImage = resources->loadImage("cube_specular.png");
     auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
 
     // Create a simple cube to render.
     //  TODO: Use render context -> device -> createXXX
-    auto cubeModel = resources->loadModel("cube.obj").get();
+    auto cubeModel = resources->loadModel("cube.obj");
 
     auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh());
     auto indexBuffer = OglIndexBuffer::generate(cubeModel->mesh());
