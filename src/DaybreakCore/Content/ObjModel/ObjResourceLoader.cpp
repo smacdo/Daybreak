@@ -4,6 +4,8 @@
 #include "Content/ResourcesManager.h"
 #include "Content/ObjModel/ObjModelParser.h"
 #include "Content\Models\ModelData.h"
+#include "Content\Materials\MaterialData.h"
+#include "Content\ObjModel\MtlMaterialParser.h"
 #include "Graphics/Mesh/IndexBufferData.h"
 #include "Graphics/Mesh/VertexBufferData.h"
 #include "Graphics/Mesh/MeshData.h"
@@ -54,12 +56,49 @@ std::future<std::unique_ptr<ModelData>> ObjResourceLoader::load(
             auto fileText = resources.loadTextFile(resourcePath);
             auto objData = parser.parse(fileText.get(), resourcePath);
 
-            return std::move(convert(std::move(objData)));
+            auto materials = loadMaterials(*(objData.get()), resources);
+
+            return std::move(convert(std::move(objData), materials));
     });
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<ModelData> ObjResourceLoader::convert(std::unique_ptr<obj_model_t> objModel)
+ObjResourceLoader::material_lut_t ObjResourceLoader::loadMaterials(
+    const obj_model_t& objModel,
+    ResourcesManager& resources)
+{
+    material_lut_t lut;
+
+    // Load all the referenced material libraries in the obj file.
+    for (const auto& materialLibrary : objModel.materialLibraries)
+    {
+        // TODO: Only add materials that are actually referenced by the model.
+        auto materials = loadMtl(materialLibrary, resources);
+
+        for (size_t i = 0; i < materials.size(); ++i)
+        {
+            lut.emplace(materials[i]->name(), std::move(materials[i]));
+        }
+    }
+
+    return lut;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::vector<std::unique_ptr<MaterialData>> ObjResourceLoader::loadMtl(
+    const std::string& filepath,
+    ResourcesManager& resources)
+{
+    MtlMaterialParser parser;
+
+    auto fileText = resources.loadTextFile(filepath);
+    return parser.parse(fileText.get(), filepath);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::unique_ptr<ModelData> ObjResourceLoader::convert(
+    std::unique_ptr<obj_model_t> objModel,
+    const material_lut_t& materials)
 {
     // Get a count of the total number of faces in the model across all groups.
     size_t faceCount = 0;
