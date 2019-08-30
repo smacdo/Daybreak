@@ -20,6 +20,18 @@ namespace Daybreak::OpenGlRenderer
             const Image& image,                         ///< Source image.
             const TextureParameters& params) override;  ///< Texture sampling and generation parameters.
 
+        /** Create a new index buffer. */
+        virtual std::unique_ptr<IndexBuffer> createIndexBuffer(
+            const MeshData& mesh) override;             ///< Source index data.
+       
+        /** Create a new input layout descriptor. */
+        virtual std::unique_ptr<InputLayout> createInputLayout(
+            const InputLayoutDescription& layoutDescription) override;
+
+        /** Create a new vertex buffer. */
+        virtual std::unique_ptr<VertexBuffer> createVertexBuffer(
+            const MeshData& mesh) override;             ///< Source vertex data.
+
     protected:
         /** Destroy allocated resources. */
         void destroy();

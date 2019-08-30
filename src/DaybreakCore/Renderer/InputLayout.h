@@ -1,16 +1,15 @@
 #pragma once
 #include <memory>
+#include "Graphics\InputLayoutDescription.h"
 
 namespace Daybreak
 {
-    class InputLayoutDescription;
-
     // Abstract base class for input layout.
     class InputLayout
     {
     public:
         // Constructor.
-        InputLayout(_In_ std::shared_ptr<const InputLayoutDescription> description);
+        InputLayout(const InputLayoutDescription& layoutDescription);
 
         // Copy constructor (deleted).
         InputLayout(const InputLayout&) = delete;
@@ -22,12 +21,9 @@ namespace Daybreak
         InputLayout& operator =(const InputLayout&) = delete;
 
         // Get input layout description.
-        std::shared_ptr<const InputLayoutDescription> layoutDescription() const noexcept;
-
-        // Get input layout description by reference.
-        const InputLayoutDescription& layoutDescriptionRef() const noexcept;
+        const InputLayoutDescription& layoutDescription() const noexcept;
 
     private:
-        std::shared_ptr<const InputLayoutDescription> m_layoutDescription;
+        InputLayoutDescription m_layoutDescription;
     };
 }

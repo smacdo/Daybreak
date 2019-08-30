@@ -6,6 +6,11 @@
 namespace Daybreak
 {
     class Image;
+    class IndexBuffer;
+    class InputLayout;
+    class InputLayoutDescription;
+    class MeshData;
+    class VertexBuffer;
 
     /*** Hardware independent API for managing rendering resources. */
     class IDeviceContext
@@ -28,5 +33,17 @@ namespace Daybreak
         virtual std::unique_ptr<ITexture2d> createTexture2d(
             const Image& image,                     ///< Source image.
             const TextureParameters& params) = 0;   ///< Texture sampling and generation parameters.
+
+        /** Create a new index buffer. */
+        virtual std::unique_ptr<IndexBuffer> createIndexBuffer(
+            const MeshData& mesh) = 0;              ///< Source index data.
+
+        /** Create a new input layout descriptor. */
+        virtual std::unique_ptr<InputLayout> createInputLayout(
+            const InputLayoutDescription& layoutDescription) = 0;
+
+        /** Create a new vertex buffer. */
+        virtual std::unique_ptr<VertexBuffer> createVertexBuffer(
+            const MeshData& mesh) = 0;              ///< Source vertex data.
     };
 }

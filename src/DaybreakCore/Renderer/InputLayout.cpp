@@ -6,23 +6,16 @@
 using namespace Daybreak;
 
 //---------------------------------------------------------------------------------------------------------------------
-InputLayout::InputLayout(_In_ std::shared_ptr<const InputLayoutDescription> description)
+InputLayout::InputLayout(const InputLayoutDescription& description)
     : m_layoutDescription(description)
 {
-    CHECK_NOT_NULL(description);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 InputLayout::~InputLayout() = default;
 
 //---------------------------------------------------------------------------------------------------------------------
-std::shared_ptr<const InputLayoutDescription> InputLayout::layoutDescription() const noexcept
+const InputLayoutDescription& InputLayout::layoutDescription() const noexcept
 {
     return m_layoutDescription;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-const InputLayoutDescription& InputLayout::layoutDescriptionRef() const noexcept
-{
-    return *m_layoutDescription.get();
 }

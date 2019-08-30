@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SceneRenderer.h"
+#include "app/support/deref.h"
 #include "OglRenderer/OglRenderContext.h"
 #include "OglRenderer/OglShader.h"
 #include "OglRenderer/OglError.h"
@@ -188,8 +189,8 @@ void SceneRenderer::CreateDefaultScene()
     auto material = std::make_shared<PhongMaterial>(modelData->group(0).materialRef());
 
     m_mesh = std::make_unique<Mesh>(
-        OglVertexBuffer::generate(modelData->mesh()),
-        OglIndexBuffer::generate(modelData->mesh()),
+        m_deviceContext->createVertexBuffer(modelData->mesh()),
+        m_deviceContext->createIndexBuffer(modelData->mesh()),
         material);
 
     // Generate vertex attributes for the standard shader.
@@ -205,10 +206,7 @@ void SceneRenderer::CreateDefaultScene()
         { InputAttribute::SemanticName::Normal, 0, InputAttribute::StorageType::Float, 3 }
     });
 
-    m_standardInputLayout = OglInputLayout::generate(
-        standardVertexAttributes,
-        m_renderContext,
-        m_mesh->vertexBuffer());
+    m_standardInputLayout = m_deviceContext->createInputLayout(deref(standardVertexAttributes));
 
     // Construct scene shader.
     m_phong = std::make_unique<OglPhongLightingEffect>(

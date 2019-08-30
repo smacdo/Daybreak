@@ -179,6 +179,7 @@
     <Text Include="stb\TODO.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="app\support\deref.h" />
     <ClInclude Include="app\support\hash.h" />
     <ClInclude Include="app\time.h" />
     <ClInclude Include="Common\Error.h" />
