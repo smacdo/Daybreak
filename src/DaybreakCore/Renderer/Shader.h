@@ -5,6 +5,7 @@
 namespace Daybreak
 {
     // Render API independent shader interface.
+    // TODO: Rename to ShaderProgram.
     class IShader
     {
     public:

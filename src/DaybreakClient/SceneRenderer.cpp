@@ -2,19 +2,13 @@
 #include "SceneRenderer.h"
 #include "app/support/deref.h"
 #include "OglRenderer/OglRenderContext.h"
-#include "OglRenderer/OglShader.h"
 #include "OglRenderer/OglError.h"
-#include "OglRenderer/OglInputLayout.h"
-#include "OglRenderer/OglVertexBuffer.h"
-#include "OglRenderer/OglIndexBuffer.h"
-#include "OglRenderer/OglTexture.h"
 #include "OglRenderer/OglPhongLightingEffect.h"
 #include "OglRenderer\OglDeviceContext.h"
 #include "Renderer/Mesh.h"
 #include "Content\Models\ModelData.h"
 #include "Renderer/Phong/PhongMaterial.h"
 #include "Renderer/Phong/PhongLight.h"
-#include "Renderer/RenderContext.h"
 #include "Graphics/BasicGeometryGenerator.h"
 #include "Graphics/Mesh/MeshData.h"
 #include "Content\Images\Image.h"
@@ -22,6 +16,13 @@
 #include "Scene/Camera.h"
 #include "Content/ResourcesManager.h"
 #include "Content/DefaultFileSystem.h"
+
+#include "Renderer\RenderContext.h"
+#include "Renderer\IndexBuffer.h"
+#include "Renderer\VertexBuffer.h"
+#include "Renderer\InputLayout.h"
+#include "Renderer\Mesh.h"
+#include "Renderer\Shader.h"
 
 #include <glad\glad.h>
 #include <string>
@@ -210,16 +211,15 @@ void SceneRenderer::CreateDefaultScene()
 
     // Construct scene shader.
     m_phong = std::make_unique<OglPhongLightingEffect>(
-        OglShader::generateFromFile(
+        m_deviceContext->compileShader(
             "Standard",
-            "Content\\Shaders\\Standard_vs.glsl",
-            "Content\\Shaders\\Standard_fs.glsl"));
+            m_resources->loadTextFile("Shaders\\Standard_vs.glsl"),
+            m_resources->loadTextFile("Shaders\\Standard_fs.glsl")));
 
-    m_lightDebugShader = std::move(
-        OglShader::generateFromFile(
-            "Standard",
-            "Content\\Shaders\\LightDebug_vs.glsl",
-            "Content\\Shaders\\LightDebug_fs.glsl"));
+    m_lightDebugShader = m_deviceContext->compileShader(
+        "LightDebug",
+        m_resources->loadTextFile("Shaders\\LightDebug_vs.glsl"),
+        m_resources->loadTextFile("Shaders\\LightDebug_fs.glsl"));
 
     // Configure scene lights.
     m_scene->setDirectionalLightCount(1);

@@ -66,34 +66,13 @@ Daybreak::ShaderVariable OglShader::getVariable(const std::string& name) const
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::unique_ptr<OglShader> OglShader::generateFromFile(
-    const std::string& shaderProgramName,
-    const std::string& vertexShaderPath,
-    const std::string& fragmentShaderPath)
-{
-    // Load the vertex shader and fragment shaders from disk.
-    auto vertexShaderString = ReadTextFromFile(vertexShaderPath);
-    auto fragmentShaderString = ReadTextFromFile(fragmentShaderPath);
-    
-    // Use LoadFromString variant to finish loading the shader.
-    return generate(
-        shaderProgramName,
-        vertexShaderPath,
-        vertexShaderString,
-        fragmentShaderPath,
-        fragmentShaderString);
-}
-
-//---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<OglShader> OglShader::generate(
     const std::string& shaderProgramName,
-    const std::string& vertexShaderName,
     const std::string& vertexShaderString,
-    const std::string& fragmentShaderName,
     const std::string& fragmentShaderString)
 {
-    auto vertexShaderText = vertexShaderString.c_str();
-    auto fragmentShaderText = fragmentShaderString.c_str();
+    auto vertexShaderText = vertexShaderString.data();          // TODO: instead of nullptr pass length!
+    auto fragmentShaderText = fragmentShaderString.data();
 
     // Create and upload vertex shader.
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -104,7 +83,7 @@ std::unique_ptr<OglShader> OglShader::generate(
     glCompileShader(vertexShader);
     glCheckForErrors();
 
-    VerifyShaderCompiled(vertexShader, vertexShaderName);
+    VerifyShaderCompiled(vertexShader, shaderProgramName + "_VS");
 
     // Create and upload fragment shader.
     auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -115,7 +94,7 @@ std::unique_ptr<OglShader> OglShader::generate(
     glCompileShader(fragmentShader);
     glCheckForErrors();
 
-    VerifyShaderCompiled(fragmentShader, fragmentShaderName);
+    VerifyShaderCompiled(fragmentShader, shaderProgramName + "_PS");
 
     // Create standard shader program.
     auto shaderProgram = glCreateProgram();
@@ -140,17 +119,6 @@ std::unique_ptr<OglShader> OglShader::generate(
 
     // Construct and return shader.
     return std::unique_ptr<OglShader>(new OglShader(shaderProgram, shaderProgramName));
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-std::string OglShader::ReadTextFromFile(const std::string& filepath)
-{
-    std::ifstream stream;
-
-    stream.exceptions(std::ifstream::failbit | std::ifstream::badbit);  // Enable exceptions on stream.
-    stream.open(filepath);
-
-    return std::string(std::istreambuf_iterator<char>(stream), {});
 }
 
 //---------------------------------------------------------------------------------------------------------------------

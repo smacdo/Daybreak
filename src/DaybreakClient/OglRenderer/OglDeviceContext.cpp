@@ -3,6 +3,7 @@
 #include "OglIndexBuffer.h"
 #include "OglInputLayout.h"
 #include "OglTexture.h"
+#include "OglShader.h"
 #include "OglVertexBuffer.h"
 
 using namespace Daybreak;
@@ -38,6 +39,18 @@ std::unique_ptr<IndexBuffer> OglDeviceContext::createIndexBuffer(const MeshData&
 std::unique_ptr<InputLayout> OglDeviceContext::createInputLayout(const InputLayoutDescription& layoutDescription)
 {
     return OglInputLayout::generate(layoutDescription);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+std::unique_ptr<IShader> OglDeviceContext::compileShader(
+    const std::string& shaderName,
+    std::string_view vertexShaderProgram,
+    std::string_view fragmentShaderProgram)
+{
+    return OglShader::generate(
+        shaderName,
+        std::string(vertexShaderProgram),           // TODO: Convert ogl shader to use string_view.
+        std::string(fragmentShaderProgram));
 }
 
 //---------------------------------------------------------------------------------------------------------------------

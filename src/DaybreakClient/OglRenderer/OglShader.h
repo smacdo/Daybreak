@@ -30,24 +30,13 @@ namespace Daybreak::OpenGlRenderer
         // Set shader program object.
         void setShaderProgram(GLuint id);
 
-        // Load shader program from shader files on disk.
-        static std::unique_ptr<OglShader> generateFromFile(
-            const std::string& shaderProgramName,
-            const std::string& vertexShaderPath,
-            const std::string& fragmentShaderPath);
-
         // Load shader program from in memory strings.
         static std::unique_ptr<OglShader> generate(
             const std::string& shaderProgramName,
-            const std::string& vertexShaderName,
-            const std::string& vertexShaderString,
-            const std::string& fragmentShaderName,
-            const std::string& fragmentShaderString);
+            const std::string& vertexShaderString,         // TODO: Pass these as string_view
+            const std::string& fragmentShaderString);      // TODO: Pass this as string_view
 
     private:
-        // Load a file into a string and return it. Will throw an exception if failed to load.
-        static std::string ReadTextFromFile(const std::string& filepath);
-
         // Checks that the shader was compiled successfully otherwise throws an exception.
         static void VerifyShaderCompiled(GLuint shader, const std::string& shaderName);
 

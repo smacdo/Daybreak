@@ -56,7 +56,7 @@ const void * MeshData::rawVertexBufferData() const noexcept
 //---------------------------------------------------------------------------------------------------------------------
 size_t MeshData::vertexCount() const noexcept
 {
-    return m_vertexBuffer->byteCount();
+    return m_vertexBuffer->vertexCount();
 }
 
 //---------------------------------------------------------------------------------------------------------------------

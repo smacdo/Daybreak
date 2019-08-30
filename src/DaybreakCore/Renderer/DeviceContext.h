@@ -10,6 +10,7 @@ namespace Daybreak
     class InputLayout;
     class InputLayoutDescription;
     class MeshData;
+    class IShader;
     class VertexBuffer;
 
     /*** Hardware independent API for managing rendering resources. */
@@ -41,6 +42,12 @@ namespace Daybreak
         /** Create a new input layout descriptor. */
         virtual std::unique_ptr<InputLayout> createInputLayout(
             const InputLayoutDescription& layoutDescription) = 0;
+
+        /** Create a new shader program. */
+        virtual std::unique_ptr<IShader> compileShader(
+            const std::string& shaderName,                          ///< Name of the shader program.
+            std::string_view vertexShaderProgram,                   ///< Vertex shader code.
+            std::string_view fragmentShaderProgram) = 0;            ///< Pixel shader code.
 
         /** Create a new vertex buffer. */
         virtual std::unique_ptr<VertexBuffer> createVertexBuffer(
