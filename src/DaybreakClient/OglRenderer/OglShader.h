@@ -33,15 +33,20 @@ namespace Daybreak::OpenGlRenderer
         // Load shader program from in memory strings.
         static std::unique_ptr<OglShader> generate(
             const std::string& shaderProgramName,
-            const std::string& vertexShaderString,         // TODO: Pass these as string_view
-            const std::string& fragmentShaderString);      // TODO: Pass this as string_view
+            const std::string_view& vertexShaderString,
+            const std::string_view& fragmentShaderString);
 
     private:
         // Checks that the shader was compiled successfully otherwise throws an exception.
-        static void VerifyShaderCompiled(GLuint shader, const std::string& shaderName);
+        static void VerifyShaderCompiled(
+            GLuint shader,
+            const std::string& programName,
+            const std::string& stageName);
 
         // Checks that the shader was linked successfully otherwise throws an exception.
-        static void VerifyShaderLinked(GLuint program, const std::string& programName);
+        static void VerifyShaderLinked(
+            GLuint program,
+            const std::string& programName);
 
     private:
         virtual void destroy();

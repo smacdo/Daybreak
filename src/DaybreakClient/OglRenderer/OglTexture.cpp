@@ -2,6 +2,7 @@
 #include "OglTexture.h"
 #include "OglError.h"
 #include "Content\Images\Image.h"
+#include "Renderer\RendererExceptions.h"
 
 #include <glad\glad.h>
 

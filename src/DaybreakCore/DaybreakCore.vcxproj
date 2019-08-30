@@ -214,6 +214,7 @@
     <ClInclude Include="Renderer\RenderContext.h" />
     <ClInclude Include="Renderer\Phong\PhongLightingEffect.h" />
     <ClInclude Include="Renderer\Phong\PhongLight.h" />
+    <ClInclude Include="Renderer\RendererExceptions.h" />
     <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="Renderer\ShaderVariable.h" />
     <ClInclude Include="Renderer\Texture.h" />
@@ -271,6 +272,7 @@
     <ClCompile Include="Renderer\Phong\PhongMaterial.cpp" />
     <ClCompile Include="Renderer\RenderEffect.cpp" />
     <ClCompile Include="Graphics\InputLayoutDescription.cpp" />
+    <ClCompile Include="Renderer\RendererExceptions.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
     <ClCompile Include="Content\ObjModel\ObjModelParser.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />

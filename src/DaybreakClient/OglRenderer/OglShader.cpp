@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "OglShader.h"
 #include "OglError.h"
+#include "Renderer\RendererExceptions.h"
 
 #include <glad\glad.h>
+#include <array>
 #include <string>
 #include <fstream>
 
@@ -68,33 +70,36 @@ Daybreak::ShaderVariable OglShader::getVariable(const std::string& name) const
 //---------------------------------------------------------------------------------------------------------------------
 std::unique_ptr<OglShader> OglShader::generate(
     const std::string& shaderProgramName,
-    const std::string& vertexShaderString,
-    const std::string& fragmentShaderString)
+    const std::string_view& vertexShaderString,
+    const std::string_view& fragmentShaderString)
 {
-    auto vertexShaderText = vertexShaderString.data();          // TODO: instead of nullptr pass length!
-    auto fragmentShaderText = fragmentShaderString.data();
+    std::array<const char *, 1> vertexShaderTexts{ vertexShaderString.data() };
+    std::array<GLint, 1> vertexShaderLengths{ static_cast<GLint>(vertexShaderString.size()) };
+
+    std::array<const char *, 1> fragmentShaderTexts{ fragmentShaderString.data() };
+    std::array<GLint, 1> fragmentShaderLengths{ static_cast<GLint>(fragmentShaderString.size()) };
 
     // Create and upload vertex shader.
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-    glShaderSource(vertexShader, 1, &vertexShaderText, nullptr);
+    glShaderSource(vertexShader, 1, &vertexShaderTexts[0], &vertexShaderLengths[0]);
     glCheckForErrors();
 
     glCompileShader(vertexShader);
     glCheckForErrors();
 
-    VerifyShaderCompiled(vertexShader, shaderProgramName + "_VS");
+    VerifyShaderCompiled(vertexShader, shaderProgramName, "VertexShader");
 
     // Create and upload fragment shader.
     auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glShaderSource(fragmentShader, 1, &fragmentShaderText, nullptr);
+    glShaderSource(fragmentShader, 1, &fragmentShaderTexts[0], &fragmentShaderLengths[0]);
     glCheckForErrors();
 
     glCompileShader(fragmentShader);
     glCheckForErrors();
 
-    VerifyShaderCompiled(fragmentShader, shaderProgramName + "_PS");
+    VerifyShaderCompiled(fragmentShader, shaderProgramName, "PixelShader");
 
     // Create standard shader program.
     auto shaderProgram = glCreateProgram();
@@ -122,7 +127,9 @@ std::unique_ptr<OglShader> OglShader::generate(
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglShader::VerifyShaderLinked(GLuint program, const std::string& programName)
+void OglShader::VerifyShaderLinked(
+    GLuint program,
+    const std::string& programName)
 {
     int result = 0;
     glGetProgramiv(program, GL_LINK_STATUS, &result);
@@ -142,7 +149,10 @@ void OglShader::VerifyShaderLinked(GLuint program, const std::string& programNam
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void OglShader::VerifyShaderCompiled(GLuint shader, const std::string& shaderName)
+void OglShader::VerifyShaderCompiled(
+    GLuint shader,
+    const std::string& programName,
+    const std::string& stageName)
 {
     int result = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
@@ -158,6 +168,6 @@ void OglShader::VerifyShaderCompiled(GLuint shader, const std::string& shaderNam
         glGetShaderInfoLog(shader, ErrorTextBufferSize, nullptr, &errorText[0]);
          
         // Throw an exception telling the user that the shader failed to compile.
-        throw DaybreakShaderCompileException(shaderName, errorText);
+        throw DaybreakShaderCompileException(programName + "_" + stageName, errorText);
     }
 }

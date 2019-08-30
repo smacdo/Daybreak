@@ -11,7 +11,7 @@ namespace Daybreak::OpenGlRenderer
     };
 
     // Error when interacting with OpenGL.
-    class GlException : public std::runtime_error
+    class GlException : public std::runtime_error       // TODO: Derive from another base
     {
     public:
         // Constructor.
