@@ -183,28 +183,17 @@ void SceneRenderer::CreateDefaultScene()
     // Enable depth testing by default.
     m_renderContext->setDepthTestEnabled(true);
 
-    // Load textures.
-    //  TODO: Use render context -> device -> createTexture
-    auto diffuseImage = resources->loadImage("cube_diffuse.png");
-    auto diffuseTexture = OglTexture2d::generate(*diffuseImage.get(), TextureParameters(), TextureFormat::RGB);
-
-    auto specularImage = resources->loadImage("cube_specular.png");
-    auto specularTexture = OglTexture2d::generate(*specularImage.get(), TextureParameters(), TextureFormat::RGB);
-
     // Create a simple cube to render.
-    //  TODO: Use render context -> device -> createXXX
     auto cubeModel = resources->loadModel("cube.obj");
 
-    auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh());
+    auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh()); 
     auto indexBuffer = OglIndexBuffer::generate(cubeModel->mesh());
-
-    auto material = std::make_shared<PhongMaterial>();
-
-    material->setDiffuseTexture(std::move(diffuseTexture));
-    material->setSpecularTexture(std::move(specularTexture));
-    material->setShininess(32.0f);
-
-    m_mesh = std::make_unique<Mesh>(std::move(vertexBuffer), std::move(indexBuffer), material);
+     
+    auto material = std::make_shared<PhongMaterial>(cubeModel->group(0).materialRef());
+    m_mesh = std::make_unique<Mesh>(
+        std::move(vertexBuffer),
+        std::move(indexBuffer),
+        material);
 
     // Generate vertex attributes for the standard shader.
     // TODO: Move this work into a fluent-ish interface inside InputLayout.

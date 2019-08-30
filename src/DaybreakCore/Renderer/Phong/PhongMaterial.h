@@ -5,12 +5,14 @@
 
 namespace Daybreak
 {
+    class MaterialData;
+
     // Material with phong lighting properties.
     class PhongMaterial
     {
     public:
-        // Constructor.
-        PhongMaterial() = default;
+        /** Initialize phong material from generic material data. */
+        PhongMaterial(const MaterialData& data);
 
         // Get ambient material color.
         glm::vec3 ambientColor() const { return m_ambientColor; }

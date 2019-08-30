@@ -267,6 +267,7 @@
     <ClCompile Include="Renderer\InputLayout.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Phong\PhongLightingEffect.cpp" />
+    <ClCompile Include="Renderer\Phong\PhongMaterial.cpp" />
     <ClCompile Include="Renderer\RenderEffect.cpp" />
     <ClCompile Include="Graphics\InputLayoutDescription.cpp" />
     <ClCompile Include="Renderer\TextureParameters.cpp" />
