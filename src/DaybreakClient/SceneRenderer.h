@@ -15,6 +15,7 @@ namespace Daybreak
     class ITexture2d;
     class IRenderContext;
     class PhongLightingEffect;
+    class ResourcesManager;
 }
 
 namespace Daybreak::OpenGlRenderer
@@ -61,7 +62,9 @@ private:
     // Amount of accumulated rendering time.
     Daybreak::timespan_t m_renderTime;
 
+    std::shared_ptr<Daybreak::IDeviceContext> m_deviceContext;
     std::shared_ptr<Daybreak::IRenderContext> m_renderContext;
+    std::shared_ptr<Daybreak::ResourcesManager> m_resources;
 
     std::shared_ptr<Daybreak::InputLayout> m_standardInputLayout; // TODO: Not here. Not sure where yet.
     std::shared_ptr<Daybreak::IShader> m_lightDebugShader;        // TODO: Move to effect class.

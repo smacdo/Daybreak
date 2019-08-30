@@ -169,30 +169,27 @@ void SceneRenderer::Render(const Daybreak::Scene& scene, timespan_t deltaTime)
 //---------------------------------------------------------------------------------------------------------------------
 void SceneRenderer::CreateDefaultScene()
 {
-    auto deviceContext = std::make_shared<OglDeviceContext>();
-    auto fileSystem = std::make_shared<DefaultFileSystem>("Content");
-
-    auto resources = std::make_unique<ResourcesManager>(deviceContext, fileSystem);
-
-    m_scene = std::make_unique<Scene>();
+    m_deviceContext = std::make_shared<OglDeviceContext>();
     m_renderContext = std::make_unique<OglRenderContext>();
 
-    // Configure camera.
-    m_camera->setPerspective(45.0f, 0.1f, 100.0f);
+    m_resources = std::make_shared<ResourcesManager>(
+        m_deviceContext,
+        std::make_shared<DefaultFileSystem>("Content"));
 
     // Enable depth testing by default.
     m_renderContext->setDepthTestEnabled(true);
 
-    // Create a simple cube to render.
-    auto cubeModel = resources->loadModel("cube.obj");
+    // Create the default scene.
+    m_scene = std::make_unique<Scene>();
+    m_camera->setPerspective(45.0f, 0.1f, 100.0f);
 
-    auto vertexBuffer = OglVertexBuffer::generate(cubeModel->mesh()); 
-    auto indexBuffer = OglIndexBuffer::generate(cubeModel->mesh());
-     
-    auto material = std::make_shared<PhongMaterial>(cubeModel->group(0).materialRef());
+    // Create a simple cube to render.
+    auto modelData = m_resources->loadModel("cube.obj");
+    auto material = std::make_shared<PhongMaterial>(modelData->group(0).materialRef());
+
     m_mesh = std::make_unique<Mesh>(
-        std::move(vertexBuffer),
-        std::move(indexBuffer),
+        OglVertexBuffer::generate(modelData->mesh()),
+        OglIndexBuffer::generate(modelData->mesh()),
         material);
 
     // Generate vertex attributes for the standard shader.
