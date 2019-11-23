@@ -16,12 +16,19 @@ int main(int argc, char* argv[])
     app.setGlDebugContextRequested(false);
 #endif
 
+    // TODO: Use the logging system to print the working directory.
+    // TODO: Support linux and other platforms for working directory.
+    char currentPath[FILENAME_MAX];
+
+    /*auto bytes =*/ GetModuleFileNameA(NULL, &currentPath[0], FILENAME_MAX);
+    
 
     //try
     //{
-        app.Run();
+         app.Run();
     //}
     /* TODO: Only catch if debugger attached
+    // TODO: Catch file access errors, make sure to print the current working directory in the error message.
     catch (DaybreakEngineException& e)
     {
         std::string message;

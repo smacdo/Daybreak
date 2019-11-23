@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Common/Error.h"
 
 namespace Daybreak::TextUtils
 {
@@ -46,7 +47,7 @@ namespace Daybreak::TextUtils
         }
 
         /** Returns the next line from the text. */
-        std::basic_string_view<CharT, Traits> readNextLine() noexcept
+        std::basic_string_view<CharT, Traits> readNextLine()
         {
             const auto start = m_position;
             const auto size = m_text.size();
@@ -100,8 +101,24 @@ namespace Daybreak::TextUtils
                 end = firstCommentChar;
             }
 
-            // Return to the caller the extracted line.
-            return m_text.substr(start, end - start);
+            // Save the current line start and end position, and return to the caller a copy of that line.
+            m_currentLineStart = start;
+            m_currentLineEnd = end;
+
+            return currentLine();
+        }
+
+        /** Get the current line or throw an exception if no line is available. */
+        std::basic_string_view<CharT, Traits> currentLine() const
+        {
+            if (m_currentLineStart == std::basic_string_view<CharT, Traits>::npos ||
+                m_currentLineEnd == std::basic_string_view<CharT, Traits>::npos ||
+                m_currentLineEnd > m_text.size() || m_currentLineEnd < m_currentLineStart)
+            {
+                throw DaybreakEngineException("StringLineParser line start or end is invalid", "");
+            }
+
+            return m_text.substr(m_currentLineStart, m_currentLineEnd - m_currentLineStart);
         }
 
         /** Check if there is another line to be read from the text. */
@@ -119,6 +136,10 @@ namespace Daybreak::TextUtils
     private:
         std::basic_string_view<CharT, Traits> m_text;
         typename std::basic_string_view<CharT, Traits>::size_type m_position = 0;
+        typename std::basic_string_view<CharT, Traits>::size_type m_currentLineStart =
+            std::basic_string_view<CharT, Traits>::npos;
+        typename std::basic_string_view<CharT, Traits>::size_type m_currentLineEnd =
+            std::basic_string_view<CharT, Traits>::npos;
         CharT m_commentChar = 0;
         bool m_stripComments = false;
     };
