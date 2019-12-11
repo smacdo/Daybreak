@@ -195,7 +195,7 @@
     <ClCompile Include="Graphics\Mesh\BufferDataTests.cpp" />
     <ClCompile Include="Graphics\Mesh\IndexBufferDataTests.cpp" />
     <ClCompile Include="Graphics\Mesh\VertexAttributeIteratorTests.cpp" />
-    <ClCompile Include="Graphics\Mesh\VertexBufferTests.cpp" />
+    <ClCompile Include="Graphics\Mesh\VertexBufferDataTests.cpp" />
     <ClCompile Include="Content\ObjModelLoaderTests.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

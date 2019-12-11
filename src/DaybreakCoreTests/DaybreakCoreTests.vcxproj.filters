@@ -41,9 +41,6 @@
     <ClCompile Include="Graphics\InputLayoutDescriptionTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Mesh\VertexBufferTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics\Mesh\VertexAttributeIteratorTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Mesh\VertexBufferDataTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
