@@ -2,6 +2,9 @@
 #include "Content/ObjModel/ObjModelParser.h"
 #include "Graphics/Mesh/IndexBufferData.h"
 
+#include "Content/ObjModel/MtlMaterialException.h"
+#include "Content/ObjModel/ObjModelException.h"
+
 #include <ostream>
 #include <string>
 
@@ -9,6 +12,8 @@
 #include "TestHelpers.h"
 
 using namespace Daybreak;
+
+CATCH_TRANSLATE_EXCEPTION(MtlMaterialException& ex) { return ex.Message(); }
 
 std::ostream& operator <<(std::ostream& os, const glm::vec2& v)
 {

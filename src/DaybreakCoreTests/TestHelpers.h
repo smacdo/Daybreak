@@ -43,7 +43,59 @@ namespace Daybreak
         T y;
         T z;
     };
+
+    class MtlMaterialException;
 }
+
+/** Matches an exception message exactly. */
+// Ref: https://github.com/catchorg/Catch2/issues/1703
+template<typename T>
+class MatchesExceptionMessage : public Catch::MatcherBase<T>
+{
+public:
+    MatchesExceptionMessage(const std::string& expected)
+        : expected_(expected)
+    {
+    }
+
+    bool match(const T& e) const override
+    {
+        return std::string(e.what()) == expected_;
+    }
+
+    std::string describe() const override
+    {
+        return "exception message equals: \"" + expected_ + '"';
+    }
+
+private:
+    std::string expected_;
+};
+
+/** Matches a subset of an exception message. */
+template<typename T>
+class ContainsExceptionMessage : public Catch::MatcherBase<T>
+{
+public:
+    ContainsExceptionMessage(const std::string& expected)
+        : expected_(expected)
+    {}
+
+    bool match(const T& e) const override
+    {
+        return std::string(e.what()).find(expected_) != std::string::npos;
+    }
+
+    std::string describe() const override
+    {
+        return "exception message equals: \"" + expected_ + '"';
+    }
+
+private:
+    std::string expected_;
+};
+
+//CATCH_TRANSLATE_EXCEPTION(Daybreak::MtlMaterialException& ex);
 
 std::ostream& operator <<(std::ostream& os, const glm::vec2& v);            // TODO: Remove when not using GLM.
 std::ostream& operator <<(std::ostream& os, const glm::vec3& v);            // TODO: Remove when GLM removed.
