@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FirstPersonCameraController.h"
-#include "app/time.h"
+#include "app/timespan.h"
 #include "Input/IInputSource.h"
 #include "Camera.h"
 

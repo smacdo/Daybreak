@@ -181,7 +181,7 @@
   <ItemGroup>
     <ClInclude Include="app\support\deref.h" />
     <ClInclude Include="app\support\hash.h" />
-    <ClInclude Include="app\time.h" />
+    <ClInclude Include="app\timespan.h" />
     <ClInclude Include="Common\Error.h" />
     <ClInclude Include="Common\Singleton.h" />
     <ClInclude Include="Common\stdafx.h" />

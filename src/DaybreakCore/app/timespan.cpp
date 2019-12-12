@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include "stdafx.h"
-#include "time.h"
+#include "timespan.h"
 
 #include <ostream>
 #include <sstream>
@@ -80,10 +80,10 @@ namespace Daybreak
     //-----------------------------------------------------------------------------------------------------------------
     std::ostream& operator <<(std::ostream& os, const timespan_t& t)
     {
-        os << to_string(t);
+        using std::to_string;
+        os << to_string(t.rawValue());
         return os;
     }
-
 }
 
 //---------------------------------------------------------------------------------------------------------------------

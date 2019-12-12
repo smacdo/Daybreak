@@ -178,9 +178,6 @@
     <ClInclude Include="Content\ObjModel\TextParsingUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="app\time.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Content\ObjModel\ObjModelParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -206,6 +203,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\RendererExceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="app\timespan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

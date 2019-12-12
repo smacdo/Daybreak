@@ -1,5 +1,5 @@
 #pragma once
-#include "app/time.h"
+#include "app/timespan.h"
 #include <cstdint>
 #include <memory>
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "app/time.h"
+#include "app/timespan.h"
 
 #include <glm/glm.hpp>      // TODO: Remove when we switch to internal math.
 #include <memory>
