@@ -188,7 +188,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common\TimeSpanTests.cpp" />
+    <ClCompile Include="app\deref_tests.cpp" />
+    <ClCompile Include="app\timespan_tests.cpp" />
     <ClCompile Include="Content\MtlMaterialLoaderTests.cpp" />
     <ClCompile Include="TestHelpers.cpp" />
     <ClCompile Include="Graphics\InputLayoutDescriptionTests.cpp" />
