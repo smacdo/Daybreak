@@ -46,9 +46,6 @@
     <ClInclude Include="Input\InputKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Input\IInputSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
